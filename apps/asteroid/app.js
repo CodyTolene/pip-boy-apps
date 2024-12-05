@@ -99,7 +99,7 @@ function onFrame() { "RAM";
   }
 
   G.clear(1).setFontMonofonto28().drawString(score,8,8);
-  G.drawRect(0,0,W-1,H-1);
+  //G.drawRect(0,0,W-1,H-1);
   var rs = Math.PI*0.8;
   G.drawPolyAA([
     ship.x+Math.cos(ship.r)*8, ship.y+Math.sin(ship.r)*8,
