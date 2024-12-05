@@ -29,6 +29,7 @@ Const.HAS_E_SHOWMESSAGE = false;
 Const.CODE_PROGRESSBAR = "g.drawRect(10,g.getHeight()-16,g.getWidth()-10,g.getHeight()-8).flip();p=x=>g.fillRect(10,g.getHeight()-16,10+(g.getWidth()-20)*x/100,g.getHeight()-8);",
 Const.NO_RESET = true;
 Const.LOAD_APP_AFTER_UPLOAD = true;
+Const.UPLOAD_CHUNKSIZE = 2048;
 
 
 // Set up source code URL
