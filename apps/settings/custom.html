@@ -1,0 +1,60 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../css/spectre.min.css">
+  </head>
+  <body>
+
+    <h2>Settings</h2>
+    <p></p>
+
+    <div class="form-group">
+      <label class="form-label">Color</label>
+      <select class="form-select" id="settings-color">
+        <option value="[0.1,1,0.1]">Green (default)</option>
+        <option value="[1,0.5,0.1]">Orange</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Scanlines</label>
+      <select class="form-select" id="settings-scanline">
+        <option value="0.5">Normal (default)</option>
+        <option value="0.75">Mild</option>
+        <option value="1">Off</option>
+      </select>
+    </div>
+
+    <p>Click <button id="upload" class="btn btn-primary">Save Settings</button></p>
+
+    <script src="../../core/lib/customize.js"></script>
+
+    <script>
+      var domCol = document.querySelector("#settings-color");
+      var domScanline = document.querySelector("#settings-scanline");
+
+
+
+      // When the 'upload' button is clicked...
+      document.getElementById("upload").addEventListener("click", function() {
+        var js = "";
+        if (domCol.value) js += `settings.display.color=${domCol.value};`;
+        if (domScanline.value) js += `settings.display.scanlineMultiplier=${domScanline.value};`;
+        if (js!="") js += "saveSettings();\n";
+        sendCustomizedApp({
+          storage:[
+            {name:"RAM", content:js},
+          ]
+        });
+      });
+
+      // Called when we know what device we're using
+      function onInit(device) {
+        Puck.eval('{col:settings&&E.toJS(settings.display.color),scanline:settings&&E.toJS(settings.display.scanlineMultiplier)}', s => {
+          console.log("Got "+JSON.stringify(s));
+          if (s.col) domCol.value = s.col;
+          if (s.scanline) domScanline.value = s.scanline;
+        })
+      }
+
+    </script>
+  </body>
+</html>

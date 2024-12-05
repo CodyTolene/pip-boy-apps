@@ -1,0 +1,14 @@
+{ "id": "settings",
+  "name": "Settings",
+  "version":"0.01",
+  "description": "Allows you to tweak settings on your Pip-boy",
+  "icon": "app.png",
+  
+  "tags": "",
+  "type": "RAM",
+  "readme": "README.md",
+  "custom": "custom.html",
+  "customConnect": true,
+  "storage": [
+  ]
+}
