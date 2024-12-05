@@ -12,7 +12,7 @@ if (window.location.host=="thewandcompany.github.io") {
     'This is a fork of the main Mod Tool - you can try the <a href="https://thewandcompany.github.io/pip-boy/">Official Version</a> here.';
 }
 
-var RECOMMENDED_VERSION = "2v24";
+var RECOMMENDED_VERSION = "2v24.436";
 
 // We're only interested in
 DEVICEINFO = [
@@ -24,6 +24,11 @@ DEVICEINFO = [
     img : ""
   }
 ];
+Const.FILES_IN_FS = true;
+Const.HAS_E_SHOWMESSAGE = false;
+Const.CODE_PROGRESSBAR = "g.drawRect(10,g.getHeight()-16,g.getWidth()-10,g.getHeight()-8).flip();p=x=>g.fillRect(10,g.getHeight()-16,10+(g.getWidth()-20)*x/100,g.getHeight()-8);",
+Const.NO_RESET = true;
+
 
 // Set up source code URL
 (function() {
@@ -67,3 +72,7 @@ if (window.location.protocol === 'http:' && window.location.hostname!="localhost
   link.href = window.location.href.replace('http://', 'https://');
   requireHTTPS.classList.remove('hidden');
 }
+
+
+// DEBUGGING
+UART.debug=3;

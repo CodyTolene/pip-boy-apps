@@ -1,0 +1,12 @@
+{ "id": "asteroid",
+  "name": "Asteroids",
+  "version":"0.01",
+  "description": "An Asteroids Game",
+  "icon": "app.png",
+  "tags": "game",
+  "type": "app",
+  "readme": "README.md",
+  "storage": [
+    {"name":"USER/asteroid.js","url":"app.js"}
+  ]
+}
