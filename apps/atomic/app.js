@@ -45,29 +45,29 @@ gun:atob("JDICAAAAAetAAAAAAAAAA//QAAAAAAAAC//wAAAAAAAAC+vwAAAAAAAAD//wAAAAAAAAB/
   gunend:atob("CA8CAAAAAAfQD/AP8AfQD/AP8A/wD/AH0B/4P/3///+/"),
   bomb:atob("CRICAAAAEAB9AG/0L/0H/gD/QD/QD/QD/QC/QD/gC/QB/AB/AAtAAEAAAAA="),
   missile:atob("CRQCAuAA/AB/gB/gC/wB/gB/gA/QB/QD/wC7gAAAAAAAAAAAAAAAAAAAAAAAAAAA"),
-  boom:atob("FhYCAAb/5QAABv//9AAB////8AC//qv/wB/+qq/+A/6qqqv4f6pVWq/P+pVVav3/qVVWr//qVQVa//6lQFWr/6lUAVa/+pVQVav/6VVVar7/qVVar8P+qVar/D/qqqq/QP6qqq/gA/+qr/gAD////gAAL///QAAAG/4AAA==")
+   boom:atob("FhYCAAb/5QAABv//9AAB////8AC//qv/wB/+qq/+A/6qqqv4f6pVWq/P+pVVav3/qVVWr//qVQVa//6lQFWr/6lUAVa/+pVQVav/6VVVar7/qVVar8P+qVar/D/qqqq/QP6qqq/gA/+qr/gAD////gAAL///QAAAG/4AAA=="),
+  nuket:atob("LRwCAAAAAAAAAAAAAAAAAAAAL//QAAAAAAAAAAAf//kBAAAAAAAAAB9BR+/0AAAAAAAb/8AAL//0AAAAAG//+QAAAv8AAAAAv///8AAAAvAAAAB/0AH9AEAAfAAAAD9AAA/AAAAfkAAAH4AAAfQAAH//0AALwAAAPgAAf//9AAL1UAAHQAA/QBvAAP//kADAAC+AAPgAv/V/AAAAD0AAHwC/kAfwAAADwAAD0D9AAH0AH+SwAAH0P0AAD4AL/8B+QPwP0AAD4AAH+A/1vwH0AQAQAAAvgD//AD0H8AAAAAfgB/0AD9vQEAAAAPgA+AAAv9A+B0AAfQB9AAAH8A/m9AA/QH8AAAB9AL//gb///0AAAA/QH///////QAAAAf//9H//5VUAAAAAH//0BGkQAAAAAAAAG5AAAAAAAAAA"),
+  nukeb:atob("Hj4CAAAEEAAAAAAAANcAUAAAAAAONA4AAAAWqNNAq6qQP//vNA76/++/+adA2//f9////v///fL////+///0Ab//////5AAAALdA0AAAAAAHNAwAAAAAAHdA0AAAAAAHdAwAAAAAADcAwAAAAAADQBwAAAAAADABwAAAAAADQRwAAAAAADQBwAAAAAADQCwAAAAAADQCwAAAAAADRCgAAAAAADgDwAAAAAADQCgAAAAAADgDwAAAAAADgDgAAAAAADQCgAAAAAADwDgAAAAAACgCQAAAAAADwDgAAAAAADwDQAAAAAACgDQAAAAAADwDQAAAAAABgDQAAAAAACwDQAAAAAACwDQAAAAAACwDQAAAAAACwDQAAAAAABgDAAAAAAACwDAAAAAAABwDAAAAAAABwDAAAAAAACwDAAAAAAABwDAAAAAAACwDAAAAAAABwDAAAAAAABwDAAAAAAABwDAAAAAAABwDAAAAAAABwHAAAAAAABwDAAAAAAABwHAAAAAAABwHAAAAAAABwHAAAAAAABwDAAAAAAABgCAAAAAAABwHAAAAAAABkGAAAAAAABQFAAAAAAABQFAAAAAAABQBAAAAAAABQBAAAAAAAAAAAAAA")
 };
-var build = [
-  { w: 31, x: 7, y: 253 },
-  { w: 30, x: 49, y: 240 },
-  { w: 32, x: 90, y: 245 },
-  { w: 32, x: 132, y: 258 },
-  { w: 27, x: 240, y: 232 },
-  { w: 29, x: 281, y: 255 },
-  { w: 29, x: 323, y: 244 },
-  { w: 28, x: 365, y: 239 }
- ];
-/*build=[];for (var i=0;i<8;i++) {
-  var p = (i<4)?i:i+1.5; // space for gun
-  var im = G.imageMetrics(IM.p[i]);
-  build.push({
-    w : im.width,
-    x : 22 + p*42 - (im.width>>1),
-    y : 288-im.height
-  });
-}*/
-var gun = { x:203, y:262, r : 0, fire:0 };
+let build = [];
 
+function initBuildings() {
+  build=[];
+  for (var i=0;i<8;i++) {
+    var p = (i<4)?i:i+1.5; // space for gun
+    var im = G.imageMetrics(IM.p[i]);
+    var x = 22 + p*42 - (im.width>>1);
+    build.push({
+      im : IM.p[i],
+      w : im.width,
+      x : x,
+      x2 : x+im.width,
+      y : 288-im.height
+    });
+  }
+}
+initBuildings();
+let gun = { x:203, y:262, r : 0, fire:0 };
 let bombs = [
 /* {
   x,y,  // pos
@@ -78,17 +78,21 @@ let bombs = [
 } */
 ];
 let newBombs = [];
+let nuke = [/* { x, frame} */];
 let missile = undefined;
 let lines = []; // [x1,y1,x2,y2];
+let score = { score : 0, lvl:0, nuke:0 }
+let TOP = 20;
+let BLDGTOP = build.reduce((v,b)=>Math.min(b.y,v),H); // top of buildings
 let FLOOR = 288;
-let BOOMSIZE = 20;
+let BOOMSIZE = 30;
 let BOOMLIFE = 10;
 
 function newBomb(last) {
   if (bombs.length>15) return;
   var bm = last ? { x:last.x, y:last.y, life:100000 } : {
     x : Math.randInt(400),
-    y : 0,
+    y : TOP+5,
     life : 0|(20 + Math.randInt(100))
   };
   bm.r = Math.random()-0.5;
@@ -107,21 +111,29 @@ function newBomb(last) {
 
 
 function drawBuildings() {
-  G.clear(1);
+  G.clearRect(0,BLDGTOP,399,H-1);
   G.setColor(2).drawRect(0,288,399,290).drawRect(0,306,399,307).setColor(3);
-  build.forEach((b,i) => G.drawImage(IM.p[i],b.x, b.y));
+  build.forEach((b,i) => G.drawImage(b.im,b.x, b.y));
+}
+
+function drawScore() {
+  G.clearRect(0,0,399,19).setFontMonofonto18().setFontAlign(0,-1);
+  G.drawString("LVL: "+score.lvl,75,0);
+  G.drawString("NUKE: "+score.nuke,325,0);
+  G.drawString("SCORE: "+score.score,200,0);
 }
 
 function drawAll() {
-  G.clear();
+  G.clear(1);
+  drawScore();
   drawBuildings();
 }
 
-function onFrame() {
-  let redraw = false;
-  // Gun
-  G.drawImage(IM.gun, gun.x-18,gun.y-3);
-  G.drawImage(IM.gunend, gun.x+8*Math.sin(gun.r),gun.y-8*Math.cos(gun.r),{rotate:gun.r});
+let redrawBuildings, redrawScore;
+
+function onFrame() {  
+  // clear main area  
+  G.clearRect(0,TOP,399,BLDGTOP);
   // missile movement
   if (gun.fire && !missile) {
     missile = {
@@ -145,7 +157,6 @@ function onFrame() {
     missile.x += missile.vx;
     missile.y += missile.vy;
     if (missile.x<0 || missile.x>400 || missile.y<0 || missile.y>FLOOR || missile.boom>BOOMLIFE) {
-      redraw = true;
       missile = undefined;
     }
   }  
@@ -154,12 +165,12 @@ function onFrame() {
     bm.x+=bm.vx;
     bm.y+=bm.vy;
     if (bm.x<0 || bm.x>400) {
-      redraw = true; // offscreen
+      if (bm.y>BLDGTOP) redrawBuildings = 1;
       return false;
     }
     if (bm.y>FLOOR) {
-      redraw = true;
-      return false; // knock out buildings
+      redrawBuildings = 1;
+      return false;
     }
     if (missile) {
       let dx = missile.x-bm.x,
@@ -168,11 +179,22 @@ function onFrame() {
       if (!missile.boom && d<BOOMSIZE) {
         missile.rad = BOOMSIZE;
         missile.boom=1;
-        redraw = true;
       }
       if (d<missile.rad) { // hit by missile
+        score.score++;redrawScore=1;
         return false; // score?
       }
+    }
+    if (bm.y>BLDGTOP) { // if it's approaching buildings..
+      redrawBuildings = 1;
+      if (build.some((b,i) => {
+        if (bm.y<b.y || bm.x<b.x || bm.x>b.x2) return false;
+        nuke.push({x:(b.x+b.x2)/2,frame:1});// hit!
+        score.nuke++;redrawScore=1;
+        build.splice(i,1);
+        redrawBuildings = 1;
+        return true;
+      })) return false;
     }
     if (bm.life--) return true;
     // else new bombs
@@ -182,18 +204,24 @@ function onFrame() {
     // return undefined->remove current
   }).concat(newBombs);
   newBombs=[];
-  // Now start drawing...
-  if (redraw) drawAll();
+  // Now start drawing main area...
+  if (redrawScore) drawScore();
+  redrawScore = 0;
+  if (redrawBuildings) drawBuildings();
+  redrawBuildings = 0;
+  // Draw Gun
+  G.drawImage(IM.gun, gun.x-18,gun.y-3);
+  G.drawImage(IM.gunend, gun.x+8*Math.sin(gun.r),gun.y-8*Math.cos(gun.r),{rotate:gun.r});
   // missile
   if (missile) {
     if (missile.boom) {
       G.setColor(Math.max(0,BOOMLIFE-missile.boom))
-      .drawImage(IM.boom, missile.x, missile.y, {scale:missile.rad/16,rotate:getTime()})
+      .drawImage(IM.boom, missile.x, missile.y, {scale:missile.rad/12,rotate:getTime()})
       .setColor(-1);
     } else {
       G.drawLineAA(gun.x, gun.y, missile.x, missile.y)
       .drawImage(IM.missile, missile.x, missile.y, {rotate:missile.r});
-    }    
+    }
   }
   // lines for bombs
   lines = lines.filter(l=>l[4]);
@@ -204,14 +232,24 @@ function onFrame() {
     if (bm.jx) G.drawLineAA(bm.ix, bm.iy, bm.jx, bm.jy);
     G.drawImage(IM.bomb, bm.x, bm.y, {rotate:bm.r});
   });
+  // nukes
+  nuke.forEach(n=>{
+    var s = n.frame*3;
+    G.setColor(Math.min(3,Math.round(20-n.frame))).drawImage(IM.nukeb, n.x, FLOOR-s/2, {rotate:0,scale:s/62});
+    G.drawImage(IM.nuket, n.x, FLOOR-s-20, {rotate:0,scale:(0.2+s/40)}).setColor(3);
+    redrawBuildings = true;
+    n.frame++;
+    if (n.frame>20) n.done=true;
+  });
+  nuke = nuke.filter(n=>!n.done);
   
   G.flip();
 }
 
-
-for (var i=0;i<1;i++) newBomb();
+initBuildings();
+for (var i=0;i<2;i++) newBomb();
 frameInterval = setInterval(onFrame, 50);
-setInterval(function() {
+/*setInterval(function() {
   newBomb();
-}, 2000);
+}, 2000);*/
 drawAll();
