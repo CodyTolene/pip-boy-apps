@@ -31,6 +31,26 @@ let ast = [];
 let score = 0;
 let level = 10;
 let framesSinceFired = 0;
+let lastFrame; // time of last frame
+
+const SS = W/24;  // ship back length
+const AS = W/18;  // asteroid radius
+const SR = SS / 2; // radius of ship for collision detection
+const AST = [ // asteroid polygon as X/Y pairs
+  0  ,-1.5,
+  1  ,   0,
+  0.5,   0,
+  0.5, 0.5,
+  0  ,   1,
+  -1 ,   0,
+  -1 ,  -1
+];
+const SHIP = [
+  SS, 0,
+  -0.6*SS, 0.4*SS,
+  -0.3*SS,0,
+  -0.6*SS, -0.4*SS,
+];
 
 
 function newAst(x,y) {
@@ -38,7 +58,7 @@ function newAst(x,y) {
     x:x,y:y,
     vx:Math.random()-0.5,
     vy:Math.random()-0.5,
-    rad:10+Math.random()*20
+    rad:10+Math.random()*AS
   };
   return a;
 }
@@ -51,11 +71,12 @@ function gameStop() {
 
 function addAsteroids() {
   for (var i=0;i<level;i++) {
+    var d,x,y;
     do {
-      var x = Math.random()*W, y = Math.random()*H;
+      x = Math.random()*W; y = Math.random()*H;
       var dx = x-ship.x, dy = y-ship.y;
-      var d = Math.sqrt(dx*dx+dy*dy);
-    } while (d<50);
+      d = Math.sqrt(dx*dx+dy*dy);
+    } while (d<10);
     ast.push(newAst(x,y));
   }
 }
@@ -66,13 +87,17 @@ function gameStart() {
   score = 0;
   level = 4;
   ship = { x:W/2,y:H/2,r:0,v:0 };
-  framesSinceFired = 0;
+  timeSinceFired = 0;
   addAsteroids();
   running = true;
 }
 
+function onFrame() {
+  "ram"
+  var t = getTime();
+  var d = (lastFrame===undefined)?0:(t-lastFrame)*20;
+  lastFrame = t;
 
-function onFrame() { "RAM";
   if (!running) {
     if (KNOB1_BTN.read()) gameStart();
     return;
@@ -86,12 +111,12 @@ function onFrame() { "RAM";
   if (ship.y<0) ship.y+=H;
   if (ship.x>=W) ship.x-=W;
   if (ship.y>=H) ship.y-=H;
-  framesSinceFired++;
-  if (KNOB1_BTN.read() && framesSinceFired>4) { // fire!
-    framesSinceFired = 0;
+  timeSinceFired+=d;
+  if (KNOB1_BTN.read() && timeSinceFired>4) { // fire!
+    timeSinceFired = 0;
     ammo.push({
-      x:ship.x+Math.cos(ship.r)*4,
-      y:ship.y+Math.sin(ship.r)*4,
+      x:ship.x+Math.cos(ship.r)*SS,
+      y:ship.y+Math.sin(ship.r)*SS,
       vx:Math.cos(ship.r)*3,
       vy:Math.sin(ship.r)*3,
     });
@@ -99,17 +124,11 @@ function onFrame() { "RAM";
   }
 
   G.clear(1).setFontMonofonto28().drawString(score,8,8);
-  //G.drawRect(0,0,W-1,H-1);
-  var rs = Math.PI*0.8;
-  G.drawPolyAA([
-    ship.x+Math.cos(ship.r)*8, ship.y+Math.sin(ship.r)*8,
-    ship.x+Math.cos(ship.r+rs)*6, ship.y+Math.sin(ship.r+rs)*6,
-    ship.x+Math.cos(ship.r-rs)*6, ship.y+Math.sin(ship.r-rs)*6,
-  ],true);
+  G.drawPolyAA(g.transformVertices(SHIP,{x:ship.x,y:ship.y,scale:1,rotate:ship.r}),true);
   var na = [];
   ammo.forEach(function(a) {
-    a.x += a.vx;
-    a.y += a.vy;
+    a.x += a.vx*d;
+    a.y += a.vy*d;
     G.fillRect(a.x-1, a.y, a.x+1, a.y).fillRect(a.x, a.y-1, a.x, a.y+1);
     var hit = false;
     ast.forEach(function(b) {
@@ -129,9 +148,10 @@ function onFrame() { "RAM";
   na = [];
   var crashed = false;
   ast.forEach(function(a) {
-    a.x += a.vx;
-    a.y += a.vy;
-    G.drawCircleAA(a.x, a.y, a.rad);
+    a.x += a.vx*d;
+    a.y += a.vy*d;
+    // a 7 point asteroid with rough circle radius of scale 2
+    G.drawPolyAA(g.transformVertices(AST,{x:a.x,y:a.y,scale:a.rad,rotate:t}),true);
     if (a.x<0) a.x+=W;
     if (a.y<0) a.y+=H;
     if (a.x>=W) a.x-=W;
@@ -158,7 +178,7 @@ function onFrame() { "RAM";
     var dx = a.x-ship.x;
     var dy = a.y-ship.y;
     var d = Math.sqrt(dx*dx+dy*dy);
-    if (d < a.rad) crashed = true;
+    if (d < a.rad + SR) crashed = true;
   });
   ast=na;
   if (!ast.length) {

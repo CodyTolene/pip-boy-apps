@@ -1,6 +1,6 @@
 { "id": "asteroid",
   "name": "Asteroids",
-  "version":"0.01",
+  "version":"0.02",
   "description": "An Asteroids Game",
   "icon": "app.png",
   "tags": "game",
