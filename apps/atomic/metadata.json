@@ -1,0 +1,12 @@
+{ "id": "atomic",
+  "name": "Atomic Command",
+  "version":"0.01",
+  "description": "...",
+  "icon": "app.png",
+  "tags": "game",
+  "type": "app",
+  "readme": "README.md",
+  "storage": [
+    {"name":"USER/atomic.js","url":"app.js"}
+  ]
+}
