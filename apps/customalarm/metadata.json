@@ -1,0 +1,13 @@
+{ "id": "customalarm",
+  "name": "Custom Alarm",
+  "version":"0.01",
+  "description": "Upload a custom audio file for the alarm",
+  "icon": "app.png",
+  "tags": "",
+  "type": "map",
+  "readme": "README.md",
+  "custom": "custom.html",
+  "storage": [
+    {"name":"ALARM/CUSTOM.WAV"}
+  ]
+}

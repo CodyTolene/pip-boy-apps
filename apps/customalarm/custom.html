@@ -1,0 +1,74 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../css/spectre.min.css">
+  </head>
+  <body>
+
+    <h2>Custom Map</h2>
+    <p></p>
+
+    <p>Upload a (less than 10 sec) Audio file: <input class="form-input" id="fileInput" type="file"></p>
+
+    <p>Click <button id="upload" class="btn btn-primary disabled" style>Upload</button></p>
+
+    <script src="../../core/lib/customize.js"></script>
+
+
+    <script>
+      const fileInput = document.getElementById('fileInput');
+      let wavContents = "";
+
+      fileInput.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        const SAMPLERATE = 16000;
+        const offlineAudioContext = new OfflineAudioContext(1, SAMPLERATE*10/*buffer length*/, SAMPLERATE);
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          offlineAudioContext.decodeAudioData(e.target.result)
+            .then(audioBuffer => {
+              const bufferLength = audioBuffer.length;
+              const numberOfChannels = audioBuffer.numberOfChannels;
+
+              // Get the PCM data from the audio buffer
+              const pcmData = new Float32Array(bufferLength);
+              audioBuffer.copyFromChannel(pcmData, 0, 0); // copy from first channel only
+              // TODO: could average channels?
+
+              // convert it to 16 bit format and append)
+              wavContents = String.fromCharCode(82, 73, 70, 70, 134, 2, 0, 0, 87, 65, 86, 69, 102, 109, 116, 32, 16, 0, 0, 0, 1, 0, 1, 0, 128, 62, 0, 0, 0, 125, 0, 0, 2, 0, 16, 0, 100, 97, 116, 97, 98, 2, 0, 0);
+              for (let i = 0; i < pcmData.length; i++) {
+                var v = Math.round(pcmData[i] * 32767); // we expect this to wrap over negative->positive anyway
+                if (v<-32768) v=-32768;
+                if (v>32767) v=32767;
+                wavContents += String.fromCharCode(v&255,v>>8);
+              }
+
+              document.getElementById("upload").classList.remove("disabled");
+            })
+            .catch(error => {
+              console.error('Error decoding audio data:', error);
+            });
+        };
+        reader.readAsArrayBuffer(file);
+      });
+
+      // When the 'upload' button is clicked...
+      document.getElementById("upload").addEventListener("click", function() {
+        var js = "";
+
+        sendCustomizedApp({
+          storage:[
+            {name:"ALARM/CUSTOM.WAV", content:wavContents},
+          ]
+        });
+      });
+
+
+      // Called when we know what device we're using
+      function onInit(device) {
+      }
+
+    </script>
+  </body>
+</html>
