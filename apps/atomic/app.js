@@ -17,7 +17,7 @@ let H = G.getHeight();
 // handle knob inputs and removal
 function onKnob1(dir) {
   if (dir) {
-    gun.tx = E.clip(gun.tx - dir*10,20,380);
+    gun.ty = E.clip(gun.ty - dir*10, 40, 210);
     gun.aim();
   } else {
     if (running) gun.fire=1;
@@ -25,7 +25,7 @@ function onKnob1(dir) {
   }
 }
 function onKnob2(dir) {
-  gun.ty = E.clip(gun.ty - dir*10, 40, 210);
+  gun.tx = E.clip(gun.tx + dir*10,20,380);
   gun.aim();
 }
 Pip.on("knob1", onKnob1);
