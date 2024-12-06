@@ -10,8 +10,10 @@
     <div class="form-group">
       <label class="form-label">Color</label>
       <select class="form-select" id="settings-color">
-        <option value="[0.1,1,0.1]">Green (default)</option>
-        <option value="[1,0.5,0.1]">Orange</option>
+        <option value="0,1,0">Green</option>
+        <option value="1,0.5,0">Orange</option>
+        <option value="1,1,1">White</option>
+        <option value="">Green (default, ignore other options)</option>
       </select>
     </div>
     <div class="form-group">
@@ -22,6 +24,15 @@
         <option value="1">Off</option>
       </select>
     </div>
+    <div class="form-group">
+      <label class="form-label">Rolling Brightness</label>
+      <select class="form-select" id="settings-rolling">
+        <option value="0.1">Normal</option>
+        <option value="0.05">Mild</option>
+        <option value="0.2">High</option>
+        <option value="0">Off</option>
+      </select>
+    </div>
 
     <p>Click <button id="upload" class="btn btn-primary">Save Settings</button></p>
 
@@ -30,15 +41,47 @@
     <script>
       var domCol = document.querySelector("#settings-color");
       var domScanline = document.querySelector("#settings-scanline");
+      var domRolling = document.querySelector("#settings-rolling");
 
+function getPalette() {
+  if (!domCol.value) return ""; // default
+  var color = domCol.value.split(",").map(v=>parseFloat(v));
+  const R = color[0];
+  const G = color[1];
+  const B = color[2];
+  const SM = parseFloat(domScanline.value);
+  const RB = parseFloat(domRolling.value);
+  var g = { toColor : (r,g,b) => {
+    r = Math.min(31, Math.max(0, Math.round(r*32)));
+    g = Math.min(63, Math.max(0, Math.round(g*64)));
+    b = Math.min(31, Math.max(0, Math.round(b*32)));
+    var v = (r<<11)|(g<<5)|b;
+    console.log(r,g,b,"=>",v);
+    return v;
+  }};
+  var pal = [
+    new Uint16Array(16),
+    new Uint16Array(16),
+    new Uint16Array(16),
+    new Uint16Array(16)
+  ];
+  for (var i=0;i<16;i++) {
+    var w = Math.max(0,(i-12)/30);
+    console.log("Color",i);
+    pal[0][i] = g.toColor(w+(R*i/15),      w+(G*i/15),      w+(B*i/15)); // 0: even (bright line)
+    pal[1][i] = g.toColor(w+(SM*R*i/15),   w+(SM*G*i/15),   w+(SM*B*i/15)); // 1: odd (dark line)
+    pal[2][i] = g.toColor(w+((RB+R)*i/15),   w+((RB+G)*i/15),   w+((RB+B)*i/15)); // 0: even scan effect
+    pal[3][i] = g.toColor(w+((RB+(SM*R))*i/15),w+((RB+(SM*G))*i/15),w+((RB+(SM*B))*i/15)); // 1: odd scan effect
+  }
+  return pal.map(a => btoa(String.fromCharCode.apply(null,new Uint8Array(a.buffer)))).join(",");
+}
 
 
       // When the 'upload' button is clicked...
       document.getElementById("upload").addEventListener("click", function() {
         var js = "";
-        if (domCol.value) js += `settings.display.color=${domCol.value};`;
-        if (domScanline.value) js += `settings.display.scanlineMultiplier=${domScanline.value};`;
-        if (js!="") js += "saveSettings();\n";
+        js += `settings.palette=${JSON.stringify(getPalette())};`;
+        js += "saveSettings();\n";
         sendCustomizedApp({
           storage:[
             {name:"RAM", content:js},
@@ -48,11 +91,12 @@
 
       // Called when we know what device we're using
       function onInit(device) {
-        Puck.eval('{col:settings&&E.toJS(settings.display.color),scanline:settings&&E.toJS(settings.display.scanlineMultiplier)}', s => {
+        // don't try and figure out what we did have...
+        /*Puck.eval('{pa:settings&&E.toJS(settings.display.color),scanline:settings&&E.toJS(settings.display.scanlineMultiplier)}', s => {
           console.log("Got "+JSON.stringify(s));
           if (s.col) domCol.value = s.col;
           if (s.scanline) domScanline.value = s.scanline;
-        })
+        })*/
       }
 
     </script>
