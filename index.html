@@ -139,7 +139,7 @@ Puck = {
   connect : UART.connect,
   write : UART.write,
   eval : UART.eval,
-  isConnected : UART.isConnected() && UART.getConnection().isOpen(),
+  isConnected : () => UART.isConnected() && UART.getConnection().isOpen,
   getConnection : UART.getConnection,
   close : UART.close,
   RECEIVED_NOT_IN_DATA_HANDLER : true, // hack for Comms.on
