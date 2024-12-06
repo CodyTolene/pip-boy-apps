@@ -19,7 +19,10 @@ function onKnob1(dir) {
   if (dir) {
     gun.tx = E.clip(gun.tx - dir*10,20,380);
     gun.aim();
-  } else gun.fire=1;
+  } else {
+    if (running) gun.fire=1;
+    else setTimeout(restartGame, 100);
+  }
 }
 function onKnob2(dir) {
   gun.ty = E.clip(gun.ty - dir*10, 40, 210);
@@ -85,14 +88,24 @@ let newBombs = [];
 let nuke = [/* { x, frame} */];
 let missile = undefined;
 let lines = []; // [x1,y1,x2,y2];
-let score = { score : 0, lvl:0, nuke:0, ammo:8 }
+let running = true;
+let score = { /*score : 0, lvl:0, nuke:0, ammo:12, bombs:10*/ };
 let TOP = 20;
 let BLDGTOP = build.reduce((v,b)=>Math.min(b.y,v),H); // top of buildings
 let FLOOR = 288;
 let BOOMSIZE = 30;
 let BOOMLIFE = 10;
 
-function newBomb(last) {
+function restartGame() {
+  running = true;
+  initBuildings();
+  score = { score : 0, lvl:0, nuke:0, ammo:12, bombs:8 };
+  bombs = [];
+  for (var i=0;i<2;i++) newBomb();
+  drawAll();
+}
+
+function newBomb(last) {"ram";
   if (bombs.length>15) return;
   var bm = last ? { x:last.x, y:last.y, life:100000 } : {
     x : Math.randInt(400),
@@ -127,7 +140,7 @@ function drawBuildings() {
 function drawScore() {
   G.clearRect(0,0,399,19).setFontMonofonto18().setFontAlign(0,-1);
   G.drawString("LVL: "+score.lvl,75,0);
-  G.drawString("NUKE: "+score.nuke,325,0);
+  if (score.nuke!==undefined) G.drawString("NUKE: "+score.nuke,325,0);
   G.drawString("SCORE: "+score.score,200,0);
 }
 
@@ -136,9 +149,28 @@ function drawAmmo() {
   for (var i=1;i<score.ammo;i++) {
     var side = i&1;
     var x = (gun.x+1) + (-1+2*side)*(10+(i>>1)*8);
-    print(x);
     G.drawImage(IM.ammo, x,FLOOR+5);
   }
+}
+
+function drawGameScreen() {"ram";
+  G.clear(1);
+  drawScore();
+  G.setFontAlign(0,0);
+  var scoreAmmo = score.ammo*25;
+  var scoreBuild = build.length*100;
+  G.setColor(3).setFontMonofonto28().drawString("BONUS POINTS", 200, 60);
+  G.setColor(2).setFontMonofonto16().drawString("BONUS LANDMARK EVERY 10000 POINTS", 200, 95);
+  G.setColor(3).setFontMonofonto23().drawString(scoreAmmo, 100, 140);
+  for (var i=0;i<score.ammo;i++) G.drawImage(IM.ammo, 180 + i*15,126, {scale:2});
+  G.setColor(3).setFontMonofonto23().drawString(scoreBuild, 100, 190);
+  build.forEach((b,i) => {
+    var x = i&3;
+    var y = i>>2;
+    G.drawImage(b.im, 180+x*40, 200+y*60-G.imageMetrics(b.im).height);
+  });
+  G.setColor(2).setFontMonofonto18().drawString("CONTINUE", 200, 290);
+  G.flip()
 }
 
 function drawAll() {
@@ -149,7 +181,8 @@ function drawAll() {
 
 let redrawBuildings, redrawScore;
 
-function onFrame() {  
+function onFrame() {  "ram";
+  if (!running) return drawGameScreen();
   // clear main area  
   G.clearRect(0,TOP,399,BLDGTOP);
   // missile movement
@@ -193,6 +226,7 @@ function onFrame() {
     }
     if (bm.y>FLOOR) {
       redrawBuildings = 1;
+      score.nuke++;redrawScore=1;
       return false;
     }
     if (missile && missile.boom) {
@@ -265,9 +299,15 @@ function onFrame() {
 }
 
 initBuildings();
-for (var i=0;i<2;i++) newBomb();
 frameInterval = setInterval(onFrame, 50);
 setInterval(function() {
-  newBomb();
-}, 8000);
-drawAll();
+  if (score.bombs) {
+    score.bombs--;
+    newBomb();
+  } else if (!bombs.length) {
+    running = false;
+  }
+  if (!build.length && !nuke.length)
+    running = false;
+}, 10000);
+restartGame();
