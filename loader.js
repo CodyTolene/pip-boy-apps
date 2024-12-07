@@ -12,7 +12,7 @@ if (window.location.host=="thewandcompany.github.io") {
     'This is a fork of the main Mod Tool - you can try the <a href="https://thewandcompany.github.io/pip-boy/">Official Version</a> here.';
 }
 
-var RECOMMENDED_VERSION = "2v24.436";
+var RECOMMENDED_VERSION = "2v24.446";
 
 // We're only interested in
 DEVICEINFO = [
@@ -50,7 +50,8 @@ function onFoundDeviceInfo(deviceId, deviceVersion) {
   if (deviceId != "PIPBOY") {
     showToast(`You're using ${deviceId}, not a Pip-Boy! Did you want <a href="https://espruino.com/apps">espruino.com/apps</a> instead?` ,"warning", 20000);
   } else if (versionLess(deviceVersion, RECOMMENDED_VERSION)) {
-    showToast(`You're using an old firmware (${deviceVersion}) and ${RECOMMENDED_VERSION} is available (<a href="https://www.espruino.com/ChangeLog" target="_blank">see changes</a>). <a href="https://thewand.co/pip-boy" target="_blank">Click here to update</a>` ,"warning", 20000);
+//    showToast(`You're using an old firmware (${deviceVersion}) and ${RECOMMENDED_VERSION} is available (<a href="https://www.espruino.com/ChangeLog" target="_blank">see changes</a>). <a href="https://thewand.co/pip-boy" target="_blank">Click here to update</a>` ,"warning", 20000);
+    showToast(`You're using an old firmware (${deviceVersion}) and ${RECOMMENDED_VERSION} is available. <a href="https://thewand.co/pip-boy/upgrade/?file=fwupdate_${RECOMMENDED_VERSION}.zip">Click here to update</a>` ,"warning", 20000);
   }
 }
 
