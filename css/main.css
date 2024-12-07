@@ -38,3 +38,39 @@
 .hidden {
   display: none !important;
 }
+.tile {
+  border: 1px solid #ccc;
+  box-shadow: 2px 2px 4px rgba(0.8,0.8,0.8,0.05);
+  margin: 3px;
+  padding: 10px;
+  width: 49%;
+}
+.panel-body,.panel {
+  padding-bottom: 10px;
+}
+body {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size:large;
+  font-weight: 300;
+}
+p {
+  margin: 0 0 0.5rem;
+}
+.tab {
+  letter-spacing: 0.015rem;
+}
+.tile-title {
+  font-size: 1.1rem;
+  letter-spacing: 0.01rem;
+  font-weight: 500;
+}
+.small-text {
+  font-size: 0.8rem;
+}
+h1 {
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+h2 {
+  font-size: 1.1rem;
+}
