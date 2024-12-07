@@ -1,16 +1,21 @@
 <html>
   <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../../css/spectre.min.css">
+    <link rel="stylesheet" href="../../css/main.css">
   </head>
   <body>
 
     <h2>Custom Map</h2>
     <p></p>
 
-    <p>Upload an image (2048x2048px): <input class="form-input" id="customfile" type="file"></p>
+    <p>Upload an image (2048x2048px):</p>
+    <p><input class="form-input" id="customfile" type="file"></p>
     <div style="float:right">Preview:<br/><canvas id="preview" style="width:256px;height:256px"></canvas></div>
     <img class="thumbnail" id="customimage" src="" face="custom" style="display:none"/>
-    <p>Click <button id="upload" class="btn btn-primary disabled" style>Upload</button></p>
+    <p><button id="upload" class="btn btn-primary disabled" style>Upload</button></p>
 
     <script src="../../core/lib/customize.js"></script>
     <script src="../../webtools/imageconverter.js"></script>

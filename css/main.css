@@ -1,7 +1,7 @@
 .navbar { background-color: #5755d9; padding: 0.5em 1em 0.5em 1em; }
 .navbar .navbar-brand {
   color: #fff;
-  font-weight: bold;
+  font-weight: 400;
 }
 .avatar img {
   border-radius: 5px 5px 5px 5px;
@@ -55,6 +55,7 @@ body {
 }
 p {
   margin: 0 0 0.5rem;
+  font-weight: 300;
 }
 .tab {
   letter-spacing: 0.015rem;
@@ -68,9 +69,12 @@ p {
   font-size: 0.8rem;
 }
 h1 {
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   font-weight: 700;
 }
 h2 {
-  font-size: 1.1rem;
+  font-size: 1.3rem;
+}
+#connectmydevice {
+  font-size:0.9rem;
 }
