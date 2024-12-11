@@ -14,13 +14,26 @@ G.flip = () => Pip.blitImage(G,40,7);
 let W = G.getWidth();
 let H = G.getHeight();
 
+// load start screen
+var f = E.openFile("USER/atomic.img","r");
+var o = 400*18>>2, a = new Uint8Array(G.buffer), b = f.read(2048);
+while (b) {
+  a.set(b, o);
+  o += b.length;
+  b = f.read(2048);
+}
+delete b;
+f.close();
+delete f;
+G.flip();
+
 // handle knob inputs and removal
 function onKnob1(dir) {
   if (dir) {
     gun.ty = E.clip(gun.ty - dir*10, 40, 210);
     gun.aim();
   } else {
-    if (running) gun.fire=1;
+    if (mode=="game") gun.fire=1;
     else setTimeout(restartGame, 100);
   }
 }
@@ -88,7 +101,7 @@ let newBombs = [];
 let nuke = [/* { x, frame} */];
 let missile = undefined;
 let lines = []; // [x1,y1,x2,y2];
-let running = true;
+let mode = "intro";
 let score = { /*score : 0, lvl:0, nuke:0, ammo:12, bombs:10*/ };
 let TOP = 20;
 let BLDGTOP = build.reduce((v,b)=>Math.min(b.y,v),H); // top of buildings
@@ -97,7 +110,7 @@ let BOOMSIZE = 30;
 let BOOMLIFE = 10;
 
 function restartGame() {
-  running = true;
+  mode = "game";
   initBuildings();
   score = { score : 0, lvl:0, nuke:0, ammo:12, bombs:8 };
   bombs = [];
@@ -173,6 +186,12 @@ function drawGameScreen() {"ram";
   G.flip()
 }
 
+function drawIntroScreen() {
+  G.setFontAlign(0,0);
+  G.setColor(((getTime()*1.5)&1)?2:3).setFontMonofonto18().drawString("START GAME", 200, 290);
+  G.flip()
+}
+
 function drawAll() {
   G.clear(1);
   drawScore();
@@ -182,7 +201,8 @@ function drawAll() {
 let redrawBuildings, redrawScore;
 
 function onFrame() {  "ram";
-  if (!running) return drawGameScreen();
+  if (mode == "score") return drawGameScreen();
+  if (mode == "intro") return drawIntroScreen();
   // clear main area  
   G.clearRect(0,TOP,399,BLDGTOP);
   // missile movement
@@ -213,6 +233,7 @@ function onFrame() {  "ram";
       missile.rad = BOOMSIZE+missile.boom*2;
     }
     if (missile.x<0 || missile.x>400 || missile.y<0 || missile.y>FLOOR || missile.boom>BOOMLIFE) {
+      redrawBuildings = 1;
       missile = undefined;
     }
   }  
@@ -298,16 +319,16 @@ function onFrame() {  "ram";
   G.flip();
 }
 
-initBuildings();
 frameInterval = setInterval(onFrame, 50);
 setInterval(function() {
-  if (score.bombs) {
-    score.bombs--;
-    newBomb();
-  } else if (!bombs.length) {
-    running = false;
+  if (mode=="game") {
+    if (score.bombs) {
+      score.bombs--;
+      newBomb();
+    } else if (!bombs.length) {
+      mode = "score";
+    }
+    if (!build.length && !nuke.length)
+      mode = "score";
   }
-  if (!build.length && !nuke.length)
-    running = false;
 }, 10000);
-restartGame();
