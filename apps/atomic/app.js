@@ -7,7 +7,7 @@ g.clear();
 // create new Graphics instance
 let G = Graphics.createArrayBuffer(400,308,2,{
   msb : true,
-  buffer : E.toArrayBuffer(E.memoryArea(0x10000000 + 16384, (400*308)>>2))
+  buffer : E.toArrayBuffer(E.memoryArea(0x10000000 + 32768, (400*308)>>2)) // Uses 30,800 bytes of the 64KB CCM memory, starting above the 32KB audio ring buffer
 });
 G.clear();
 G.flip = () => Pip.blitImage(G,40,7);
