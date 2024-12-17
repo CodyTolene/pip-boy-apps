@@ -15,8 +15,8 @@ let W = G.getWidth();
 let H = G.getHeight();
 
 // load start screen
-var f = E.openFile("USER/atomic.img","r");
-var o = 400*18>>2, a = new Uint8Array(G.buffer), b = f.read(2048);
+let f = E.openFile("USER/atomic.img","r");
+let o = 400*18>>2, a = new Uint8Array(G.buffer), b = f.read(2048);
 while (b) {
   a.set(b, o);
   o += b.length;
@@ -45,6 +45,7 @@ Pip.on("knob1", onKnob1);
 Pip.on("knob2", onKnob2);
 Pip.remove = function() {
   clearInterval(frameInterval);
+  clearInterval(gameInterval);
   Pip.removeListener("knob1", onKnob1);
   Pip.removeListener("knob2", onKnob2);
 };
@@ -138,7 +139,7 @@ function newBomb(last) {"ram";
   newBombs.push(bm);
 }
 
-Math.dist = function(dx,dy) {
+function dist(dx,dy) {
   return Math.sqrt(dx*dx+dy*dy);
 }
 
@@ -213,7 +214,7 @@ function onFrame() {  "ram";
       y : gun.y,
       r : gun.r,
       d : 0, // current distance
-      md : Math.dist(gun.x-gun.tx,gun.y-gun.ty)-10, // max distance 
+      md : dist(gun.x-gun.tx,gun.y-gun.ty)-10, // max distance 
       v : 5,
       vx : Math.sin(gun.r)*5,
       vy : -Math.cos(gun.r)*5
@@ -251,7 +252,7 @@ function onFrame() {  "ram";
       return false;
     }
     if (missile && missile.boom) {
-      let d = Math.dist(missile.x-bm.x,missile.y-bm.y);
+      let d = dist(missile.x-bm.x,missile.y-bm.y);
       if (d<missile.rad) { // hit by missile
         score.score++;redrawScore=1;
         return false; // remove bomb
@@ -319,8 +320,8 @@ function onFrame() {  "ram";
   G.flip();
 }
 
-frameInterval = setInterval(onFrame, 50);
-setInterval(function() {
+let frameInterval = setInterval(onFrame, 50);
+let gameInterval = setInterval(function() {
   if (mode=="game") {
     if (score.bombs) {
       score.bombs--;
@@ -332,3 +333,4 @@ setInterval(function() {
       mode = "score";
   }
 }, 10000);
+
