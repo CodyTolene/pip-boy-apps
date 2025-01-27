@@ -9,8 +9,8 @@
   "storage": [
     {"name":"USER/atomic.js","url":"app.js"},
     {"name":"USER/atomic.img","url":"atomic.img"},
-    {"name":"USER/atomiccd.wav","url":"atomiccd.wav"}
-    {"name":"USER/atomicgs.wav","url":"atomicgs.wav"}
+    {"name":"USER/atomiccd.wav","url":"atomiccd.wav"},
+    {"name":"USER/atomicgs.wav","url":"atomicgs.wav"},
     {"name":"USER/atomicst.wav","url":"atomicst.wav"}
   ]
 }
