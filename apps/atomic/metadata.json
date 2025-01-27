@@ -1,6 +1,6 @@
 { "id": "atomic",
   "name": "Atomic Command",
-  "version":"0.02",
+  "version":"0.03",
   "description": "...",
   "icon": "app.png",
   "tags": "game",
@@ -8,6 +8,9 @@
   "readme": "README.md",
   "storage": [
     {"name":"USER/atomic.js","url":"app.js"},
-    {"name":"USER/atomic.img","url":"atomic.img"}
+    {"name":"USER/atomic.img","url":"atomic.img"},
+    {"name":"USER/atomiccd.wav","url":"atomiccd.wav"}
+    {"name":"USER/atomicgs.wav","url":"atomicgs.wav"}
+    {"name":"USER/atomicst.wav","url":"atomicst.wav"}
   ]
 }
