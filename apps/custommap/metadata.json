@@ -7,7 +7,6 @@
   "type": "map",
   "readme": "README.md",
   "custom": "custom.html",
-  "customConnect": true,
   "storage": [
     {"name":"MAP/MAP.img"}
   ]

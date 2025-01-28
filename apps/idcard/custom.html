@@ -1,0 +1,171 @@
+<html>
+  <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/spectre.min.css">
+    <link rel="stylesheet" href="../../css/main.css">
+  </head>
+  <body>
+
+    <p>Upload a profile picture (160x240px):</p>
+    <p><input class="form-input" id="customfile" type="file"></p>
+
+    <div class="form-group">
+      <label class="form-label" for="input-name">Name</label>
+      <input class="form-input" type="text" id="input-name" placeholder="Name" value="Bob" onchange="drawPreview()">
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="input-room">Room</label>
+      <input class="form-input" type="text" id="input-room" placeholder="123" value="123" onchange="drawPreview()">
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="input-dob">D.O.B.</label>
+      <input class="form-input" type="text" id="input-dob" placeholder="1970.1.1" value="1970.1.1" onchange="drawPreview()">
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="input-skill">Skill</label>
+      <input class="form-input" type="text" id="input-skill" placeholder="Engineer" value="Engineer" onchange="drawPreview()">
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="input-vault">Vault</label>
+      <input class="form-input" type="text" id="input-vault" placeholder="VAULT 33" value="VAULT 33" onchange="drawPreview()">
+    </div>
+
+    <div style="float:right">Preview:<br/><canvas id="preview" style="width:400px;height:300px"></canvas></div>
+    <img class="thumbnail" id="customimage" src="" face="custom" style="display:none"/>
+    <img id="vaulttec-logo" src="vaulttec.png" style="display:none"/>
+
+
+    <p><button id="upload" class="btn btn-primary disabled" style>Upload</button></p>
+
+    <script src="../../core/lib/customize.js"></script>
+    <script src="../../webtools/imageconverter.js"></script>
+
+    <script>
+      const IMGW = 400, IMGH = 300;
+      const PHOTOX = 220, PHOTOY = 30, PHOTOW = 160, PHOTOH = 240;
+      var customImage = undefined;
+      var imageLoaded = false;
+      var falloutFont = new FontFace('Fallout', 'url(monofonto.otf)');
+
+
+      function drawPreview() {
+        var img = document.getElementById("customimage");
+        const canvas = document.getElementById("preview");
+        canvas.width = IMGW; // setting size clears canvas
+        canvas.height = IMGH;
+        const ctx = canvas.getContext("2d",{willReadFrequently:true});
+        var y = 0;
+        ctx.fillStyle = "#000";
+        ctx.fillRect(0, 0, IMGW, IMGH);
+        if (imageLoaded) {
+          let imgW = img.naturalWidth;
+          let imgH = img.naturalHeight;
+          // todo: maintain aspect?
+          ctx.drawImage(img, 0, 0, imgW, imgH, PHOTOX, PHOTOY, PHOTOW, PHOTOH);
+        } else {
+          ctx.strokeStyle = "#fff";
+          ctx.strokeRect(PHOTOX, PHOTOY, PHOTOW, PHOTOH);
+          ctx.fillStyle = "#666";
+          ctx.fillRect(PHOTOX+8, PHOTOY+8, PHOTOW-16, PHOTOH-16);
+        }
+        function fontSize(s) {
+          ctx.font = s+"px Fallout";
+        }
+
+        ctx.fillStyle = "#fff";
+        fontSize(24);
+        ctx.textAlign = "center";
+        ctx.fillText("VAULT DWELLER ID", 110, 50);
+        ctx.strokeStyle = "#888";
+        ctx.strokeRect(10, 60, 200, 1);
+        ctx.strokeRect(10, 170, 200, 1);
+
+        ctx.textAlign = "left";
+        var y = 86, h = 24;
+        fontSize(18);
+        function drawEntry(name, id) {
+          ctx.fillStyle = "#888";
+          ctx.fillText(name, 10, y);
+          ctx.fillStyle = "#fff";
+          ctx.fillText(document.getElementById(id).value, 68, y);
+          y += h;
+        }
+        drawEntry("NAME:", "input-name");
+        drawEntry("ROOM#:", "input-room");
+        drawEntry("DOB:", "input-dob");
+        drawEntry("SKILL:", "input-skill");
+        ctx.textAlign = "center";
+        fontSize(36);
+        ctx.drawImage(document.getElementById("vaulttec-logo"),110-60,184);
+        ctx.fillText(document.getElementById("input-vault").value, 110, 265);
+        var options = {
+          mode:"2bitbw",
+          output:"raw",
+          transparent:false,
+          compression:false,
+          //diffusion:"bayer4",
+          //contrast: brightness ? -64 : 64,
+          //brightness : -128
+        };
+        let imageData = ctx.getImageData(0, 0, IMGW, IMGH);
+        let rgba = imageData.data;
+        options.rgbaOut = rgba;
+        options.width = IMGW;
+        options.height = IMGH;
+        customImage = imageconverter.RGBAtoString(rgba, options).substr(3); // convert image, cut off the header
+        var i = 0;
+        for (var y=0;y<IMGH;y++) {
+          for (var x=0;x<IMGW;x++) { // greenify and add scanlines to give an accurate-ish view
+            rgba[i+0] = 0; // r
+            if (y&1) rgba[i+1] = rgba[i+1]*2 / 3;
+            rgba[i+2] = 0; // b
+            i+=4;
+          }
+        }
+        let outputImageData = new ImageData(options.rgbaOut, options.width, options.height);
+        ctx.putImageData(outputImageData,0,0);
+        document.getElementById("upload").classList.remove("disabled")
+      }
+
+      // Custom image upload
+      document.getElementById('customfile').onchange = function (evt) {
+      var tgt = evt.target || window.event.srcElement, files = tgt.files;
+      if (FileReader && files && files.length) {
+        var fr = new FileReader();
+        fr.onload = function () {
+          document.getElementById("customimage").onload = function() {
+            imageLoaded = true;
+            drawPreview();
+          };
+          document.getElementById("customimage").src = fr.result;
+        }
+        fr.readAsDataURL(files[0]);
+      }
+    }
+      // When the 'upload' button is clicked...
+      document.getElementById("upload").addEventListener("click", function() {
+        var js = "";
+
+        sendCustomizedApp({
+          storage:[
+            {name:"USER/idcard.img", content:customImage},
+          ]
+        });
+      });
+
+
+      // Called when we know what device we're using
+      function onInit(device) {
+        drawPreview();
+      }
+
+      falloutFont.load().then(function(font){
+        document.fonts.add(font);
+        drawPreview();
+      });
+
+    </script>
+  </body>
+</html>

@@ -1,0 +1,109 @@
+<html>
+  <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/spectre.min.css">
+    <link rel="stylesheet" href="../../css/main.css">
+  </head>
+  <body>
+
+    <p>Upload an image (400x300px):</p>
+    <p><input class="form-input" id="customfile" type="file"></p>
+    <p>Brightness:&nbsp;
+    <input class="slider" type="range" id="brightness" min="-127" max="127" value="0" onchange="drawPreview()"></input><span id="brightnessv"></span></p>
+    <p>Contrast:&nbsp;&nbsp;&nbsp;&nbsp;
+    <input class="slider" type="range" id="contrast" min="-255" max="255" value="0" onchange="drawPreview()"></input><span id="contrastv"></span></p>
+
+    <div style="float:right">Preview:<br/><canvas id="preview" style="width:400px;height:300px"></canvas></div>
+    <img class="thumbnail" id="customimage" src="" face="custom" style="display:none"/>
+    <p><button id="upload" class="btn btn-primary disabled" style>Upload</button></p>
+
+    <script src="../../core/lib/customize.js"></script>
+    <script src="../../webtools/imageconverter.js"></script>
+
+    <script>
+      const IMGW = 400;
+      const IMGH = 300;
+      var customImage = undefined;
+      var imageLoaded = false;
+
+      function drawPreview() {
+        if (!imageLoaded) return;
+        var img = document.getElementById("customimage");
+        const canvas = document.getElementById("preview");
+        canvas.width = IMGW; // setting size clears canvas
+        canvas.height = IMGH;
+        const ctx = canvas.getContext("2d",{willReadFrequently:true});
+        var y = 0;
+        let imgW = img.naturalWidth;
+        let imgH = img.naturalHeight;
+        // todo: maintain aspect?
+        ctx.drawImage(img, 0, 0, imgW, imgH, 0, 0, IMGW, IMGH);
+        var options = {
+          mode:"2bitbw",
+          output:"raw",
+          transparent:false,
+          compression:false,
+          diffusion:"bayer4",
+          //contrast: brightness ? -64 : 64,
+          //brightness:64*brightness
+        };
+        options.brightness = 0|document.getElementById("brightness").value;
+        document.getElementById("brightnessv").innerText = options.brightness;
+        options.contrast = 0|document.getElementById("contrast").value;
+        document.getElementById("contrastv").innerText = options.contrast;
+        let imageData = ctx.getImageData(0, 0, IMGW, IMGH);
+        let rgba = imageData.data;
+        options.rgbaOut = rgba;
+        options.width = IMGW;
+        options.height = IMGH;
+        customImage = imageconverter.RGBAtoString(rgba, options).substr(3); // convert image, cut off the header
+        var i = 0;
+        for (var y=0;y<IMGH;y++) {
+          for (var x=0;x<IMGW;x++) { // greenify and add scanlines to give an accurate-ish view
+            rgba[i+0] = 0; // r
+            if (y&1) rgba[i+1] = rgba[i+1]*2 / 3;
+            rgba[i+2] = 0; // b
+            i+=4;
+          }
+        }
+        let outputImageData = new ImageData(options.rgbaOut, options.width, options.height);
+        ctx.putImageData(outputImageData,0,0);
+        document.getElementById("upload").classList.remove("disabled")
+      }
+
+      // Custom image upload
+      document.getElementById('customfile').onchange = function (evt) {
+      var tgt = evt.target || window.event.srcElement, files = tgt.files;
+      if (FileReader && files && files.length) {
+        var fr = new FileReader();
+        fr.onload = function () {
+          document.getElementById("customimage").onload = function() {
+            imageLoaded = true;
+            drawPreview();
+          };
+          document.getElementById("customimage").src = fr.result;
+        }
+        fr.readAsDataURL(files[0]);
+      }
+    }
+      // When the 'upload' button is clicked...
+      document.getElementById("upload").addEventListener("click", function() {
+        var js = "";
+
+        sendCustomizedApp({
+          storage:[
+            {name:"USER/customimg.img", content:customImage},
+          ]
+        });
+      });
+
+
+      // Called when we know what device we're using
+      function onInit(device) {
+      }
+
+    </script>
+  </body>
+</html>

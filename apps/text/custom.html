@@ -1,0 +1,58 @@
+<html>
+  <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/spectre.min.css">
+    <link rel="stylesheet" href="../../css/main.css">
+  </head>
+  <body>
+    <div class="form-group">
+      <label class="form-label" for="input-name">Title</label>
+      <input class="form-input" type="text" id="input-title" placeholder="Title" value="Urgent Action Required">
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="input-room">Message Text</label>
+      <textarea class="form-input" type="text" id="input-text" rows="15">
+  Dweller,
+
+  This message is for your immediate attention. A critical situation has arisen. A recent seismic event has caused a major breach in the hydroponics bay. The integrity of our life support systems is compromised. Oxygen levels are dropping, and the water purification system is failing.
+
+  We require immediate assistance to repair the breach and restore essential systems. Your technical expertise is needed. Proceed to the hydroponics bay with all available repair kits, welding torches, and any spare parts you can locate.
+
+  The survival of this vault depends on your swift action. Do not delay.
+      </textarea>
+    </div>
+
+
+    <p><button id="upload" class="btn btn-primary" style>Upload</button></p>
+
+    <script src="../../core/lib/customize.js"></script>
+
+    <script>
+
+      // When the 'upload' button is clicked...
+      document.getElementById("upload").addEventListener("click", function() {
+        var js = "";
+
+        sendCustomizedApp({
+          storage:[
+            {name:"USER/text.txt", content:document.getElementById("input-title").value.trim()+"\n"+document.getElementById("input-text").value},
+          ]
+        });
+      });
+
+
+      // Called when we know what device we're using
+      function onInit(device) {
+        drawPreview();
+      }
+
+      falloutFont.load().then(function(font){
+        document.fonts.add(font);
+        drawPreview();
+      });
+
+    </script>
+  </body>
+</html>

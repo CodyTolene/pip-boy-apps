@@ -1,0 +1,14 @@
+{ "id": "idcard",
+  "name": "ID Card",
+  "version":"0.01",
+  "description": "Create a customised ID card",
+  "icon": "app.png",
+  "tags": "",
+  "type": "app",
+  "readme": "README.md",
+  "custom": "custom.html",
+  "storage": [
+    {"name":"USER/idcard.js","url":"app.js"},
+    {"name":"USER/idcard.img"}
+  ]
+}
