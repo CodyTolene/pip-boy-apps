@@ -115,20 +115,22 @@ let nuke = [/* { x, frame} */];
 let missile = undefined;
 let lines = []; // [x1,y1,x2,y2];
 let mode = "intro";
-let score = { /*score : 0, lvl:0, nuke:0, ammo:12, bombs:10*/ };
+let score = { /*score : 0, lvl:0, nuke:0, ammo:15, bombs:10*/ };
 let TOP = 20;
 let BLDGTOP = build.reduce((v,b)=>Math.min(b.y,v),H); // top of buildings
 let FLOOR = 288;
 let BOOMSIZE = 30;
-let BOOMLIFE = 10;
+let BOOMLIFE = 8;
+let lastTime = getTime();
 let frame = 0;
 
 function restartGame() {
   mode = "game";
   initBuildings();
-  score = { score : 0, lvl:0, nuke:0, ammo:12, bombs:8 };
+  score = { score : 0, lvl:0, nuke:0, ammo:15, bombs:8 };
   bombs = [];
-  for (var i=0;i<2;i++) newBomb();
+  newBombs = [];
+  setTimeout(newBomb, 1000);  
   drawAll();
 }
 
@@ -137,7 +139,7 @@ function newBomb(last) {"ram";
   var bm = last ? { x:last.x, y:last.y, life:100000 } : {
     x : Math.randInt(400),
     y : TOP+5,
-    life : 0|(20 + Math.randInt(100))
+    life : 0|(1 + Math.random()*4)
   };
   bm.r = Math.random()-0.5;
   if (last) {
@@ -145,8 +147,8 @@ function newBomb(last) {"ram";
     bm.jx = last.ix;
     bm.jy = last.iy;
   }
-  bm.vx = -Math.sin(bm.r)*3;
-  bm.vy = Math.cos(bm.r)*3;
+  bm.vx = -Math.sin(bm.r)*60;
+  bm.vy = Math.cos(bm.r)*60;
   bm.ix = bm.x;
   bm.iy = bm.y;
   newBombs.push(bm);
@@ -235,6 +237,9 @@ function drawAll() {
 let redrawBuildings, redrawScore;
 
 function onFrame() {  "ram";
+  var T = getTime();
+  var dT = T-lastTime;
+  lastTime = T;
   if (mode == "score") return drawGameScreen();
   if (mode == "intro") return drawIntroScreen();
   // clear main area  
@@ -248,12 +253,12 @@ function onFrame() {  "ram";
       r : gun.r,
       d : 0, // current distance
       md : dist(gun.x-gun.tx,gun.y-gun.ty)-10, // max distance 
-      v : 10,
-      vx : Math.sin(gun.r)*10,
-      vy : -Math.cos(gun.r)*10
+      v : 15
     };
-    missile.x += missile.vx*2;
-    missile.y += missile.vy*2;
+    missile.vx = Math.sin(gun.r)*missile.v;
+    missile.vy = -Math.cos(gun.r)*missile.v;
+    missile.x += missile.vx*dT;
+    missile.y += missile.vy*dT;
     Pip.audioStartVar(SND.fire, SND.opts);
   }
   gun.fire = false;
@@ -275,8 +280,8 @@ function onFrame() {  "ram";
   }  
   // Bombs
   bombs = bombs.filter(bm=>{
-    bm.x+=bm.vx;
-    bm.y+=bm.vy;
+    bm.x+=bm.vx*dT;
+    bm.y+=bm.vy*dT;
     if (bm.x<0 || bm.x>400) {
       if (bm.y>BLDGTOP) redrawBuildings = 1;
       return false;
@@ -306,7 +311,7 @@ function onFrame() {  "ram";
         return true;
       })) return false;
     }
-    if (bm.life--) return true;
+    if ((bm.life-=dT) > 0) return true;
     // else new bombs
     let bombcnt = 1+Math.random()*3;
     for (var i=0;i<3;i++)
@@ -370,5 +375,5 @@ let gameInterval = setInterval(function() {
     if (!build.length && !nuke.length)
       mode = "score";
   }
-}, 5000);
+}, 4000);
 
