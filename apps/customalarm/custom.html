@@ -57,7 +57,7 @@
       // When the 'upload' button is clicked...
       document.getElementById("upload").addEventListener("click", function() {
         var js = "";
-
+        Util.showModal("Uploading...");
         sendCustomizedApp({
           storage:[
             {name:"ALARM/CUSTOM.WAV", content:wavContents},

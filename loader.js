@@ -78,4 +78,4 @@ if (window.location.protocol === 'http:' && window.location.hostname!="localhost
 
 
 // DEBUGGING
-UART.debug=3;
+//UART.debug=3;
