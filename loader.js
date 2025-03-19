@@ -30,6 +30,8 @@ Const.CODE_PROGRESSBAR = "g.drawRect(10,g.getHeight()-16,g.getWidth()-10,g.getHe
 Const.NO_RESET = true;
 Const.LOAD_APP_AFTER_UPLOAD = true;
 Const.UPLOAD_CHUNKSIZE = 2048;
+Const.PACKET_UPLOAD_CHUNKSIZE = 1024*7;
+Const.PACKET_UPLOAD_NOACK = true; // we're over USB and confident in flow control
 
 
 // Set up source code URL
