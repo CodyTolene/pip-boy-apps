@@ -1,0 +1,14 @@
+#progressContainer {
+  margin-top: 1rem;
+  width: 300px;
+  height: 20px;
+  background: #eee;
+  border: 1px solid #ccc;
+}
+
+#progressBar {
+  height: 100%;
+  width: 0%;
+  background: #4caf50;
+  transition: width 0.2s ease;
+}

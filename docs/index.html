@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Pip-App Loader</title>
+    <link rel="stylesheet" href="loader.css" />
+  </head>
+  <body>
+    <h2>Pip-App Loader</h2>
+    <p>A simple uploader for testing apps on your Pip-Boy 3000 Mk V device.</p>
+    <button id="connect">Connect to Pip-Boy</button>
+    <input type="file" id="fileInput" accept=".js" disabled />
+    <div id="progressContainer">
+      <div id="progressBar"></div>
+    </div>
+    <p>Note, you may want to restart your device between tests.</p>
+    <button id="restart">Restart</button>
+    <script src="https://www.espruino.com/js/uart.js"></script>
+    <script type="module" src="loader.js"></script>
+  </body>
+</html>

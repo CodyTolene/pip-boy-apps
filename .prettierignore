@@ -1,0 +1,11 @@
+# Ignore everything...
+/*
+
+# Except these files and directories:
+!.github/CODEOWNERS
+!README.md
+!USER/
+!docs/
+
+# Re-ignore sub-directories from the above exempt directories:
+.github/CODEOWNERS
