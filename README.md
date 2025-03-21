@@ -60,8 +60,8 @@ below to get started. Thanks for being part of the Wasteland's growing arcade!
 
 ### Website <a name="website-installation"></a>
 
-You can install and play games directly from https://pip-boy.com/inv/games. Just
-connect to your PC using the website and start playing!
+You can install and play games directly from https://pip-boy.com/. Just connect
+to your PC using the website and start playing!
 
 > ![Info][img-info] Games will be available under the INV > APPS tabs on your
 > Pip-Boy device once uploaded.
