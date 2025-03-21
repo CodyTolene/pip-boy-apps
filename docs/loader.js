@@ -68,10 +68,10 @@ fileInput.addEventListener('change', async (e) => {
 
   const fileName = file.name;
   const fileBuffer = await file.arrayBuffer();
-  const gamePath = `USER/${fileName}`;
+  const appPath = `USER/${fileName}`;
 
   const zip = new JSZip();
-  zip.file(gamePath, fileBuffer);
+  zip.file(appPath, fileBuffer);
   const zipContent = await zip.generateAsync({ type: 'uint8array' });
   const zipLoaded = await JSZip.loadAsync(zipContent);
 
@@ -136,8 +136,8 @@ fileInput.addEventListener('change', async (e) => {
     (() => {
       var fs = require("fs");
       try {
-        eval(fs.readFile("${gamePath}"));
-        return { success: true, message: "Game launched successfully!" };
+        eval(fs.readFile("${appPath}"));
+        return { success: true, message: "App launched successfully!" };
       } catch (error) {
         return { success: false, message: error.message };
       }
@@ -158,7 +158,7 @@ fileInput.addEventListener('change', async (e) => {
       console.error('Launch failed:', result?.message);
     }
   } catch (err) {
-    alert('Error launching game: ' + err.message);
+    alert('Error launching app: ' + err.message);
     console.error('Launch error:', err);
   }
 

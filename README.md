@@ -27,7 +27,7 @@
   - [Prerequisites](#prerequisites)
   - [Setup](#setup)
   - [App Loader](#app-loader)
-  - [Creating a New Game](#new-game)
+  - [Creating a New App/Game](#new-app-game)
 - [License(s)](#licenses)
 - [Terms of Use](#terms)
 - [Wrapping Up](#wrapping-up)
@@ -120,31 +120,31 @@ To get set up for development, follow these steps:
 ### App Loader <a name="app-loader"></a>
 
 Once you have the project and dependencies [set up](#setup) locally, you can
-start the game loader to test your apps and games. To do this, follow these
+start the app loader to test your apps and games. To do this, follow these
 steps:
 
 1. Run `npm run loader` to start the loader app. This is the app you will use to
-   rapidly upload and test your game.
+   rapidly upload and test your app.
 
 2. Open a browser and navigate to `http://localhost:3000` if it doesn't open
    automatically.
 
-3. From here you can connect and upload your game files for quick testing.
+3. From here you can connect and upload your app files for quick testing.
 
 <p align="right">[ <a href="#index">Index</a> ]</p>
 
-### Creating a New Game <a name="new-game"></a>
+### Creating a New App/Game <a name="new-app-game"></a>
 
-To create a new game, follow these steps:
+To create a new app/game, follow these steps:
 
 1. Create a new js file using pascal casing (ie `MyGame.js`) in the `USER`
-   folder. This will be the entry point for your game.
+   folder. This will be the entry point for your app.
 
-2. Test by using the upload tool in the [game loader](#app-loader).
+2. Test by using the upload tool in the [app loader](#app-loader).
 
-3. Update the `USER/_registry.json` file with the new game information. This
-   meta will be used on the website to help users and possibly on the Pip-Boy at
-   a later date.
+3. Update the `USER/_registry.json` file with the new app information. This meta
+   will be used on the website to help users and possibly on the Pip-Boy at a
+   later date.
 
    ```diff
    [
@@ -153,10 +153,10 @@ To create a new game, follow these steps:
    + },
    + {
    +      "author": "My name...",
-   +      "description": "My game description...",
+   +      "description": "My app/game description...",
    +      "id": "MyGameNamePascalCased",
    +      "homepage": "",
-   +      "instructions": "My game instructions...",
+   +      "instructions": "My app/game instructions...",
    +      "tip": "",
    +      "version": "1.0.0"
    + }
