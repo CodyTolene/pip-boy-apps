@@ -2,7 +2,7 @@
   <img align="center" src=".github/images/logo.png" />
   <h1 align="center">Pip-Apps</h1>
   <p align="center">
-    A common repository to house all the great games made by fellow vault-dwellers for the Pip-Boy 3000 Mk V device. Games are hosted on <a href="https://pip-boy.com/" target="_blank">pip-boy.com</a> and are open-source for all to enjoy.
+    A common repository to house all the great games and apps made by fellow vault-dwellers for the Pip-Boy 3000 Mk V device. Apps are hosted on <a href="https://pip-boy.com/" target="_blank">pip-boy.com</a> and are open-source for all to enjoy.
   </p>
   <p align="center">
     Purchase the device from the Bethesda store 
@@ -19,14 +19,14 @@
 
 ## Index <a name="index"></a>
 
-- [Web App](#web-app)
+- [Website](#website)
 - [Playing the Apps/Games](#playing-the-apps-games)
   - [Website Installation](#website-installation)
   - [Manual Installation](#manual-installation)
 - [Development](#development)
   - [Prerequisites](#prerequisites)
   - [Setup](#setup)
-  - [Game Loader](#game-loader)
+  - [App Loader](#app-loader)
   - [Creating a New Game](#new-game)
 - [License(s)](#licenses)
 - [Terms of Use](#terms)
@@ -36,19 +36,19 @@
 <!---------------------------------------------------------------------------->
 <!---------------------------------------------------------------------------->
 
-## Web App <a name="web-app"></a>
+## Website <a name="website"></a>
 
 [**Pip-Boy.com**](https://pip-boy.com/)
 
 Just here to have some fun? Head over to the
-[Apps Inventory](https://pip-boy.com/inv/apps) and start playing right from
-your Pip-Boy’s interface, no fuss, no power armor required. Otherwise you can
-install manually using this repository, follow that guide
-[here](#manual-installation) to get started.
+[Apps Inventory](https://pip-boy.com/inv/apps) and start playing right from your
+Pip-Boy’s interface, no fuss, no power armor required. Otherwise you can install
+manually using this repository, follow that guide [here](#manual-installation)
+to get started.
 
 Feeling like a Vault-Tec engineer? If you’re interested in developing your own
-holotape-style games and apps, follow the [development guide](#development) below to get
-started. Thanks for being part of the Wasteland's growing arcade!
+holotape-style games and apps, follow the [development guide](#development)
+below to get started. Thanks for being part of the Wasteland's growing arcade!
 
 <p align="right">[ <a href="#index">Index</a> ]</p>
 
@@ -73,10 +73,9 @@ connect to your PC using the website and start playing!
 To manually install the games, you have a few options:
 
 1. Upload the zip file from the
-   [latest release](https://github.com/CodyTolene/pip-apps/releases) page to
-   the device using the Zip upload tool here:
-   https://pip-boy.com/data/maintenance. This is the easiest option and doesn't
-   require you to remove the SD card.
+   [latest release](https://github.com/CodyTolene/pip-apps/releases) page to the
+   device using the Zip upload tool here: https://pip-boy.com/data/maintenance.
+   This is the easiest option and doesn't require you to remove the SD card.
 
 2. Copy the entire USER folder from this repository over to the root of the SD
    card. This will overwrite any existing games and settings. This requires you
@@ -118,10 +117,11 @@ To get set up for development, follow these steps:
 
 <p align="right">[ <a href="#index">Index</a> ]</p>
 
-### Game Loader <a name="game-loader"></a>
+### App Loader <a name="app-loader"></a>
 
 Once you have the project and dependencies [set up](#setup) locally, you can
-start the game loader to test your apps and games. To do this, follow these steps:
+start the game loader to test your apps and games. To do this, follow these
+steps:
 
 1. Run `npm run loader` to start the loader app. This is the app you will use to
    rapidly upload and test your game.
@@ -140,7 +140,7 @@ To create a new game, follow these steps:
 1. Create a new js file using pascal casing (ie `MyGame.js`) in the `USER`
    folder. This will be the entry point for your game.
 
-2. Test by using the upload tool in the [game loader](#game-loader).
+2. Test by using the upload tool in the [game loader](#app-loader).
 
 3. Update the `USER/_registry.json` file with the new game information. This
    meta will be used on the website to help users and possibly on the Pip-Boy at
