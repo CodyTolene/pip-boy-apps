@@ -72,10 +72,11 @@ to your PC using the website and start playing!
 
 To manually install the apps, you have a few options:
 
-1. Upload the zip file from the
-   [latest release](https://github.com/CodyTolene/pip-apps/releases) page to the
-   device using the Zip upload tool here: https://pip-boy.com/data/maintenance.
-   This is the easiest option and doesn't require you to remove the SD card.
+1. Download the latest `apps.zip` archive from the
+   [latest build](https://github.com/CodyTolene/pip-apps/actions/workflows/zip-apps.yml)
+   and extract the contents to the root of the SD card. You can use the Zip
+   upload tool here: https://pip-boy.com/data/maintenance. This is the easiest
+   option and doesn't require you to remove the SD card.
 
 2. Copy the entire USER folder from this repository over to the root of the SD
    card. This will overwrite any existing apps and settings. This requires you
