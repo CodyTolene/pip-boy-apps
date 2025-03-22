@@ -28,6 +28,7 @@
   - [Setup](#setup)
   - [App Loader](#app-loader)
   - [Creating a New App/Game](#new-app-game)
+- [Directory Structure](#directory-structure)
 - [License(s)](#licenses)
 - [Terms of Use](#terms)
 - [Wrapping Up](#wrapping-up)
@@ -185,6 +186,32 @@ To create a new app/game, follow these steps:
 6. Wait for the pull request to be reviewed and merged.
 
 Thank you for any and all contributions!
+
+<p align="right">[ <a href="#index">Index</a> ]</p>
+
+<!---------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------->
+
+## Directory Structure <a name="directory-structure"></a>
+
+    .
+    ├─ .github                     # GitHub configuration files.
+    ├─ .husky                      # Husky configuration files.
+    ├─ .vscode                     # VS Code configuration files.
+    ├─ docs                        # The App Loader web app (GitHub Pages hosted)
+    ├─ node_modules                # Node.js dependencies (ignored).
+    ├─ USER                        # The directory for user created apps and games.
+    │  ├─ _registry.json           # The app registry file for user created apps.
+    │  └─ *.js                     # User created apps and games.
+    ├─ .gitignore                  # Git ignore configuration file.
+    ├─ .prettierignore             # Prettier ignore configuration file.
+    ├─ LICENSE.md                  # The project license file.
+    ├─ package-lock.json           # Node.js package lock file.
+    ├─ package.json                # Node.js package file.
+    ├─ prettier.config.cjs         # Prettier configuration file.
+    ├─ README.md                   # The project README file.
+    └─ TERMS.md                    # The project terms of use file.
 
 <p align="right">[ <a href="#index">Index</a> ]</p>
 
