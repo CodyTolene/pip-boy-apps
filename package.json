@@ -9,11 +9,13 @@
   "scripts": {
     "loader": "node docs/main.js",
     "prettier": "prettier --write .",
-    "prettier:check": "prettier --check ."
+    "prettier:check": "prettier --check .",
+    "prepare": "husky"
   },
   "devDependencies": {
     "@types/node": "^22.13.11",
     "express": "^4.21.2",
+    "husky": "^9.1.7",
     "open": "^10.1.0",
     "prettier": "^3.5.2"
   },
