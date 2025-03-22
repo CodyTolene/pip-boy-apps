@@ -1,4 +1,9 @@
-// PipSnake game for Pip-Boy
+// =============================================================================
+//  App/Game: Pip-Snake
+//  License: CC-BY-NC-4.0
+//  Repository: https://github.com/CodyTolene/pip-apps
+//  Description: A simple snake game for the Pip-Boy 3000 Mk V.
+// =============================================================================
 
 const SCREEN_WIDTH = g.getWidth();
 const SCREEN_HEIGHT = g.getHeight();
@@ -197,7 +202,7 @@ function initializeGame() {
 
   g.setFont('6x8', 2);
   g.drawString(
-    'Control a Pip-Snake, eat food.',
+    'Control a Pip-Snake, eat food',
     SCREEN_WIDTH / 2,
     SCREEN_HEIGHT / 2 - 60,
   );
@@ -218,25 +223,25 @@ function initializeGame() {
 
   g.setColor(COLOR_GREEN);
   g.drawString(
-    'Tip: Hitting edges wraps around.',
+    'Tip: Hitting edges wraps around',
     SCREEN_WIDTH / 2,
     SCREEN_HEIGHT / 2,
   );
 
   g.drawString(
-    'Tuner-up: Right, Tuner-down: Left',
+    'Use tuner-up/down to turn',
     SCREEN_WIDTH / 2,
     SCREEN_HEIGHT / 2 + 20,
   );
 
   g.drawString(
-    'Torch: Quit, Tuner-play: Restart',
+    'Torch: Quit | Tuner-play: Restart',
     SCREEN_WIDTH / 2,
     SCREEN_HEIGHT / 2 + 40,
   );
 
   g.drawString(
-    'Press tuner-play to START.',
+    'Press tuner-play to START',
     SCREEN_WIDTH / 2,
     SCREEN_HEIGHT / 2 + 80,
   );
