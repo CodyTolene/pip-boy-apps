@@ -2,7 +2,7 @@
   <img align="center" src=".github/images/logo.png" />
   <h1 align="center">Pip-Apps</h1>
   <p align="center">
-    A common repository to house all the great games and apps made by fellow vault-dwellers for the Pip-Boy 3000 Mk V device. Apps are hosted on <a href="https://pip-boy.com/" target="_blank">pip-boy.com</a> and are open-source for all to enjoy.
+    A common repository to house all the great apps and games made by fellow vault-dwellers for the Pip-Boy 3000 Mk V device. Apps are hosted on <a href="https://pip-boy.com/" target="_blank">pip-boy.com</a> and are open-source for all to enjoy.
   </p>
   <p align="center">
     Purchase the device from the Bethesda store 
@@ -47,8 +47,8 @@ manually using this repository, follow that guide [here](#manual-installation)
 to get started.
 
 Feeling like a Vault-Tec engineer? If you’re interested in developing your own
-holotape-style games and apps, follow the [development guide](#development)
-below to get started. Thanks for being part of the Wasteland's growing arcade!
+holotape-style apps, follow the [development guide](#development) below to get
+started. Thanks for being part of the Wasteland's growing arcade!
 
 <p align="right">[ <a href="#index">Index</a> ]</p>
 
@@ -60,7 +60,7 @@ below to get started. Thanks for being part of the Wasteland's growing arcade!
 
 ### Website <a name="website-installation"></a>
 
-You can install and play games directly from https://pip-boy.com/. Just connect
+You can install and play apps directly from https://pip-boy.com/. Just connect
 to your PC using the website and start playing!
 
 > ![Info][img-info] Games will be available under the INV > APPS tabs on your
@@ -70,7 +70,7 @@ to your PC using the website and start playing!
 
 ### Manual Installation <a name="manual-installation"></a>
 
-To manually install the games, you have a few options:
+To manually install the apps, you have a few options:
 
 1. Upload the zip file from the
    [latest release](https://github.com/CodyTolene/pip-apps/releases) page to the
@@ -78,11 +78,12 @@ To manually install the games, you have a few options:
    This is the easiest option and doesn't require you to remove the SD card.
 
 2. Copy the entire USER folder from this repository over to the root of the SD
-   card. This will overwrite any existing games and settings. This requires you
+   card. This will overwrite any existing apps and settings. This requires you
    to remove the SD card though, so probably not the best option.
 
-3. Use the development process below, which is meant for rapidly testing games
-   and features. This requires a bit of setup but is the most flexible option.
+3. Use the [development process](#development) below, which is meant for rapidly
+   testing apps and features. This requires a bit of setup but is the most
+   flexible option.
 
 <p align="right">[ <a href="#index">Index</a> ]</p>
 
@@ -131,6 +132,9 @@ steps:
 
 3. From here you can connect and upload your app files for quick testing.
 
+> ![Info][img-info] The loader app is also available via GitHub pages here
+> https://codytolene.github.io/pip-apps
+
 <p align="right">[ <a href="#index">Index</a> ]</p>
 
 ### Creating a New App/Game <a name="new-app-game"></a>
@@ -148,23 +152,30 @@ To create a new app/game, follow these steps:
 
    ```diff
    [
-     {
-         ...
-   + },
+     ...
    + {
    +      "author": "My name...",
-   +      "description": "My app/game description...",
-   +      "id": "MyGameNamePascalCased",
+   +      "description": "My app description...",
    +      "homepage": "",
-   +      "instructions": "My app/game instructions...",
+   +      "id": "MyAppName",
+   +      "instructions": "My app instructions & controls...",
+   +      "name": "My App Name",
    +      "tip": "",
    +      "version": "1.0.0"
    + }
    ]
    ```
 
-   > ![Info][img-info] It's ok to leave `homepage` and `tip` blank if you don't
-   > have a website or tip to share.
+   | Key            | Description                                                 |
+   | :------------- | :---------------------------------------------------------- |
+   | `author`       | Your name or handle.                                        |
+   | `description`  | A brief description of your app.                            |
+   | `homepage`     | A link to your website or social media, can be empty.       |
+   | `id`           | A unique app id that also should match the `.js` file name. |
+   | `instructions` | Instructions and controls for your app.                     |
+   | `name`         | The name of your app.                                       |
+   | `tip`          | A tip or trick for your app, can be empty.                  |
+   | `version`      | The version of your app.                                    |
 
 4. Add your code using Git and push to a new branch.
 
