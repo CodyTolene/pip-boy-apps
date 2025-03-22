@@ -27,6 +27,8 @@
   - [Prerequisites](#prerequisites)
   - [Setup](#setup)
   - [App Loader](#app-loader)
+    <!-- Pending dev approval -->
+    <!-- - [Learning app development](#learning-app-development) -->
   - [Creating a New App/Game](#new-app-game)
 - [Directory Structure](#directory-structure)
 - [License(s)](#licenses)
@@ -138,6 +140,20 @@ steps:
 > https://codytolene.github.io/pip-apps
 
 <p align="right">[ <a href="#index">Index</a> ]</p>
+
+<!-- Pending dev approval -->
+<!--
+### Learning app development <a name="learning-app-development"></a>
+
+To learn how to develop apps for the Pip-Boy 3000 Mk V, you can use the great
+RobCo Industries documentation available here:
+
+https://log.robco-industries.org/documentation/pipboy-3000/
+
+Thanks to [@rikkuness](https://github.com/rikkuness) for the great work on this!
+
+<p align="right">[ <a href="#index">Index</a> ]</p>
+-->
 
 ### Creating a New App/Game <a name="new-app-game"></a>
 

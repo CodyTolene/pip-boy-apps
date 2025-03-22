@@ -8,5 +8,15 @@
     "name": "Pip-Snake",
     "tip": "The snake wraps around when it hits the edge of the screen.",
     "version": "1.0.0"
+  },
+  {
+    "author": "Cody Tolene",
+    "description": "Pip-Pong is a simple game where you control a paddle that hits a ball back and forth.",
+    "homepage": "https://www.CodyTolene.com",
+    "id": "PipPong",
+    "instructions": "Use the tune-up and tune-down buttons to move the paddle up and down, and the top torch button to exit the game.",
+    "name": "Pip-Pong",
+    "tip": "",
+    "version": "1.0.0"
   }
 ]
