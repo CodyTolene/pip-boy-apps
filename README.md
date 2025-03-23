@@ -27,8 +27,7 @@
   - [Prerequisites](#prerequisites)
   - [Setup](#setup)
   - [App Loader](#app-loader)
-    <!-- Pending dev approval -->
-    <!-- - [Learning app development](#learning-app-development) -->
+  - [Learning app development](#learning-app-development)
   - [Creating a New App/Game](#new-app-game)
 - [Directory Structure](#directory-structure)
 - [License(s)](#licenses)
@@ -141,19 +140,17 @@ steps:
 
 <p align="right">[ <a href="#index">Index</a> ]</p>
 
-<!-- Pending dev approval -->
-<!--
 ### Learning app development <a name="learning-app-development"></a>
 
-To learn how to develop apps for the Pip-Boy 3000 Mk V, you can use the great
-RobCo Industries documentation available here:
+Interested in learning how to develop apps for the Pip-Boy 3000 Mk V? Check out
+the excellent
+[RobCo Industries Documentation](https://log.robco-industries.org/documentation/pipboy-3000/)
+for everything you need to get started.
 
-https://log.robco-industries.org/documentation/pipboy-3000/
-
-Thanks to [@rikkuness](https://github.com/rikkuness) for the great work on this!
+Special thanks to [@rikkuness](https://github.com/rikkuness) for the hard work
+in providing and maintaining this amazing resource!
 
 <p align="right">[ <a href="#index">Index</a> ]</p>
--->
 
 ### Creating a New App/Game <a name="new-app-game"></a>
 
