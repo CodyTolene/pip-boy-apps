@@ -176,6 +176,7 @@ To create a new app/game, follow these steps:
    +      "instructions": "My app instructions & controls...",
    +      "name": "My App Name",
    +      "tip": "",
+   +      "type": "APP",
    +      "version": "1.0.0"
    + }
    ]
@@ -190,6 +191,7 @@ To create a new app/game, follow these steps:
    | `instructions` | Instructions and controls for your app.                     |
    | `name`         | The name of your app.                                       |
    | `tip`          | A tip or trick for your app, can be empty.                  |
+   | `type`         | The type of app, either "APP" or "GAME".                    |
    | `version`      | The version of your app.                                    |
 
 4. Add your code using Git and push to a new branch.

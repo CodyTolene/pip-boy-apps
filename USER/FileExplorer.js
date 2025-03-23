@@ -1,8 +1,9 @@
 // =============================================================================
-//  App/Tool: Pip-Explorer
+//  Name: File Explorer
 //  License: CC-BY-NC-4.0
 //  Repository: https://github.com/CodyTolene/pip-apps
 //  Description: Directory and media file explorer for the Pip-Boy 3000 Mk V.
+//  Version: 1.0.1
 // =============================================================================
 
 var fs = require('fs');
@@ -70,7 +71,7 @@ function drawUI() {
   g.clear();
   g.setColor(COLOR_TEXT);
   g.setFont('6x8', 2);
-  g.drawString('Pip-Explorer', SCREEN_WIDTH / 2, 10);
+  g.drawString('File Explorer', SCREEN_WIDTH / 2, 10);
   g.setFont('6x8', 1);
 
   let visible = flatList.slice(scrollOffset, scrollOffset + MAX_LINES);
