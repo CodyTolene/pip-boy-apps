@@ -31,5 +31,16 @@
     "tip": "The snake wraps around when it hits the edge of the screen.",
     "type": "GAME",
     "version": "1.0.0"
+  },
+  {
+    "author": "gnargle",
+    "description": "",
+    "homepage": "https://athene.gay/",
+    "id": "statsDisplay",
+    "instructions": "",
+    "name": "Stats Display",
+    "tip": "",
+    "type": "APP",
+    "version": "1.0.0"
   }
 ]
