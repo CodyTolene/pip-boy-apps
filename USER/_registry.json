@@ -1,6 +1,7 @@
 [
   {
     "author": "Cody Tolene",
+    "dependencies": [],
     "description": "A lightweight file explorer for the Pip-Boy 3000 Mk V. Browse your device's file system and interact with files directly.",
     "homepage": "https://www.CodyTolene.com",
     "id": "FileExplorer",
@@ -12,6 +13,7 @@
   },
   {
     "author": "Cody Tolene",
+    "dependencies": [],
     "description": "Pip-Pong is a simple game where you control a paddle that hits a ball back and forth.",
     "homepage": "https://www.CodyTolene.com",
     "id": "PipPong",
@@ -23,6 +25,7 @@
   },
   {
     "author": "Cody Tolene",
+    "dependencies": [],
     "description": "Pip-Snake is a simple game where you control a growing snake that eats food and avoids crashing into itself.",
     "homepage": "https://www.CodyTolene.com",
     "id": "PipSnake",
@@ -34,9 +37,32 @@
   },
   {
     "author": "gnargle",
-    "description": "",
+    "dependencies": [
+      "StatsDisplay/PERKS/ENABLED/computerwhiz.json",
+      "StatsDisplay/SKILLS/barter.json",
+      "StatsDisplay/SKILLS/energyweapons.json",
+      "StatsDisplay/SKILLS/explosives.json",
+      "StatsDisplay/SKILLS/guns.json",
+      "StatsDisplay/SKILLS/lockpicks.json",
+      "StatsDisplay/SKILLS/medicine.json",
+      "StatsDisplay/SKILLS/meleeweapons.json",
+      "StatsDisplay/SKILLS/repair.json",
+      "StatsDisplay/SKILLS/science.json",
+      "StatsDisplay/SKILLS/sneak.json",
+      "StatsDisplay/SKILLS/speech.json",
+      "StatsDisplay/SKILLS/survival.json",
+      "StatsDisplay/SKILLS/unarmed.json",
+      "StatsDisplay/SPECIAL/aStrength.json",
+      "StatsDisplay/SPECIAL/bPerception.json",
+      "StatsDisplay/SPECIAL/cEndurance.json",
+      "StatsDisplay/SPECIAL/dCharisma.json",
+      "StatsDisplay/SPECIAL/eIntelligence.json",
+      "StatsDisplay/SPECIAL/fAgility.json",
+      "StatsDisplay/SPECIAL/gLuck.json"
+    ],
+    "description": "The SPECIAL/Skills/Perks menu for the Pip-Boy 3000 Mk V.",
     "homepage": "https://athene.gay/",
-    "id": "statsDisplay",
+    "id": "StatsDisplay",
     "instructions": "",
     "name": "Stats Display",
     "tip": "",
