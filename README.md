@@ -170,6 +170,7 @@ To create a new app/game, follow these steps:
      ...
    + {
    +      "author": "My name...",
+   +      "dependencies": ["MyAppName"],
    +      "description": "My app description...",
    +      "homepage": "",
    +      "id": "MyAppName",
@@ -185,6 +186,7 @@ To create a new app/game, follow these steps:
    | Key            | Description                                                 |
    | :------------- | :---------------------------------------------------------- |
    | `author`       | Your name or handle.                                        |
+   | `dependencies` | The array of folder names for any assets your app uses.     |
    | `description`  | A brief description of your app.                            |
    | `homepage`     | A link to your website or social media, can be empty.       |
    | `id`           | A unique app id that also should match the `.js` file name. |
@@ -218,7 +220,8 @@ Thank you for any and all contributions!
     ├─ node_modules                # Node.js dependencies (ignored).
     ├─ USER                        # The directory for user created apps and games.
     │  ├─ _registry.json           # The app registry file for user created apps.
-    │  └─ *.js                     # User created apps and games.
+    │  ├─ <...>                    # Asset folders for user created apps.
+    │  └─ *.js                     # User created apps and games (entry file).
     ├─ .gitignore                  # Git ignore configuration file.
     ├─ .prettierignore             # Prettier ignore configuration file.
     ├─ LICENSE.md                  # The project license file.
