@@ -7,10 +7,10 @@
   "type": "module",
   "main": "docs/main.js",
   "scripts": {
-    "loader": "node docs/main.js",
+    "prepare": "husky",
     "prettier": "prettier --write .",
     "prettier:check": "prettier --check .",
-    "prepare": "husky"
+    "start": "node docs/main.js"
   },
   "devDependencies": {
     "@types/node": "^22.13.11",

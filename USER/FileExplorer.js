@@ -3,7 +3,7 @@
 //  License: CC-BY-NC-4.0
 //  Repository: https://github.com/CodyTolene/pip-apps
 //  Description: Directory and media file explorer for the Pip-Boy 3000 Mk V.
-//  Version: 1.0.1
+//  Version: 1.1.0
 // =============================================================================
 
 var fs = require('fs');
@@ -28,36 +28,51 @@ function resolvePath(dir, file) {
   return dir + '/' + file;
 }
 
-function walkAllSync(dir, depth) {
-  let results = [];
-  try {
-    let list = fs.readdir(dir);
-    if (!list || !list.length) return results;
+function walkAllSync(startDir, startDepth) {
+  let stack = [{ path: startDir, depth: startDepth, parent: null }];
+  let rootEntries = [];
+
+  while (stack.length > 0) {
+    let current = stack.pop();
+    let dir = current.path;
+    let depth = current.depth;
+    let parent = current.parent;
+    let list;
+
+    try {
+      list = fs.readdir(dir);
+    } catch (e) {
+      continue;
+    }
+
+    if (!list || !list.length) continue;
 
     list.forEach(function (name) {
       let fullPath = resolvePath(dir, name);
+      let node = {
+        name: name,
+        path: fullPath,
+        depth: depth,
+      };
+
       try {
         fs.readdir(fullPath);
-        results.push({
-          name: name,
-          path: fullPath,
-          type: 'dir',
-          depth: depth,
-        });
-        results = results.concat(walkAllSync(fullPath, depth + 1));
+        node.type = 'dir';
+        node.children = [];
+        stack.push({ path: fullPath, depth: depth + 1, parent: node });
       } catch (err) {
-        results.push({
-          name: name,
-          path: fullPath,
-          type: 'file',
-          depth: depth,
-        });
+        node.type = 'file';
+      }
+
+      if (parent) {
+        parent.children.push(node);
+      } else {
+        rootEntries.push(node);
       }
     });
-  } catch (e) {
-    console.log('Failed to read dir:', dir, e);
   }
-  return results;
+
+  return rootEntries;
 }
 
 function flattenTree(tree) {
@@ -98,6 +113,30 @@ function drawUI() {
       g.drawString(' (PLAYING)', x + labelWidth + 4, y);
     }
   });
+}
+
+function flattenNestedTree(tree) {
+  let result = [];
+  let stack = tree.slice().reverse();
+
+  while (stack.length > 0) {
+    let node = stack.pop();
+
+    result.push({
+      name: node.name,
+      path: node.path,
+      type: node.type,
+      depth: node.depth,
+    });
+
+    if (node.type === 'dir' && Array.isArray(node.children)) {
+      for (let i = node.children.length - 1; i >= 0; i--) {
+        stack.push(node.children[i]);
+      }
+    }
+  }
+
+  return result;
 }
 
 function scrollUp() {
@@ -194,9 +233,9 @@ function startExplorer() {
   showLoadingScreen();
 
   setTimeout(function () {
-    let tree = walkAllSync(ROOT_PATH, 0);
-    console.log('Loaded', tree.length, 'items');
-    flattenTree(tree);
+    let nestedTree = walkAllSync(ROOT_PATH, 0);
+    let flatTree = flattenNestedTree(nestedTree);
+    flattenTree(flatTree);
     setInterval(handleInput, 150);
   }, 50);
 

@@ -127,7 +127,7 @@ Once you have the project and dependencies [set up](#setup) locally, you can
 start the app loader to test your apps and games. To do this, follow these
 steps:
 
-1. Run `npm run loader` to start the loader app. This is the app you will use to
+1. Run `npm run start` to start the loader app. This is the app you will use to
    rapidly upload and test your app.
 
 2. Open a browser and navigate to `http://localhost:3000` if it doesn't open
