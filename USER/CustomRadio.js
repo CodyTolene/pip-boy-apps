@@ -4,7 +4,7 @@
 //  Repository: https://github.com/CodyTolene/pip-apps
 //  Description: A custom music player that allows you to choose the music you
 //               want to play from the `/RADIO` directory without restriction.
-//  Version: 1.0.0
+//  Version: 1.0.1
 // =============================================================================
 
 const fs = require('fs');
@@ -78,7 +78,7 @@ function drawMusicOverlay() {
 }
 
 function exit() {
-  clearInterval(modeCheck);
+  clearInterval(handleInput);
   Pip.audioStop();
 
   Pip.removeAllListeners('knob1');
