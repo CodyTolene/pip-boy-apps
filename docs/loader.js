@@ -41,7 +41,7 @@ connectBtn.addEventListener('click', async () => {
       });
 
       console.log('Connected to Pip-Boy!');
-      alert('Connected to Pip-Boy!');
+      //alert('Connected to Pip-Boy!');
       updateUIConnectionState();
     } else {
       alert('Connection failed.');
@@ -117,7 +117,6 @@ fileInput.addEventListener('change', async (e) => {
         g.clear(1);
         if (g.setFontMonofonto23) g.setFontMonofonto23();
         g.setFontAlign(0, 0);
-        g.flip();
 
         return "Screen cleared";
       } catch (e) {
@@ -150,7 +149,7 @@ fileInput.addEventListener('change', async (e) => {
     });
 
     if (result?.success) {
-      alert(result.message);
+      // alert(result.message);
       console.log(result.message);
       fileInput.value = '';
     } else {
@@ -180,7 +179,7 @@ restartBtn.addEventListener('click', async () => {
     fileInput.disabled = true;
     restartBtn.disabled = true;
 
-    alert('Reboot command sent!');
+    //alert('Reboot command sent!');
   } catch (err) {
     alert('Error rebooting device: ' + err.message);
     console.error('Reboot error:', err);
