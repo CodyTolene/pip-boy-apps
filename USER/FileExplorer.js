@@ -3,7 +3,7 @@
 //  License: CC-BY-NC-4.0
 //  Repository: https://github.com/CodyTolene/pip-apps
 //  Description: Directory and media file explorer for the Pip-Boy 3000 Mk V.
-//  Version: 1.1.0
+//  Version: 1.2.0
 // =============================================================================
 
 var fs = require('fs');
@@ -17,7 +17,7 @@ const LINE_HEIGHT = 12;
 const MAX_LINES = Math.floor(SCREEN_HEIGHT / LINE_HEIGHT);
 const ROOT_PATH = '/';
 
-let flatList = [];
+let entries = [];
 let currentIndex = 0;
 let scrollOffset = 0;
 let currentAudio = null;
@@ -28,58 +28,45 @@ function resolvePath(dir, file) {
   return dir + '/' + file;
 }
 
-function walkAllSync(startDir, startDepth) {
-  let stack = [{ path: startDir, depth: startDepth, parent: null }];
-  let rootEntries = [];
+function loadDirectory(dir) {
+  try {
+    let list = fs.readdir(dir) || [];
+    let depth = dir.split('/').length - 1;
 
-  while (stack.length > 0) {
-    let current = stack.pop();
-    let dir = current.path;
-    let depth = current.depth;
-    let parent = current.parent;
-    let list;
+    entries = [];
 
-    try {
-      list = fs.readdir(dir);
-    } catch (e) {
-      continue;
+    if (dir !== ROOT_PATH) {
+      entries.push({
+        name: '..',
+        path: dir.split('/').slice(0, -1).join('/') || '/',
+        type: 'dir',
+        depth: depth - 1,
+      });
     }
 
-    if (!list || !list.length) continue;
-
-    list.forEach(function (name) {
-      let fullPath = resolvePath(dir, name);
-      let node = {
-        name: name,
-        path: fullPath,
-        depth: depth,
-      };
+    list.forEach((name) => {
+      let path = resolvePath(dir, name);
+      let type = 'file';
 
       try {
-        fs.readdir(fullPath);
-        node.type = 'dir';
-        node.children = [];
-        stack.push({ path: fullPath, depth: depth + 1, parent: node });
-      } catch (err) {
-        node.type = 'file';
-      }
+        fs.readdir(path);
+        type = 'dir';
+      } catch (_) {}
 
-      if (parent) {
-        parent.children.push(node);
-      } else {
-        rootEntries.push(node);
-      }
+      entries.push({
+        name: name,
+        path: path,
+        type: type,
+        depth: depth,
+      });
     });
+
+    currentIndex = 0;
+    scrollOffset = 0;
+    drawUI();
+  } catch (e) {
+    console.log('Failed to load dir:', dir);
   }
-
-  return rootEntries;
-}
-
-function flattenTree(tree) {
-  flatList = tree;
-  currentIndex = 0;
-  scrollOffset = 0;
-  drawUI();
 }
 
 function drawUI() {
@@ -89,7 +76,7 @@ function drawUI() {
   g.drawString('File Explorer', SCREEN_WIDTH / 2, 10);
   g.setFont('6x8', 1);
 
-  let visible = flatList.slice(scrollOffset, scrollOffset + MAX_LINES);
+  let visible = entries.slice(scrollOffset, scrollOffset + MAX_LINES);
 
   visible.forEach(function (entry, i) {
     let isSelected = scrollOffset + i === currentIndex;
@@ -108,35 +95,10 @@ function drawUI() {
 
     g.drawString(label, x, y);
 
-    // If playing audio show "(PLAYING)""
     if (entry.path === currentAudio) {
       g.drawString(' (PLAYING)', x + labelWidth + 4, y);
     }
   });
-}
-
-function flattenNestedTree(tree) {
-  let result = [];
-  let stack = tree.slice().reverse();
-
-  while (stack.length > 0) {
-    let node = stack.pop();
-
-    result.push({
-      name: node.name,
-      path: node.path,
-      type: node.type,
-      depth: node.depth,
-    });
-
-    if (node.type === 'dir' && Array.isArray(node.children)) {
-      for (let i = node.children.length - 1; i >= 0; i--) {
-        stack.push(node.children[i]);
-      }
-    }
-  }
-
-  return result;
 }
 
 function scrollUp() {
@@ -148,7 +110,7 @@ function scrollUp() {
 
 function scrollDown() {
   stopVideo();
-  if (currentIndex < flatList.length - 1) currentIndex++;
+  if (currentIndex < entries.length - 1) currentIndex++;
   if (currentIndex >= scrollOffset + MAX_LINES) scrollOffset++;
   drawUI();
 }
@@ -163,7 +125,7 @@ function handleInput() {
   }
 
   if (BTN_PLAY.read()) {
-    playStop();
+    selectEntry();
   }
 
   if (BTN_TORCH.read()) {
@@ -175,11 +137,14 @@ function handleInput() {
   }
 }
 
-function playStop() {
-  const selected = flatList[currentIndex];
+function selectEntry() {
+  const selected = entries[currentIndex];
   if (!selected) return;
-  if (selected.type !== 'file') return;
-  if (typeof selected.name !== 'string') return;
+
+  if (selected.type === 'dir') {
+    loadDirectory(selected.path);
+    return;
+  }
 
   const name = selected.name.toLowerCase();
 
@@ -188,28 +153,31 @@ function playStop() {
     return;
   }
 
-  // Audio
   if (name.endsWith('.wav') || name.endsWith('.mp3') || name.endsWith('.ogg')) {
     if (currentAudio === selected.path) {
       Pip.audioStop();
       currentAudio = null;
       drawUI();
-      return;
+    } else {
+      Pip.audioStop();
+      Pip.audioStart(selected.path);
+      currentAudio = selected.path;
+      drawUI();
     }
-
-    Pip.audioStop();
-    Pip.audioStart(selected.path);
-    currentAudio = selected.path;
-    drawUI();
     return;
   }
 
-  // Video
   if (name.endsWith('.avi') || name.endsWith('.mp4')) {
     Pip.audioStop();
     Pip.videoStart(selected.path, { x: 40, y: 0 });
     isVideoPlaying = true;
     currentAudio = null;
+    return;
+  }
+
+  if (name.endsWith('.holotape')) {
+    Pip.loadApp(selected.path);
+    return;
   }
 }
 
@@ -225,38 +193,36 @@ function showLoadingScreen() {
   g.clear();
   g.setFont('6x8', 2);
   g.setColor(COLOR_TEXT);
-  let msg = 'Loading directories...';
-  g.drawString(msg, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
+  g.drawString('Loading...', SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
 }
 
 function startExplorer() {
+  if (!Pip.isSDCardInserted()) {
+    g.clear();
+    g.setFont('6x8', 2);
+    g.setColor('#F00');
+    g.drawString('NO SD CARD DETECTED', SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
+    return;
+  }
+
   showLoadingScreen();
 
   setTimeout(function () {
-    let nestedTree = walkAllSync(ROOT_PATH, 0);
-    let flatTree = flattenNestedTree(nestedTree);
-    flattenTree(flatTree);
+    loadDirectory(ROOT_PATH);
     setInterval(handleInput, 150);
   }, 50);
 
   Pip.removeAllListeners('knob1');
   Pip.on('knob1', function (dir) {
-    if (dir < 0) {
-      scrollDown();
-    } else if (dir > 0) {
-      scrollUp();
-    } else {
-      playStop();
-    }
+    if (dir < 0) scrollDown();
+    else if (dir > 0) scrollUp();
+    else selectEntry();
   });
 
   Pip.removeAllListeners('knob2');
   Pip.on('knob2', function (dir) {
-    if (dir < 0) {
-      scrollUp();
-    } else if (dir > 0) {
-      scrollDown();
-    }
+    if (dir < 0) scrollUp();
+    else if (dir > 0) scrollDown();
   });
 }
 
