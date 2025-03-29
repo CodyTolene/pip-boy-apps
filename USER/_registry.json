@@ -88,10 +88,10 @@
     "description": "The SPECIAL/Skills/Perks menu for the Pip-Boy 3000 Mk V.",
     "homepage": "https://athene.gay/",
     "id": "StatsDisplay",
-    "instructions": "Use the scroll wheel to navigate the menu.",
+    "instructions": "Use the scroll wheel to navigate the menu and the right scroller to switch between screens. Clicking the wheel on a stat will allow you to edit its value. Clicking the wheel in the perks page takes you to the perk config screen - to save changes, scroll the right scroller.",
     "name": "Stats Display",
     "tip": "",
     "type": "APP",
-    "version": "1.0.0"
+    "version": "2.0.0"
   }
 ]
