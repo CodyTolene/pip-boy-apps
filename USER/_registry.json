@@ -9,7 +9,7 @@
     "name": "File Explorer",
     "tip": "Press play again to stop currently playing media.",
     "type": "APP",
-    "version": "1.1.0"
+    "version": "1.2.0"
   },
   {
     "author": "Cody Tolene",
@@ -93,5 +93,17 @@
     "tip": "",
     "type": "APP",
     "version": "2.0.0"
+  },
+  {
+    "author": "Cody Tolene",
+    "dependencies": [],
+    "description": "A custom music player that allows you to choose the music you want to play from the `/RADIO` directory without restriction.",
+    "homepage": "https://www.CodyTolene.com",
+    "id": "CustomRadio",
+    "instructions": "Use the top-left or top-right rotary wheels or the front radio tuner to scroll. Press the left rotary wheel or front radio tuner to play or stop media. Press the top torch button to exit.",
+    "name": "Custom Radio",
+    "tip": "Press play again to stop currently playing media.",
+    "type": "APP",
+    "version": "1.0.1"
   }
 ]
