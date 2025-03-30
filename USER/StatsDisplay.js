@@ -14,6 +14,10 @@ const perkScreen = 2;
 const statScreen = 1;
 const SPECIALScreen = 0;
 const perkSelectionScreen = 3;
+const enabledPerkFolder = 'USER/StatsDisplay/PERKS/ENABLED/';
+const allPerkFolder = 'USER/StatsDisplay/PERKS/ALL/';
+const skillsFolder = 'USER/StatsDisplay/SKILLS/';
+const specialFolder = 'USER/StatsDisplay/SPECIAL/';
 
 Graphics.prototype.setFontMonofonto14 = function () {
   // Actual height 14 (13 - 0)
@@ -40,11 +44,11 @@ function draw() {
   drawing = true;
   bC.clear();
   if (screenSelected == perkScreen) {
-    buildScreen('USER/PERKS/ENABLED');
+    buildScreen(enabledPerkFolder);
   } else if (screenSelected == statScreen) {
-    buildScreen('USER/SKILLS');
+    buildScreen(skillsFolder);
   } else if (screenSelected == SPECIALScreen) {
-    buildScreen('USER/SPECIAL');
+    buildScreen(specialFolder);
   } else if (screenSelected == perkSelectionScreen) {
     buildPerkSelectionScreen();
   }
@@ -71,7 +75,7 @@ function buildScreen(directory) {
   }
   for (i = a * entryListDisplayMax; i < entryListMax; i++) {
     let file = files[i];
-    let fileString = require('fs').readFileSync(directory + '/' + file);
+    let fileString = require('fs').readFileSync(directory + file);
     let fileObj = JSON.parse(fileString);
     if (i == entrySelected) {
       drawEntry(fileObj);
@@ -127,20 +131,18 @@ function buildPerkSelectionScreen() {
 }
 
 function generatePerksConfigLists() {
-  let enabledDir = 'USER/PERKS/ENABLED';
-  let allDir = 'USER/PERKS/ALL';
   //first load of screen, build the full list.
-  let files = require('fs').readdirSync(enabledDir);
+  let files = require('fs').readdirSync(enabledPerkFolder);
   if (files == undefined) {
-    require('fs').mkdir(enabledDir);
+    require('fs').mkdir(enabledPerkFolder);
   }
   for (file of files) {
     enabledPerks.push(file);
   }
-  files = require('fs').readdirSync(allDir);
+  files = require('fs').readdirSync(allPerkFolder);
   loadedListMax = files.length;
   for (file of files) {
-    let fileString = require('fs').readFileSync(allDir + '/' + file);
+    let fileString = require('fs').readFileSync(allPerkFolder + file);
     let fileObj = JSON.parse(fileString);
     let perkObj = { filename: file, title: fileObj.title };
     allPerks.push(perkObj);
@@ -273,7 +275,7 @@ function drawSelectedEntryOutlineConfig(i, col) {
 //SECTION: config saving
 function saveFile(directory) {
   let files = require('fs').readdirSync(directory);
-  let fileToSave = directory + '/' + files[entrySelected];
+  let fileToSave = directory + files[entrySelected];
   let fileString = require('fs').readFileSync(fileToSave);
   let fileObj = JSON.parse(fileString);
   fileObj.points = pointsOfSelected;
@@ -283,20 +285,20 @@ function saveFile(directory) {
 
 function saveNewValue() {
   if (screenSelected == SPECIALScreen) {
-    saveFile('USER/SPECIAL');
+    saveFile(specialFolder);
   } else if (screenSelected == statScreen) {
-    saveFile('USER/SKILLS');
+    saveFile(skillsFolder);
   }
 }
 
 function saveEnabledPerk(filename) {
   //"USER/PERKS/ALL"
-  let fileString = require('fs').readFileSync('USER/PERKS/ALL/' + filename);
-  require('fs').writeFile('USER/PERKS/ENABLED/' + filename, fileString);
+  let fileString = require('fs').readFileSync(allPerkFolder + filename);
+  require('fs').writeFile(enabledPerkFolder + filename, fileString);
 }
 
 function saveNewPerkSelection() {
-  let enabledFiles = require('fs').readdirSync('USER/PERKS/ENABLED/');
+  let enabledFiles = require('fs').readdirSync(enabledPerkFolder);
   for (let i = 0; i < allPerks.length; i++) {
     let perk = allPerks[i];
     if (
@@ -315,7 +317,7 @@ function saveNewPerkSelection() {
       enabledFiles.includes(perk.filename)
     ) {
       //was enabled, no longer is, delete the file from ENABLED
-      require('fs').unlink('USER/PERKS/ENABLED/' + perk.filename);
+      require('fs').unlink(enabledPerkFolder + perk.filename);
     }
   }
   //everything done, wipe out the in-memory enabled/disabled lists.
