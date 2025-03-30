@@ -1,4 +1,7 @@
+//SECTION: consts
 const entryListDisplayMax = 6;
+const configListDisplayMax = 18;
+const configColumnDisplayMax = 9; //half of config display max
 const titleOffsetY = 22;
 const perkImageXMaxSize = 167;
 const perkImageYMaxSize = 153;
@@ -10,6 +13,11 @@ const maxScreen = 2;
 const perkScreen = 2;
 const statScreen = 1;
 const SPECIALScreen = 0;
+const perkSelectionScreen = 3;
+const enabledPerkFolder = 'USER/StatsDisplay/PERKS/ENABLED/';
+const allPerkFolder = 'USER/StatsDisplay/PERKS/ALL/';
+const skillsFolder = 'USER/StatsDisplay/SKILLS/';
+const specialFolder = 'USER/StatsDisplay/SPECIAL/';
 
 Graphics.prototype.setFontMonofonto14 = function () {
   // Actual height 14 (13 - 0)
@@ -30,16 +38,19 @@ Graphics.prototype.setFontMonofonto14 = function () {
   );
 };
 
+//SECTION: Screen drawing
 function draw() {
   if (drawing) return;
   drawing = true;
   bC.clear();
   if (screenSelected == perkScreen) {
-    buildScreen('USER/StatsDisplay/PERKS/ENABLED');
+    buildScreen(enabledPerkFolder);
   } else if (screenSelected == statScreen) {
-    buildScreen('USER/StatsDisplay/SKILLS');
+    buildScreen(skillsFolder);
   } else if (screenSelected == SPECIALScreen) {
-    buildScreen('USER/StatsDisplay/SPECIAL');
+    buildScreen(specialFolder);
+  } else if (screenSelected == perkSelectionScreen) {
+    buildPerkSelectionScreen();
   }
   bH.flip();
   bF.flip();
@@ -50,6 +61,10 @@ function draw() {
 function buildScreen(directory) {
   let files = require('fs').readdirSync(directory);
   loadedListMax = files.length;
+  if (files.length == 0) {
+    drawEmptyScreen();
+    return;
+  }
   let entryListMax = Math.min(entryListDisplayMax, loadedListMax);
   let a = 0;
   while (entrySelected >= entryListMax) {
@@ -60,11 +75,15 @@ function buildScreen(directory) {
   }
   for (i = a * entryListDisplayMax; i < entryListMax; i++) {
     let file = files[i];
-    let fileString = require('fs').readFileSync(directory + '/' + file);
+    let fileString = require('fs').readFileSync(directory + file);
     let fileObj = JSON.parse(fileString);
     if (i == entrySelected) {
       drawEntry(fileObj);
       drawSelectedEntryOutline(i % entryListDisplayMax);
+      if (!configMode && screenSelected != perkScreen) {
+        //only update pointsOfSelected when not actively configuring.
+        pointsOfSelected = fileObj.points;
+      }
     }
     drawEntryTitle(fileObj.title, i % entryListDisplayMax, i == entrySelected);
     if (screenSelected != perkScreen) {
@@ -75,6 +94,67 @@ function buildScreen(directory) {
       );
     }
   }
+}
+
+function buildPerkSelectionScreen() {
+  if (allPerks.length == 0) {
+    generatePerksConfigLists();
+  }
+  //ok, now for each element in allPerks, we draw it.
+  //I think we can draw two columns of 8 titles, so sixteen on screen
+  //at a time. Then scroll further and it's a new screen of sixteen.
+  let entryListMax = Math.min(configListDisplayMax, loadedListMax);
+  let a = 0;
+  while (entrySelected >= entryListMax) {
+    a++;
+    //We're beyond the number of entries we can see on one page.
+    //We need to get the next set of files and display them
+    entryListMax = Math.min(configListDisplayMax * (a + 1), loadedListMax);
+  }
+  let col = 0;
+  for (i = a * configListDisplayMax; i < entryListMax; i++) {
+    if (i != a * configListDisplayMax && i % configColumnDisplayMax == 0) {
+      col = 1;
+    }
+    let perk = allPerks[i];
+    if (i == entrySelected) {
+      drawSelectedEntryOutlineConfig(i % configListDisplayMax, col);
+    }
+    drawEntryTitleConfig(
+      perk.title,
+      i % configListDisplayMax,
+      i == entrySelected,
+      col,
+      enabledPerks.includes(perk.filename),
+    );
+  }
+}
+
+function generatePerksConfigLists() {
+  //first load of screen, build the full list.
+  let files = require('fs').readdirSync(enabledPerkFolder);
+  if (files == undefined) {
+    require('fs').mkdir(enabledPerkFolder);
+  }
+  for (file of files) {
+    enabledPerks.push(file);
+  }
+  files = require('fs').readdirSync(allPerkFolder);
+  loadedListMax = files.length;
+  for (file of files) {
+    let fileString = require('fs').readFileSync(allPerkFolder + file);
+    let fileObj = JSON.parse(fileString);
+    let perkObj = { filename: file, title: fileObj.title };
+    allPerks.push(perkObj);
+  }
+}
+
+//SECTION: Element Drawing
+
+function drawEmptyScreen() {
+  bC.setFontMonofonto18();
+  bC.setColor(colourWhite);
+  bC.drawString('No Perks selected, press wheel to configure.', 2, 100);
 }
 
 function drawEntry(perkObj) {
@@ -113,6 +193,30 @@ function drawEntryTitle(title, i, selected) {
   bC.drawString(title, 10, titleOffsetY * i + 5);
 }
 
+function drawEntryTitleConfig(title, i, selected, col, enabled) {
+  bC.setFontMonofonto18();
+  let finalTitle = '';
+  if (enabled) {
+    finalTitle = title + ' *';
+  } else {
+    finalTitle = title;
+  }
+  if (selected) {
+    bC.setColor(colourBlack);
+  } else {
+    bC.setColor(colourWhite);
+  }
+  if (col == 0) {
+    bC.drawString(finalTitle, 10, titleOffsetY * i + 5);
+  } else {
+    bC.drawString(
+      finalTitle,
+      210,
+      titleOffsetY * (i - configColumnDisplayMax) + 5,
+    );
+  }
+}
+
 function drawEntryPoints(points, i, selected) {
   bC.setFontMonofonto18();
   if (selected) {
@@ -120,7 +224,27 @@ function drawEntryPoints(points, i, selected) {
   } else {
     bC.setColor(colourWhite);
   }
-  bC.drawString(points, 160, titleOffsetY * i + 5);
+  if (configMode && selected) {
+    bC.fillPoly([
+      129,
+      titleOffsetY * i + 12,
+      140,
+      titleOffsetY * i + 12,
+      135,
+      titleOffsetY * i + 5,
+    ]);
+    bC.fillPoly([
+      141,
+      titleOffsetY * i + 12,
+      151,
+      titleOffsetY * i + 12,
+      146,
+      titleOffsetY * i + 17,
+    ]);
+    bC.drawString(pointsOfSelected, 160, titleOffsetY * i + 5);
+  } else {
+    bC.drawString(points, 160, titleOffsetY * i + 5);
+  }
 }
 
 function drawEntryDesc(desc) {
@@ -134,25 +258,162 @@ function drawSelectedEntryOutline(i) {
   bC.fillRect(5, titleOffsetY * i + 1, 190, titleOffsetY * i + 23);
 }
 
+function drawSelectedEntryOutlineConfig(i, col) {
+  bC.setColor(colourWhite);
+  if (col == 0) {
+    bC.fillRect(5, titleOffsetY * i + 1, 190, titleOffsetY * i + 23);
+  } else {
+    bC.fillRect(
+      205,
+      titleOffsetY * (i - configColumnDisplayMax) + 1,
+      390,
+      titleOffsetY * (i - configColumnDisplayMax) + 23,
+    );
+  }
+}
+
+//SECTION: config saving
+function saveFile(directory) {
+  let files = require('fs').readdirSync(directory);
+  let fileToSave = directory + files[entrySelected];
+  let fileString = require('fs').readFileSync(fileToSave);
+  let fileObj = JSON.parse(fileString);
+  fileObj.points = pointsOfSelected;
+  fileString = JSON.stringify(fileObj);
+  require('fs').writeFile(fileToSave, fileString);
+}
+
+function saveNewValue() {
+  if (screenSelected == SPECIALScreen) {
+    saveFile(specialFolder);
+  } else if (screenSelected == statScreen) {
+    saveFile(skillsFolder);
+  }
+}
+
+function saveEnabledPerk(filename) {
+  //"USER/PERKS/ALL"
+  let fileString = require('fs').readFileSync(allPerkFolder + filename);
+  require('fs').writeFile(enabledPerkFolder + filename, fileString);
+}
+
+function saveNewPerkSelection() {
+  let enabledFiles = require('fs').readdirSync(enabledPerkFolder);
+  for (let i = 0; i < allPerks.length; i++) {
+    let perk = allPerks[i];
+    if (
+      enabledPerks.includes(perk.filename) &&
+      enabledFiles.includes(perk.filename)
+    ) {
+      continue; //was enabled, still enabled, nothing to do.
+    } else if (
+      enabledPerks.includes(perk.filename) &&
+      !enabledFiles.includes(perk.filename)
+    ) {
+      //wasn't enabled, is enabled now, copy the file to enabled folder.
+      saveEnabledPerk(perk.filename);
+    } else if (
+      !enabledPerks.includes(perk.filename) &&
+      enabledFiles.includes(perk.filename)
+    ) {
+      //was enabled, no longer is, delete the file from ENABLED
+      require('fs').unlink(enabledPerkFolder + perk.filename);
+    }
+  }
+  //everything done, wipe out the in-memory enabled/disabled lists.
+  enabledPerks = [];
+  allPerks = [];
+}
+
+function togglePerkEnabled() {
+  let perkObj = allPerks[entrySelected];
+  if (enabledPerks.includes(perkObj.filename)) {
+    let index = enabledPerks.indexOf(perkObj.filename);
+    enabledPerks.splice(index, 1);
+  } else {
+    enabledPerks.push(perkObj.filename);
+  }
+}
+
+function gracefulClose() {
+  //shut down interval triggers first in case one fires while we're tearing down
+  clearInterval(modeCheck);
+  clearInterval(intervalId);
+  Pip.removeListener('knob1', registeredKnob1Func);
+  Pip.removeListener('knob2', handleKnob2);
+  Pip.removeListener('torch', handleTorch);
+  showMainMenu(); //this causes a brief flicker but if we don't do it the controls stop working.
+}
+
+//SECTION: Button handlers
+function handleKnob1Config(dir) {
+  //first, play the click.
+  Pip.knob1Click(dir);
+
+  if (dir == 0) {
+    //pressed in, this is the config trigger.
+    //toggle configuration mode on special/skills screens
+    configMode = !configMode;
+    saveNewValue();
+    Pip.removeListener('knob1', handleKnob1Config);
+    Pip.on('knob1', handleKnob1);
+    registeredKnob1Func = handleKnob1;
+  } else {
+    pointsOfSelected += dir;
+    if (pointsOfSelected < 0) {
+      pointsOfSelected = 100;
+    } else if (pointsOfSelected > 100) {
+      entrySelected = 0;
+    }
+  }
+  draw();
+}
+
 function handleKnob1(dir) {
   //first, play the click.
   Pip.knob1Click(dir);
-  //then, we need to change our position in the list.
-  entrySelected -= dir; //-1 is scroll down, but our list increases numerically. so we need to subtract
-  if (entrySelected < 0) {
-    entrySelected = loadedListMax - 1;
-  } else if (entrySelected >= loadedListMax) {
-    entrySelected = 0;
+
+  if (dir == 0) {
+    //pressed in, this is the config trigger.
+    if (screenSelected == perkScreen) {
+      //change screen to perk selection screen.
+      entrySelected = 0;
+      screenSelected = perkSelectionScreen;
+    } else if (screenSelected == perkSelectionScreen) {
+      togglePerkEnabled();
+    } else {
+      //toggle configuration mode on special/skills screens
+      configMode = !configMode;
+      Pip.removeListener('knob1', handleKnob1);
+      Pip.on('knob1', handleKnob1Config);
+      registeredKnob1Func = handleKnob1Config;
+    }
+  } else {
+    //then, we need to change our position in the list.
+    entrySelected -= dir; //-1 is scroll down, but our list increases numerically. so we need to subtract
+    if (entrySelected < 0) {
+      entrySelected = loadedListMax - 1;
+    } else if (entrySelected >= loadedListMax) {
+      entrySelected = 0;
+    }
   }
+
   draw();
 }
 
 function handleKnob2(dir) {
   //first, play the click.
   Pip.knob2Click(dir);
-  log('knob2 direction: ' + dir);
+  //if switching screens we need to boot immediately out of config without saving.
+  configMode = false;
   //then switch stats screen.
-  screenSelected += dir;
+  if (screenSelected == perkSelectionScreen) {
+    //if scrolling away from perk selection screen, save changes and reset to perk screen.
+    saveNewPerkSelection();
+    screenSelected = perkScreen;
+  } else {
+    screenSelected += dir;
+  }
   entrySelected = 0; //reset to top of list
   if (screenSelected > maxScreen) {
     screenSelected = 0;
@@ -167,16 +428,6 @@ function handleTorch() {
   torchButtonHandler();
 }
 
-function gracefulClose() {
-  //shut down interval triggers first in case one fires while we're tearing down
-  clearInterval(intervalId);
-  clearInterval(modeCheck);
-  Pip.removeListener('knob1', handleKnob1);
-  Pip.removeListener('knob2', handleKnob2);
-  Pip.removeListener('torch', handleTorch);
-  showMainMenu(); //this causes a brief flicker but if we don't do it the controls stop working.
-}
-
 function ourModeHandler() {
   checkMode();
   if (Pip.mode != 2) {
@@ -184,14 +435,26 @@ function ourModeHandler() {
   }
 }
 
+function powerHandler() {
+  gracefulClose();
+}
+
+//SECTION: main entry point
+
 let loadedListMax = 0;
 let entrySelected = 0;
 let screenSelected = 0;
+let pointsOfSelected = 0;
 let drawing = false;
+let configMode = false;
+let allPerks = [];
+let enabledPerks = [];
 
 Pip.on('knob1', handleKnob1);
+let registeredKnob1Func = handleKnob1;
 Pip.on('knob2', handleKnob2);
 Pip.on('torch', handleTorch);
+setWatch(powerHandler, BTN_POWER, { repeat: false });
 draw();
 let modeCheck = setInterval(ourModeHandler, 100);
 let intervalId = setInterval(() => {
