@@ -4,14 +4,14 @@
 //  Repository: https://github.com/CodyTolene/pip-apps
 //  Description: A custom music player that allows you to choose the music you
 //               want to play from the `/RADIO` directory without restriction.
-//  Version: 1.0.1
+//  Version: 1.1.0
 // =============================================================================
 
 const fs = require('fs');
 
 const LIST_X = 0;
 const LIST_Y = 0;
-const LIST_WIDTH = 200;
+const LIST_WIDTH = 210;
 const LIST_HEIGHT = 200;
 const PADDING = 30;
 const LIST_LINE_HEIGHT = 20;
@@ -26,32 +26,10 @@ let files = [];
 let isPlaying = false;
 let scrollOffset = 0;
 
-try {
-  files = fs
-    .readdir(musicDir)
-    .filter((f) => f.match(audioExts))
-    .map((f) => ({
-      name: f,
-      path: musicDir + '/' + f,
-    }));
-} catch (e) {
-  g.clear(1);
-  bC.setFontMonofonto18();
-  bC.setColor(1);
-  bC.drawString('NO MUSIC FOUND', bC.getWidth() / 2, bC.getHeight() / 2);
-  bC.flip();
-  return;
-}
-
 function drawMusicOverlay() {
   // Draw a black background behind list
   bC.setColor(0);
-  bC.fillRect(
-    LIST_X - 5,
-    LIST_Y - 5,
-    LIST_X + LIST_WIDTH + 5,
-    LIST_Y + LIST_HEIGHT + 5,
-  );
+  bC.fillRect(LIST_X, LIST_Y, LIST_X + LIST_WIDTH, LIST_Y + LIST_HEIGHT);
 
   const visible = files.slice(scrollOffset, scrollOffset + LIST_MAX_VISIBLE);
 
@@ -91,6 +69,14 @@ function exit() {
   showMainMenu();
 }
 
+function reboot() {
+  Pip.audioStop();
+  Pip.videoStop();
+  currentAudio = null;
+  isVideoPlaying = false;
+  E.reboot();
+}
+
 function handleInput() {
   if (BTN_TUNEUP.read()) {
     scrollUp();
@@ -105,7 +91,8 @@ function handleInput() {
   }
 
   if (BTN_TORCH.read()) {
-    exit();
+    // exit();
+    reboot();
   }
 }
 
@@ -124,30 +111,39 @@ function playSelected() {
   const file = files[currentIndex];
   if (!file) return;
 
+  const isSameFile = currentAudio === file.path;
+
   Pip.audioStop();
-
-  if (currentAudio === file.path) {
-    currentAudio = null;
-    isPlaying = false;
-    drawMusicOverlay();
-    return;
-  }
-
-  try {
-    if (file.path.includes('MX')) {
-      radioPlayClip('MX', file.path);
-    } else if (file.path.includes('DX')) {
-      radioPlayClip('DX', file.path);
-    } else {
-      Pip.audioStart(file.path);
-    }
-  } catch {
-    Pip.audioStart(file.path);
-  }
-
-  currentAudio = file.path;
-  isPlaying = true;
+  currentAudio = null;
+  isPlaying = false;
   drawMusicOverlay();
+
+  if (isSameFile) return;
+
+  setTimeout(() => {
+    let restoreVolume = null;
+
+    const done = () => {
+      Pip.removeListener('audioStopped', done);
+      Pip.radioClipPlaying = false;
+      if (restoreVolume !== null) rd.setVol(restoreVolume);
+    };
+
+    try {
+      restoreVolume = rd.getVol();
+      rd.setVol(2);
+      Pip.radioClipPlaying = true;
+      Pip.on('audioStopped', done);
+      Pip.audioStart(file.path);
+    } catch (err) {
+      print('🚨 Failed to play:', file.path, err);
+      done();
+    }
+
+    currentAudio = file.path;
+    isPlaying = true;
+    drawMusicOverlay();
+  }, 100);
 }
 
 function scrollDown() {
@@ -181,4 +177,25 @@ function startCustomRadio() {
   Pip.on('knob2', handleKnob2);
 }
 
-startCustomRadio();
+try {
+  files = fs
+    .readdir(musicDir)
+    .filter((f) => f.match(audioExts))
+    .map((f) => ({
+      name: f,
+      path: musicDir + '/' + f,
+    }))
+    .sort((a, b) => {
+      if (a.name < b.name) return -1;
+      if (a.name > b.name) return 1;
+      return 0;
+    });
+
+  startCustomRadio();
+} catch (e) {
+  g.clear(1);
+  bC.setFontMonofonto18();
+  bC.setColor(1);
+  bC.drawString('NO MUSIC FOUND', bC.getWidth() / 2, bC.getHeight() / 2);
+  bC.flip();
+}
