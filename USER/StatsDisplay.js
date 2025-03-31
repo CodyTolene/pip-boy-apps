@@ -59,7 +59,13 @@ function draw() {
 }
 
 function buildScreen(directory) {
-  let files = require('fs').readdirSync(directory);
+  var files;
+  try {
+    files = require('fs').readdirSync(directory);
+  } catch {
+    require('fs').mkdir(directory);
+    files = require('fs').readdirSync(directory);
+  }
   loadedListMax = files.length;
   if (files.length == 0) {
     drawEmptyScreen();
@@ -132,9 +138,12 @@ function buildPerkSelectionScreen() {
 
 function generatePerksConfigLists() {
   //first load of screen, build the full list.
-  let files = require('fs').readdirSync(enabledPerkFolder);
-  if (files == undefined) {
+  var files;
+  try {
+    files = require('fs').readdirSync(enabledPerkFolder);
+  } catch {
     require('fs').mkdir(enabledPerkFolder);
+    files = require('fs').readdirSync(enabledPerkFolder);
   }
   for (file of files) {
     enabledPerks.push(file);
