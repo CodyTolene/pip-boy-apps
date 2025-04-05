@@ -479,7 +479,7 @@ function gracefulClose() {
   Pip.removeListener('knob1', registeredKnob1Func);
   Pip.removeListener('knob2', handleKnob2);
   Pip.removeListener('torch', handleTorch);
-  showMainMenu(); //this causes a brief flicker but if we don't do it the controls stop working.
+  E.reboot(); //we're using too much memory, we gotta full reboot now.
 }
 
 //SECTION: main entry point
