@@ -1,20 +1,512 @@
-const entryListDisplayMax=6,configListDisplayMax=18,configColumnDisplayMax=9,titleOffsetY=22,perkImageXMaxSize=167,perkImageYMaxSize=153,colourBlack=0,colourGray1=1,colourGray2=2,colourWhite=3,maxScreen=2,perkScreen=2,statScreen=1,SPECIALScreen=0,perkSelectionScreen=3,enabledPerkFolder="USER/StatsDisplay/PERKS/ENABLED/",allPerkFolder="USER/StatsDisplay/PERKS/ALL/",skillsFolder="USER/StatsDisplay/SKILLS/",specialFolder="USER/StatsDisplay/SPECIAL/";
-Graphics.prototype.setFontMonofonto14=function(){return this.setFontCustom(E.toString(require("heatshrink").decompress(atob("AB0D/uP/0/7AICh+AnwNC8AGBAoMBwFnw4UB/H/8f/h4ZDgHxw/nn/e+/55/DEIV88P/w/4g/4v/j7+MvwNBu4iBx/2FIPz8EfwEyKAwjB/BZGgH/5///kPLQcD///n/whgIBAQMzgARB+E/wE/gHMMwUAgkAiEBJgPgAwQyFgPgg+AjAIDsCCBg0ABINgCwoKBnAKDgahBFYN+h/gnkA4BTCUAkBXgX4n4OCgEcgCSBRYP+HQUjweOn0zDYNj+ODG4INB4YNBt0zzDKCwZYCIIN+XQLYEMwkD/cP90/zHO8c/ZQZxBj+DJgOY/1jz+IBoXAkcHxhhDgfgWwUAmODLQU7zHusZhEnED/GP805/Hn8f+g/wWwuYg9wjOABQkZ8F3wOYWIakB+EHsAUB4cDH4UJgEkgGQgVAAwgNBmHAWwIwB8EPEQTUCsEDwOO9033H8kfggY+Cj5xB+f95v7m3s/+x/zVBgPgN4U/+H/AwOAjyuDBof4UAKEEv/DAwUwjHg8eDwUIBoLRCBoM4nDmD/ANGmOY41jSggNFwHGgbyCh5KBBoOOg0z/Hv8e/DYLfCBoOAsAGFFIXALQYNBAwMBBoQtBsEBxkODYZtCIowNB/fjgZTIEQhFGOwJFIDYfwh4NFN4yZEG5E54H/gKlCDYsHnE+//7cIIbHnY3C+YpDvHD+eP80z7Hn8efBoMwTIL7FAwIZCn43DwEGPoJTEng3BwYGBDYQGB4AbBnxFDwf+Po0ghHxAwOH/iZDwZFD/BFBDYINB/jCDmEY4fjn5TCzH4dogADh//AAJXCiEAnApBgH8AIV+QoLhBIoIfBg4ZCLoQMBh+AN4PwgPgGIkEFIVAgIGFBoMCgEMG4QtBDIcwhvgm6SBgfYcIM/ehEDjANF8EH4AGB8wNBh3gmINBgPwCgfGUAauCDYvWgdYCgM9BoLqBhj0F5j0DDYMPY4Ow43D/4GC8BTIWQJhFhljn+O/0zWgJ+BAAMDgcMh8//3/+f/aIY+C/4iC90CjAlDgBoGgf4G4Y+BAwgmDBohMGoCgF3ANBj53DN4Xw//DXgquGSwIUDG43AG4MOeAIpDh1AWoJTCfYMXSQiiBwf+h/4hlgcwUDXgIpCg0AIosDwEPMIU+PoXAnCuCKYUfRYs8BoMChEMEQV+BocgFInENAMfegQpDKYVgm4pEKYYADhB4Bn////+PwqOC/+/BYIVDCYP//h/BkAKBOQUAsEBPIYGBBoI"))),32,
-atob("BwYHCAgICAYHBggIBgcGCAgGCAgICAgICAgGBggICAgICAgICAcICAgICAgICAgICAgICAgICAgICAgICAUICAcICAgICAgICAcHCAYICAgICAgICAgICAgICAgGBwg="),65550)};function draw(){drawing||(drawing=!0,bC.clear(),screenSelected==perkScreen?buildScreen(enabledPerkFolder):screenSelected==statScreen?buildScreen(skillsFolder):screenSelected==SPECIALScreen?buildScreen(specialFolder):screenSelected==perkSelectionScreen&&buildPerkSelectionScreen(),bH.flip(),bF.flip(),bC.flip(),drawing=!1)}
-function buildScreen(a){if(null==lastReload){displayedPerks=[];try{var b=require("fs").readdirSync(a)}catch{require("fs").mkdir(a),b=require("fs").readdirSync(a)}loadedListMax=b.length;if(0==b.length){drawEmptyScreen();return}let e=Math.min(entryListDisplayMax,loadedListMax);for(var c=0;entrySelected>=e;)c++,e=Math.min(entryListDisplayMax*(c+1),loadedListMax);for(i=c*entryListDisplayMax;i<e;i++){c=b[i];var d=require("fs").readFileSync(a+c);d=JSON.parse(d);screenSelected!=perkScreen?displayedPerks.push({title:d.title,
-filename:c,entryNum:i,points:d.points}):displayedPerks.push({title:d.title,filename:c,entryNum:i})}lastReload=entrySelected}null==currentPerk&&(b=displayedPerks[entrySelected%6].filename,a=require("fs").readFileSync(a+b),currentPerk=JSON.parse(a));for(a=0;a<displayedPerks.length;a++)b=displayedPerks[a],b.entryNum==entrySelected&&(drawEntry(currentPerk),drawSelectedEntryOutline(a),configMode||screenSelected==perkScreen||(pointsOfSelected=b.points)),drawEntryTitle(b.title,a,b.entryNum==entrySelected),
-screenSelected!=perkScreen&&drawEntryPoints(b.points,a,b.entryNum==entrySelected)}
-function buildPerkSelectionScreen(){0==allPerks.length&&generatePerksConfigLists();let a=Math.min(configListDisplayMax,loadedListMax),b=0;for(;entrySelected>=a;)b++,a=Math.min(configListDisplayMax*(b+1),loadedListMax);let c=0;for(i=b*configListDisplayMax;i<a;i++){i!=b*configListDisplayMax&&0==i%configColumnDisplayMax&&(c=1);let d=allPerks[i];i==entrySelected&&drawSelectedEntryOutlineConfig(i%configListDisplayMax,c);drawEntryTitleConfig(d.title,i%configListDisplayMax,i==entrySelected,c,enabledPerks.includes(d.filename))}}
-function generatePerksConfigLists(){try{var a=require("fs").readdirSync(enabledPerkFolder)}catch{require("fs").mkdir(enabledPerkFolder),a=require("fs").readdirSync(enabledPerkFolder)}for(file of a)enabledPerks.push(file);a=require("fs").readdirSync(allPerkFolder);loadedListMax=a.length;for(file of a)a=require("fs").readFileSync(allPerkFolder+file),a=JSON.parse(a),allPerks.push({filename:file,title:a.title})}
-function drawEmptyScreen(){bC.setFontMonofonto18();bC.setColor(colourWhite);bC.drawString("No Perks selected, press wheel to configure.",2,100)}function drawEntry(a){drawEntryImage(a.img,a.xSize,a.ySize);drawEntryDesc(a.description)}function drawEntryImage(a,b,c){let d=Math.floor((perkImageXMaxSize-b)/2),e=Math.floor((perkImageYMaxSize-c)/2);bC.setColor(colourGray2);bC.drawImage({width:b,height:c,bpp:1,buffer:require("heatshrink").decompress(atob(a))},200+d,0+e)}
-function drawEntryTitle(a,b,c){bC.setFontMonofonto18();c?bC.setColor(colourBlack):bC.setColor(colourWhite);bC.drawString(a,10,titleOffsetY*b+5)}function drawEntryTitleConfig(a,b,c,d,e){bC.setFontMonofonto18();a=e?a+" *":a;c?bC.setColor(colourBlack):bC.setColor(colourWhite);0==d?bC.drawString(a,10,titleOffsetY*b+5):bC.drawString(a,210,titleOffsetY*(b-configColumnDisplayMax)+5)}
-function drawEntryPoints(a,b,c){bC.setFontMonofonto18();c?bC.setColor(colourBlack):bC.setColor(colourWhite);configMode&&c?(bC.fillPoly([129,titleOffsetY*b+12,140,titleOffsetY*b+12,135,titleOffsetY*b+5]),bC.fillPoly([141,titleOffsetY*b+12,151,titleOffsetY*b+12,146,titleOffsetY*b+17]),bC.drawString(pointsOfSelected,160,titleOffsetY*b+5)):bC.drawString(a,160,titleOffsetY*b+5)}function drawEntryDesc(a){bC.setFontMonofonto14();bC.setColor(colourWhite);bC.drawString(a,10,150)}
-function drawSelectedEntryOutline(a){bC.setColor(colourWhite);bC.fillRect(5,titleOffsetY*a+1,190,titleOffsetY*a+23)}function drawSelectedEntryOutlineConfig(a,b){bC.setColor(colourWhite);0==b?bC.fillRect(5,titleOffsetY*a+1,190,titleOffsetY*a+23):bC.fillRect(205,titleOffsetY*(a-configColumnDisplayMax)+1,390,titleOffsetY*(a-configColumnDisplayMax)+23)}
-function saveFile(a){var b=require("fs").readdirSync(a);a+=b[entrySelected];b=require("fs").readFileSync(a);let c=JSON.parse(b);c.points=pointsOfSelected;b=JSON.stringify(c);require("fs").writeFile(a,b);displayedPerks[entrySelected%entryListDisplayMax].points=pointsOfSelected;currentPerk=c}function saveNewValue(){screenSelected==SPECIALScreen?saveFile(specialFolder):screenSelected==statScreen&&saveFile(skillsFolder)}
-function saveEnabledPerk(a){let b=require("fs").readFileSync(allPerkFolder+a);require("fs").writeFile(enabledPerkFolder+a,b)}
-function saveNewPerkSelection(){let a=require("fs").readdirSync(enabledPerkFolder);for(let b=0;b<allPerks.length;b++){let c=allPerks[b];enabledPerks.includes(c.filename)&&a.includes(c.filename)||(enabledPerks.includes(c.filename)&&!a.includes(c.filename)?saveEnabledPerk(c.filename):!enabledPerks.includes(c.filename)&&a.includes(c.filename)&&require("fs").unlink(enabledPerkFolder+c.filename))}enabledPerks=[];allPerks=[]}
-function togglePerkEnabled(){var a=allPerks[entrySelected];enabledPerks.includes(a.filename)?(a=enabledPerks.indexOf(a.filename),enabledPerks.splice(a,1)):enabledPerks.push(a.filename)}function handleKnob1Config(a){Pip.knob1Click(a);0==a?(configMode=!configMode,saveNewValue(),Pip.removeListener("knob1",handleKnob1Config),Pip.on("knob1",handleKnob1),registeredKnob1Func=handleKnob1):(pointsOfSelected+=a,0>pointsOfSelected?pointsOfSelected=100:100<pointsOfSelected&&(entrySelected=0));draw()}
-function handleKnob1(a){Pip.knob1Click(a);0==a?screenSelected==perkScreen?(entrySelected=0,screenSelected=perkSelectionScreen,currentPerk=null):screenSelected==perkSelectionScreen?togglePerkEnabled():(configMode=!configMode,Pip.removeListener("knob1",handleKnob1),Pip.on("knob1",handleKnob1Config),registeredKnob1Func=handleKnob1Config):(entrySelected-=a,currentPerk=null,0>entrySelected?entrySelected=loadedListMax-1:entrySelected>=loadedListMax&&(entrySelected=0),0<a&&lastReload-1==entrySelected?lastReload=
-null:0==entrySelected%entryListDisplayMax&&entrySelected!=lastReload&&(lastReload=null));draw()}function handleKnob2(a){Pip.knob2Click(a);configMode=!1;screenSelected==perkSelectionScreen?(saveNewPerkSelection(),screenSelected=perkScreen):screenSelected+=a;entrySelected=0;lastReload=currentPerk=null;screenSelected>maxScreen?screenSelected=0:0>screenSelected&&(screenSelected=maxScreen);draw()}function handleTorch(){gracefulClose();torchButtonHandler()}function powerHandler(){gracefulClose()}
-function gracefulClose(){clearInterval(intervalId);Pip.removeListener("knob1",registeredKnob1Func);Pip.removeListener("knob2",handleKnob2);Pip.removeListener("torch",handleTorch);showMainMenu()}let loadedListMax=0,entrySelected=0,screenSelected=0,pointsOfSelected=0,drawing=!1,configMode=!1,allPerks=[],enabledPerks=[],displayedPerks=[],currentPerk=null,lastReload=null,registeredKnob1Func=handleKnob1;Pip.on("knob1",registeredKnob1Func);Pip.on("knob2",handleKnob2);Pip.on("torch",handleTorch);
-setWatch(powerHandler,BTN_POWER,{repeat:!1});draw();let intervalId=setInterval(()=>{checkMode();2==Pip.mode?draw():gracefulClose()},16);
+//SECTION: consts
+const entryListDisplayMax = 6;
+const configListDisplayMax = 18;
+const configColumnDisplayMax = 9; //half of config display max
+const titleOffsetY = 22;
+const perkImageXMaxSize = 167;
+const perkImageYMaxSize = 153;
+const colourBlack = 0;
+const colourGray1 = 1;
+const colourGray2 = 2;
+const colourWhite = 3;
+const maxScreen = 2;
+const perkScreen = 2;
+const statScreen = 1;
+const SPECIALScreen = 0;
+const perkSelectionScreen = 3;
+const enabledPerkFolder = 'USER/StatsDisplay/PERKS/ENABLED/';
+const allPerkFolder = 'USER/StatsDisplay/PERKS/ALL/';
+const skillsFolder = 'USER/StatsDisplay/SKILLS/';
+const specialFolder = 'USER/StatsDisplay/SPECIAL/';
+
+Graphics.prototype.setFontMonofonto14 = function () {
+  // Actual height 14 (13 - 0)
+  // 1 BPP
+  return this.setFontCustom(
+    E.toString(
+      require('heatshrink').decompress(
+        atob(
+          'AB0D/uP/0/7AICh+AnwNC8AGBAoMBwFnw4UB/H/8f/h4ZDgHxw/nn/e+/55/DEIV88P/w/4g/4v/j7+MvwNBu4iBx/2FIPz8EfwEyKAwjB/BZGgH/5///kPLQcD///n/whgIBAQMzgARB+E/wE/gHMMwUAgkAiEBJgPgAwQyFgPgg+AjAIDsCCBg0ABINgCwoKBnAKDgahBFYN+h/gnkA4BTCUAkBXgX4n4OCgEcgCSBRYP+HQUjweOn0zDYNj+ODG4INB4YNBt0zzDKCwZYCIIN+XQLYEMwkD/cP90/zHO8c/ZQZxBj+DJgOY/1jz+IBoXAkcHxhhDgfgWwUAmODLQU7zHusZhEnED/GP805/Hn8f+g/wWwuYg9wjOABQkZ8F3wOYWIakB+EHsAUB4cDH4UJgEkgGQgVAAwgNBmHAWwIwB8EPEQTUCsEDwOO9033H8kfggY+Cj5xB+f95v7m3s/+x/zVBgPgN4U/+H/AwOAjyuDBof4UAKEEv/DAwUwjHg8eDwUIBoLRCBoM4nDmD/ANGmOY41jSggNFwHGgbyCh5KBBoOOg0z/Hv8e/DYLfCBoOAsAGFFIXALQYNBAwMBBoQtBsEBxkODYZtCIowNB/fjgZTIEQhFGOwJFIDYfwh4NFN4yZEG5E54H/gKlCDYsHnE+//7cIIbHnY3C+YpDvHD+eP80z7Hn8efBoMwTIL7FAwIZCn43DwEGPoJTEng3BwYGBDYQGB4AbBnxFDwf+Po0ghHxAwOH/iZDwZFD/BFBDYINB/jCDmEY4fjn5TCzH4dogADh//AAJXCiEAnApBgH8AIV+QoLhBIoIfBg4ZCLoQMBh+AN4PwgPgGIkEFIVAgIGFBoMCgEMG4QtBDIcwhvgm6SBgfYcIM/ehEDjANF8EH4AGB8wNBh3gmINBgPwCgfGUAauCDYvWgdYCgM9BoLqBhj0F5j0DDYMPY4Ow43D/4GC8BTIWQJhFhljn+O/0zWgJ+BAAMDgcMh8//3/+f/aIY+C/4iC90CjAlDgBoGgf4G4Y+BAwgmDBohMGoCgF3ANBj53DN4Xw//DXgquGSwIUDG43AG4MOeAIpDh1AWoJTCfYMXSQiiBwf+h/4hlgcwUDXgIpCg0AIosDwEPMIU+PoXAnCuCKYUfRYs8BoMChEMEQV+BocgFInENAMfegQpDKYVgm4pEKYYADhB4Bn////+PwqOC/+/BYIVDCYP//h/BkAKBOQUAsEBPIYGBBoI',
+        ),
+      ),
+    ),
+    32,
+    atob(
+      'BwYHCAgICAYHBggIBgcGCAgGCAgICAgICAgGBggICAgICAgICAcICAgICAgICAgICAgICAgICAgICAgICAUICAcICAgICAgICAcHCAYICAgICAgICAgICAgICAgGBwg=',
+    ),
+    14 | 65536,
+  );
+};
+
+//SECTION: Screen drawing
+function draw() {
+  if (drawing) return;
+  drawing = true;
+  bC.clear();
+  if (screenSelected == perkScreen) {
+    buildScreen(enabledPerkFolder);
+  } else if (screenSelected == statScreen) {
+    buildScreen(skillsFolder);
+  } else if (screenSelected == SPECIALScreen) {
+    buildScreen(specialFolder);
+  } else if (screenSelected == perkSelectionScreen) {
+    buildPerkSelectionScreen();
+  }
+  bH.flip();
+  bF.flip();
+  bC.flip();
+  drawing = false;
+}
+
+function buildScreen(directory) {
+  //directory will only be used when we need to go to SD, which will be when perk changes or we scroll to the next page.
+  if (lastReload == null) {
+    displayedPerks = [];
+    //time to populate the displayedPerks array and currentPerk
+    var files;
+    try {
+      files = require('fs').readdirSync(directory);
+    } catch {
+      require('fs').mkdir(directory);
+      files = require('fs').readdirSync(directory);
+    }
+    loadedListMax = files.length;
+    if (files.length == 0) {
+      drawEmptyScreen();
+      return;
+    }
+    let entryListMax = Math.min(entryListDisplayMax, loadedListMax);
+    let a = 0;
+    while (entrySelected >= entryListMax) {
+      a++;
+      //We're beyond the number of entries we can see on one page.
+      //We need to get the next set of files and display them
+      entryListMax = Math.min(entryListDisplayMax * (a + 1), loadedListMax);
+    }
+    for (i = a * entryListDisplayMax; i < entryListMax; i++) {
+      let file = files[i];
+      let fileString = require('fs').readFileSync(directory + file);
+      let fileObj = JSON.parse(fileString);
+      if (screenSelected != perkScreen) {
+        displayedPerks.push({
+          title: fileObj.title,
+          filename: file,
+          entryNum: i,
+          points: fileObj.points,
+        });
+      } else {
+        displayedPerks.push({
+          title: fileObj.title,
+          filename: file,
+          entryNum: i,
+        });
+      }
+    }
+    lastReload = entrySelected;
+  }
+  if (currentPerk == null) {
+    let currPerkInt = entrySelected % 6;
+    let file = displayedPerks[currPerkInt].filename;
+    let fileString = require('fs').readFileSync(directory + file);
+    let fileObj = JSON.parse(fileString);
+    currentPerk = fileObj;
+  }
+  for (let i = 0; i < displayedPerks.length; i++) {
+    let perkObj = displayedPerks[i];
+    if (perkObj.entryNum == entrySelected) {
+      drawEntry(currentPerk);
+      drawSelectedEntryOutline(i);
+      if (!configMode && screenSelected != perkScreen) {
+        //only update pointsOfSelected when not actively configuring.
+        pointsOfSelected = perkObj.points;
+      }
+    }
+    drawEntryTitle(perkObj.title, i, perkObj.entryNum == entrySelected);
+    if (screenSelected != perkScreen) {
+      drawEntryPoints(perkObj.points, i, perkObj.entryNum == entrySelected);
+    }
+  }
+}
+
+function buildPerkSelectionScreen() {
+  if (allPerks.length == 0) {
+    generatePerksConfigLists();
+  }
+  //ok, now for each element in allPerks, we draw it.
+  //I think we can draw two columns of 8 titles, so sixteen on screen
+  //at a time. Then scroll further and it's a new screen of sixteen.
+  let entryListMax = Math.min(configListDisplayMax, loadedListMax);
+  let a = 0;
+  while (entrySelected >= entryListMax) {
+    a++;
+    //We're beyond the number of entries we can see on one page.
+    //We need to get the next set of files and display them
+    entryListMax = Math.min(configListDisplayMax * (a + 1), loadedListMax);
+  }
+  let col = 0;
+  for (i = a * configListDisplayMax; i < entryListMax; i++) {
+    if (i != a * configListDisplayMax && i % configColumnDisplayMax == 0) {
+      col = 1;
+    }
+    let perk = allPerks[i];
+    if (i == entrySelected) {
+      drawSelectedEntryOutlineConfig(i % configListDisplayMax, col);
+    }
+    drawEntryTitleConfig(
+      perk.title,
+      i % configListDisplayMax,
+      i == entrySelected,
+      col,
+      enabledPerks.includes(perk.filename),
+    );
+  }
+}
+
+function generatePerksConfigLists() {
+  //first load of screen, build the full list.
+  var files;
+  try {
+    files = require('fs').readdirSync(enabledPerkFolder);
+  } catch {
+    require('fs').mkdir(enabledPerkFolder);
+    files = require('fs').readdirSync(enabledPerkFolder);
+  }
+  for (file of files) {
+    enabledPerks.push(file);
+  }
+  files = require('fs').readdirSync(allPerkFolder);
+  loadedListMax = files.length;
+  for (file of files) {
+    let fileString = require('fs').readFileSync(allPerkFolder + file);
+    let fileObj = JSON.parse(fileString);
+    let perkObj = { filename: file, title: fileObj.title };
+    allPerks.push(perkObj);
+  }
+}
+
+//SECTION: Element Drawing
+
+function drawEmptyScreen() {
+  bC.setFontMonofonto18();
+  bC.setColor(colourWhite);
+  bC.drawString('No Perks selected, press wheel to configure.', 2, 100);
+}
+
+function drawEntry(perkObj) {
+  drawEntryImage(perkObj.img, perkObj.xSize, perkObj.ySize);
+  drawEntryDesc(perkObj.description);
+}
+
+function drawEntryImage(imgStr, xSize, ySize) {
+  //so we want to try and draw as central as possible.
+  //our 'window' for how big the perk can be is 167x153 (y truncated for the desc at the bottom)
+  //to figure out how to centre the image we need to get the difference
+  //between the size of the image and our window, halve it, and add it on
+  //to the location.
+  let xOffset = Math.floor((perkImageXMaxSize - xSize) / 2);
+  let yOffset = Math.floor((perkImageYMaxSize - ySize) / 2);
+  bC.setColor(colourGray2);
+  bC.drawImage(
+    {
+      width: xSize,
+      height: ySize,
+      bpp: 1,
+      buffer: require('heatshrink').decompress(atob(imgStr)),
+    },
+    200 + xOffset,
+    0 + yOffset,
+  );
+}
+
+function drawEntryTitle(title, i, selected) {
+  bC.setFontMonofonto18();
+  if (selected) {
+    bC.setColor(colourBlack);
+  } else {
+    bC.setColor(colourWhite);
+  }
+  bC.drawString(title, 10, titleOffsetY * i + 5);
+}
+
+function drawEntryTitleConfig(title, i, selected, col, enabled) {
+  bC.setFontMonofonto18();
+  let finalTitle = '';
+  if (enabled) {
+    finalTitle = title + ' *';
+  } else {
+    finalTitle = title;
+  }
+  if (selected) {
+    bC.setColor(colourBlack);
+  } else {
+    bC.setColor(colourWhite);
+  }
+  if (col == 0) {
+    bC.drawString(finalTitle, 10, titleOffsetY * i + 5);
+  } else {
+    bC.drawString(
+      finalTitle,
+      210,
+      titleOffsetY * (i - configColumnDisplayMax) + 5,
+    );
+  }
+}
+
+function drawEntryPoints(points, i, selected) {
+  bC.setFontMonofonto18();
+  if (selected) {
+    bC.setColor(colourBlack);
+  } else {
+    bC.setColor(colourWhite);
+  }
+  if (configMode && selected) {
+    bC.fillPoly([
+      129,
+      titleOffsetY * i + 12,
+      140,
+      titleOffsetY * i + 12,
+      135,
+      titleOffsetY * i + 5,
+    ]);
+    bC.fillPoly([
+      141,
+      titleOffsetY * i + 12,
+      151,
+      titleOffsetY * i + 12,
+      146,
+      titleOffsetY * i + 17,
+    ]);
+    bC.drawString(pointsOfSelected, 160, titleOffsetY * i + 5);
+  } else {
+    bC.drawString(points, 160, titleOffsetY * i + 5);
+  }
+}
+
+function drawEntryDesc(desc) {
+  bC.setFontMonofonto14();
+  bC.setColor(colourWhite);
+  bC.drawString(desc, 10, 150);
+}
+
+function drawSelectedEntryOutline(i) {
+  bC.setColor(colourWhite);
+  bC.fillRect(5, titleOffsetY * i + 1, 190, titleOffsetY * i + 23);
+}
+
+function drawSelectedEntryOutlineConfig(i, col) {
+  bC.setColor(colourWhite);
+  if (col == 0) {
+    bC.fillRect(5, titleOffsetY * i + 1, 190, titleOffsetY * i + 23);
+  } else {
+    bC.fillRect(
+      205,
+      titleOffsetY * (i - configColumnDisplayMax) + 1,
+      390,
+      titleOffsetY * (i - configColumnDisplayMax) + 23,
+    );
+  }
+}
+
+//SECTION: config saving
+function saveFile(directory) {
+  let files = require('fs').readdirSync(directory);
+  let fileToSave = directory + files[entrySelected];
+  let fileString = require('fs').readFileSync(fileToSave);
+  let fileObj = JSON.parse(fileString);
+  fileObj.points = pointsOfSelected;
+  fileString = JSON.stringify(fileObj);
+  require('fs').writeFile(fileToSave, fileString);
+  //update in memory data.
+  displayedPerks[entrySelected % entryListDisplayMax].points = pointsOfSelected;
+  currentPerk = fileObj;
+}
+
+function saveNewValue() {
+  if (screenSelected == SPECIALScreen) {
+    saveFile(specialFolder);
+  } else if (screenSelected == statScreen) {
+    saveFile(skillsFolder);
+  }
+}
+
+function saveEnabledPerk(filename) {
+  //"USER/PERKS/ALL"
+  let fileString = require('fs').readFileSync(allPerkFolder + filename);
+  require('fs').writeFile(enabledPerkFolder + filename, fileString);
+}
+
+function saveNewPerkSelection() {
+  let enabledFiles = require('fs').readdirSync(enabledPerkFolder);
+  for (let i = 0; i < allPerks.length; i++) {
+    let perk = allPerks[i];
+    if (
+      enabledPerks.includes(perk.filename) &&
+      enabledFiles.includes(perk.filename)
+    ) {
+      continue; //was enabled, still enabled, nothing to do.
+    } else if (
+      enabledPerks.includes(perk.filename) &&
+      !enabledFiles.includes(perk.filename)
+    ) {
+      //wasn't enabled, is enabled now, copy the file to enabled folder.
+      saveEnabledPerk(perk.filename);
+    } else if (
+      !enabledPerks.includes(perk.filename) &&
+      enabledFiles.includes(perk.filename)
+    ) {
+      //was enabled, no longer is, delete the file from ENABLED
+      require('fs').unlink(enabledPerkFolder + perk.filename);
+    }
+  }
+  //everything done, wipe out the in-memory enabled/disabled lists.
+  enabledPerks = [];
+  allPerks = [];
+}
+
+function togglePerkEnabled() {
+  let perkObj = allPerks[entrySelected];
+  if (enabledPerks.includes(perkObj.filename)) {
+    let index = enabledPerks.indexOf(perkObj.filename);
+    enabledPerks.splice(index, 1);
+  } else {
+    enabledPerks.push(perkObj.filename);
+  }
+}
+
+//SECTION: Button handlers
+function handleKnob1Config(dir) {
+  //first, play the click.
+  Pip.knob1Click(dir);
+
+  if (dir == 0) {
+    //pressed in, this is the config trigger.
+    //toggle configuration mode on special/skills screens
+    configMode = !configMode;
+    saveNewValue();
+    Pip.removeListener('knob1', handleKnob1Config);
+    Pip.on('knob1', handleKnob1);
+    registeredKnob1Func = handleKnob1;
+  } else {
+    pointsOfSelected += dir;
+    if (pointsOfSelected < 0) {
+      pointsOfSelected = 100;
+    } else if (pointsOfSelected > 100) {
+      entrySelected = 0;
+    }
+  }
+  draw();
+}
+
+function handleKnob1(dir) {
+  //first, play the click.
+  Pip.knob1Click(dir);
+
+  if (dir == 0) {
+    //pressed in, this is the config trigger.
+    if (screenSelected == perkScreen) {
+      //change screen to perk selection screen.
+      entrySelected = 0;
+      screenSelected = perkSelectionScreen;
+      currentPerk = null;
+    } else if (screenSelected == perkSelectionScreen) {
+      togglePerkEnabled();
+    } else {
+      //toggle configuration mode on special/skills screens
+      configMode = !configMode;
+      Pip.removeListener('knob1', handleKnob1);
+      Pip.on('knob1', handleKnob1Config);
+      registeredKnob1Func = handleKnob1Config;
+    }
+  } else {
+    //then, we need to change our position in the list.
+    entrySelected -= dir; //-1 is scroll down, but our list increases numerically. so we need to subtract
+    currentPerk = null;
+    if (entrySelected < 0) {
+      entrySelected = loadedListMax - 1;
+    } else if (entrySelected >= loadedListMax) {
+      entrySelected = 0;
+    }
+    if (dir > 0 && lastReload - 1 == entrySelected) {
+      //scrolling up, so e.g. 6 -> 5
+      lastReload = null;
+    } else if (
+      entrySelected % entryListDisplayMax == 0 &&
+      entrySelected != lastReload
+    ) {
+      lastReload = null; //reset lastReload value, that's our cue that we need to pull from SD card.
+    }
+  }
+
+  draw();
+}
+
+function handleKnob2(dir) {
+  //first, play the click.
+  Pip.knob2Click(dir);
+  //if switching screens we need to boot immediately out of config without saving.
+  configMode = false;
+  //then switch stats screen.
+  if (screenSelected == perkSelectionScreen) {
+    //if scrolling away from perk selection screen, save changes and reset to perk screen.
+    saveNewPerkSelection();
+    screenSelected = perkScreen;
+  } else {
+    screenSelected += dir;
+  }
+  entrySelected = 0; //reset to top of list
+  currentPerk = null;
+  lastReload = null;
+  if (screenSelected > maxScreen) {
+    screenSelected = 0;
+  } else if (screenSelected < 0) {
+    screenSelected = maxScreen;
+  }
+  draw();
+}
+
+function handleTorch() {
+  gracefulClose();
+  torchButtonHandler();
+}
+
+function powerHandler() {
+  gracefulClose();
+}
+
+function gracefulClose() {
+  //shut down interval triggers first in case one fires while we're tearing down
+  clearInterval(intervalId);
+  Pip.removeListener('knob1', registeredKnob1Func);
+  Pip.removeListener('knob2', handleKnob2);
+  Pip.removeListener('torch', handleTorch);
+  showMainMenu(); //this causes a brief flicker but if we don't do it the controls stop working.
+}
+
+//SECTION: main entry point
+
+let loadedListMax = 0;
+let entrySelected = 0;
+let screenSelected = 0;
+let pointsOfSelected = 0;
+let drawing = false;
+let configMode = false;
+let allPerks = [];
+let enabledPerks = [];
+let displayedPerks = []; //contains title and filename.
+let currentPerk = null; //contains all data
+let lastReload = null;
+let registeredKnob1Func = handleKnob1;
+
+Pip.on('knob1', registeredKnob1Func);
+Pip.on('knob2', handleKnob2);
+Pip.on('torch', handleTorch);
+setWatch(powerHandler, BTN_POWER, { repeat: false });
+draw();
+let intervalId = setInterval(() => {
+  checkMode();
+  if (Pip.mode == 2) {
+    draw();
+  } else {
+    gracefulClose();
+  }
+}, 16);
