@@ -57,6 +57,7 @@
       "StatsDisplay/PERKS/ALL/intensetraining.json",
       "StatsDisplay/PERKS/ALL/ladykiller.json",
       "StatsDisplay/PERKS/ALL/missfortune.json",
+      "StatsDisplay/PERKS/ALL/mysteriousstranger.json",
       "StatsDisplay/PERKS/ALL/radchild.json",
       "StatsDisplay/PERKS/ALL/rapidreload.json",
       "StatsDisplay/PERKS/ALL/retention.json",
@@ -92,7 +93,7 @@
     "name": "Stats Display",
     "tip": "",
     "type": "APP",
-    "version": "2.0.1"
+    "version": "2.1.0"
   },
   {
     "author": "Cody Tolene",
