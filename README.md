@@ -135,6 +135,10 @@ steps:
 
 3. From here you can connect and upload your app files for quick testing.
 
+3a. Any file beginning with "boot." will upload to USER_BOOT instead of the USER
+folder. This allows rapid testing of apps meant to run at boot time. For more
+information, see [here](https://log.robco-industries.org/log/entry016/).
+
 > ![Info][img-info] The loader app is also available via GitHub pages here
 > https://codytolene.github.io/pip-apps
 
