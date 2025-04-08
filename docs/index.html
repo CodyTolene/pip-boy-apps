@@ -8,6 +8,10 @@
   <body>
     <h2>Pip-App Loader</h2>
     <p>A simple uploader for testing apps on your Pip-Boy 3000 Mk V device.</p>
+    <p>
+      Apps will be uploaded to USER/, except if the file chosen begins with
+      "boot.", where it will be uploaded to USER_BOOT
+    </p>
     <button id="connect">Connect to Pip-Boy</button>
     <input type="file" id="fileInput" accept=".js" disabled />
     <div id="progressContainer">

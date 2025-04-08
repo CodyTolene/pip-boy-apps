@@ -68,7 +68,29 @@ fileInput.addEventListener('change', async (e) => {
 
   const fileName = file.name;
   const fileBuffer = await file.arrayBuffer();
-  const appPath = `USER/${fileName}`;
+  let appPath = '';
+  const bootCode = file.name.startsWith('boot.');
+  if (bootCode) {
+    appPath = `USER_BOOT/${fileName}`;
+    //need to make sure directory is created since it's nonstandard. if it fails (because it palready exists) we catch and ignore
+    const createUSERBOOTCommand = `
+    (() => {
+      var fs = require("fs");
+        try {
+          require("fs").mkdir("USER_BOOT"); 
+        } catch (error) {
+        }
+    })()
+        `;
+    const createUSERBOOTResult = await connection.espruinoEval(
+      createUSERBOOTCommand,
+      {
+        timeout: 1500,
+      },
+    );
+  } else {
+    appPath = `USER/${fileName}`;
+  }
 
   const zip = new JSZip();
   zip.file(appPath, fileBuffer);
@@ -99,7 +121,10 @@ fileInput.addEventListener('change', async (e) => {
   progressBar.style.width = '100%';
   await wait(1000);
 
-  const clearCommand = `
+  if (bootCode) {
+    fileInput.value = '';
+  } else {
+    const clearCommand = `
     (() => {
       try {
         if (typeof Pip !== 'undefined') {
@@ -125,40 +150,41 @@ fileInput.addEventListener('change', async (e) => {
     })()
   `;
 
-  const clearResult = await connection.espruinoEval(clearCommand, {
-    timeout: 1500,
-  });
-  console.log('Clear result:', clearResult);
-  await wait(1000);
-
-  const launchCommand = `
-    (() => {
-      var fs = require("fs");
-      try {
-        eval(fs.readFile("${appPath}"));
-        return { success: true, message: "App launched successfully!" };
-      } catch (error) {
-        return { success: false, message: error.message };
-      }
-    })()
-  `;
-
-  try {
-    const result = await connection.espruinoEval(launchCommand, {
-      timeout: 2000,
+    const clearResult = await connection.espruinoEval(clearCommand, {
+      timeout: 1500,
     });
+    console.log('Clear result:', clearResult);
+    await wait(1000);
 
-    if (result?.success) {
-      // alert(result.message);
-      console.log(result.message);
-      fileInput.value = '';
-    } else {
-      alert('Launch failed: ' + result?.message);
-      console.error('Launch failed:', result?.message);
+    const launchCommand = `
+      (() => {
+        var fs = require("fs");
+        try {
+          eval(fs.readFile("${appPath}"));
+          return { success: true, message: "App launched successfully!" };
+        } catch (error) {
+          return { success: false, message: error.message };
+        }
+      })()
+    `;
+
+    try {
+      const result = await connection.espruinoEval(launchCommand, {
+        timeout: 2000,
+      });
+
+      if (result?.success) {
+        // alert(result.message);
+        console.log(result.message);
+        fileInput.value = '';
+      } else {
+        alert('Launch failed: ' + result?.message);
+        console.error('Launch failed:', result?.message);
+      }
+    } catch (err) {
+      alert('Error launching app: ' + err.message);
+      console.error('Launch error:', err);
     }
-  } catch (err) {
-    alert('Error launching app: ' + err.message);
-    console.error('Launch error:', err);
   }
 
   setTimeout(() => {
