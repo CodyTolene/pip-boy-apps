@@ -17,11 +17,11 @@
     "description": "Pip-Pong is a simple game where you control a paddle that hits a ball back and forth.",
     "homepage": "https://www.CodyTolene.com",
     "id": "PipPong",
-    "instructions": "Use the tune-up and tune-down buttons to move the paddle up and down, and the top torch button to exit the game.",
+    "instructions": "Use any knob to move up and down, and the top torch button to exit the game.",
     "name": "Pip-Pong",
     "tip": "",
     "type": "GAME",
-    "version": "1.0.0"
+    "version": "1.1.0"
   },
   {
     "author": "Cody Tolene",
@@ -29,11 +29,11 @@
     "description": "Pip-Snake is a simple game where you control a growing snake that eats food and avoids crashing into itself.",
     "homepage": "https://www.CodyTolene.com",
     "id": "PipSnake",
-    "instructions": "Use the tune-up and tune-down buttons to rotate clockwise or counter-clockwise, the front button to restart, and the top torch button to exit the game.",
+    "instructions": "Use any knobs to move clockwise and counter-clockwise, the front radio tuner button to restart, and the top torch button to exit the game.",
     "name": "Pip-Snake",
     "tip": "The snake wraps around when it hits the edge of the screen.",
     "type": "GAME",
-    "version": "1.0.0"
+    "version": "1.1.0"
   },
   {
     "author": "gnargle",
