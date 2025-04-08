@@ -203,56 +203,91 @@ function stopGame() {
 
   gameOver = true;
   g.clear();
+  E.reboot();
+}
 
-  g.setColor(COLOR_RED);
-  g.setFont('6x8', 4);
-  g.drawString('GAME HALTED', SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 30);
-  g.setFont('6x8', 2);
-  g.drawString(
-    'Press torch again to reboot',
-    SCREEN_WIDTH / 2,
-    SCREEN_HEIGHT / 2 + 10,
-  );
+function drawGearIcon(x, y, scale) {
+  g.setColor('#FFF');
 
-  const waitLoop = setInterval(() => {
-    if (BTN_TORCH.read()) {
-      clearInterval(waitLoop);
-      E.reboot();
-    }
-  }, 100);
+  // Size of each tooth
+  const toothLength = 2 * scale;
+  // Distance from center to tooth
+  const toothOffset = 4 * scale;
+  // Outer radius
+  const radius = 3 * scale;
+  // Center radius
+  const hole = 1 * scale;
+
+  // Teeth (8 directions)
+  g.fillRect(
+    x - toothOffset - toothLength / 2,
+    y - toothLength / 2,
+    x - toothOffset + toothLength / 2,
+    y + toothLength / 2,
+  ); // Left
+  g.fillRect(
+    x + toothOffset - toothLength / 2,
+    y - toothLength / 2,
+    x + toothOffset + toothLength / 2,
+    y + toothLength / 2,
+  ); // Right
+
+  g.fillRect(
+    x - toothLength / 2,
+    y - toothOffset - toothLength / 2,
+    x + toothLength / 2,
+    y - toothOffset + toothLength / 2,
+  ); // Top
+  g.fillRect(
+    x - toothLength / 2,
+    y + toothOffset - toothLength / 2,
+    x + toothLength / 2,
+    y + toothOffset + toothLength / 2,
+  ); // Bottom
+
+  const diag = toothOffset * 0.707;
+  g.fillRect(
+    x - diag - toothLength / 2,
+    y - diag - toothLength / 2,
+    x - diag + toothLength / 2,
+    y - diag + toothLength / 2,
+  ); // Top-left
+  g.fillRect(
+    x + diag - toothLength / 2,
+    y - diag - toothLength / 2,
+    x + diag + toothLength / 2,
+    y - diag + toothLength / 2,
+  ); // Top-right
+  g.fillRect(
+    x - diag - toothLength / 2,
+    y + diag - toothLength / 2,
+    x - diag + toothLength / 2,
+    y + diag + toothLength / 2,
+  ); // Bottom-left
+  g.fillRect(
+    x + diag - toothLength / 2,
+    y + diag - toothLength / 2,
+    x + diag + toothLength / 2,
+    y + diag + toothLength / 2,
+  ); // Bottom-right
+
+  // Gear body
+  g.fillCircle(x, y, radius);
+
+  // Center hole
+  g.setColor('#000');
+  g.fillCircle(x, y, hole);
 }
 
 function initializeGame() {
   g.clear();
+
   g.setColor(COLOR_GREEN);
   g.setFont('6x8', 4);
-  g.drawString('PIP-PONG', SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 80);
-
+  g.drawString('PIP-PONG', SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 20);
   g.setFont('6x8', 2);
-  g.drawString(
-    'Use tuner-up/down to move',
-    SCREEN_WIDTH / 2,
-    SCREEN_HEIGHT / 2 - 40,
-  );
-  g.drawString(
-    'Torch: Quit | Tuner-play: Start',
-    SCREEN_WIDTH / 2,
-    SCREEN_HEIGHT / 2 - 10,
-  );
-
-  g.setColor(COLOR_RED);
-  g.drawString(
-    "Don't let the ball pass!",
-    SCREEN_WIDTH / 2,
-    SCREEN_HEIGHT / 2 + 20,
-  );
-
-  g.setColor(COLOR_GREEN);
-  g.drawString(
-    'Press tuner-play to START',
-    SCREEN_WIDTH / 2,
-    SCREEN_HEIGHT / 2 + 50,
-  );
+  g.drawString('Press   to START', SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 15);
+  drawGearIcon(SCREEN_WIDTH / 2 - 20, SCREEN_HEIGHT / 2 + 15, 2.5);
 
   const waitLoop = setInterval(() => {
     if (BTN_PLAY.read()) {
@@ -260,6 +295,31 @@ function initializeGame() {
       resetGame();
     }
   }, 100);
+
+  Pip.removeAllListeners('knob1');
+  Pip.on('knob1', function (dir) {
+    if (gameOver) {
+      if (dir === 0) resetGame(); // Press knob1 to restart
+      return;
+    }
+
+    if (dir < 0) {
+      movePlayer(1); // Down
+    } else if (dir > 0) {
+      movePlayer(-1); // Up
+    }
+  });
+
+  Pip.removeAllListeners('knob2');
+  Pip.on('knob2', function (dir) {
+    if (gameOver) return;
+
+    if (dir < 0) {
+      movePlayer(1); // Down
+    } else if (dir > 0) {
+      movePlayer(-1); // Up
+    }
+  });
 }
 
 initializeGame();
