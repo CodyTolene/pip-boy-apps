@@ -26,7 +26,7 @@
 - [Development](#development)
   - [Prerequisites](#prerequisites)
   - [Setup](#setup)
-  - [App Loader](#app-loader)
+  - [Pip-App Loader](#pip-app-loader)
   - [Learning app development](#learning-app-development)
   - [Creating a New App/Game](#new-app-game)
 - [Directory Structure](#directory-structure)
@@ -121,7 +121,9 @@ To get set up for development, follow these steps:
 
 <p align="right">[ <a href="#index">Index</a> ]</p>
 
-### App Loader <a name="app-loader"></a>
+### Pip-App Loader <a name="pip-app-loader"></a>
+
+<img src=".github/images/pip-app-loader.png" alt="Pip-App Loader" />
 
 Once you have the project and dependencies [set up](#setup) locally, you can
 start the app loader to test your apps and games. To do this, follow these
@@ -163,7 +165,7 @@ To create a new app/game, follow these steps:
 1. Create a new js file using pascal casing (ie `MyGame.js`) in the `USER`
    folder. This will be the entry point for your app.
 
-2. Test by using the upload tool in the [app loader](#app-loader).
+2. Test by using the upload tool in the [app loader](#pip-app-loader).
 
 3. Update the `registry.json` file with the new app information.
 
@@ -222,7 +224,7 @@ Thank you for any and all contributions!
     ├─ .github                     # GitHub configuration files.
     ├─ .husky                      # Husky configuration files.
     ├─ .vscode                     # VS Code configuration files.
-    ├─ docs                        # The App Loader web app (GitHub Pages hosted)
+    ├─ docs                        # The Pip-App Loader web app (GitHub Pages hosted)
     ├─ node_modules                # Node.js dependencies (ignored).
     ├─ USER                        # The directory for user created apps and games.
     │  ├─ <...>                    # Asset folders for user created apps.
