@@ -135,9 +135,9 @@ steps:
 
 3. From here you can connect and upload your app files for quick testing.
 
-3a. Any file beginning with "boot." will upload to USER_BOOT instead of the USER
-folder. This allows rapid testing of apps meant to run at boot time. For more
-information, see [here](https://log.robco-industries.org/log/entry016/).
+> ![Info][img-info] Any file beginning with "boot." will upload to USER_BOOT
+> instead of the USER folder. This allows rapid testing of apps meant to run at
+> boot time. For more information, see [here][link-bootloader-info].
 
 > ![Info][img-info] The loader app is also available via GitHub pages here
 > https://codytolene.github.io/pip-apps
@@ -165,17 +165,19 @@ To create a new app/game, follow these steps:
 
 2. Test by using the upload tool in the [app loader](#app-loader).
 
-3. Update the `USER/_registry.json` file with the new app information. This meta
-   will be used on the website to help users and possibly on the Pip-Boy at a
-   later date.
+3. Update the `registry.json` file with the new app information.
 
    ```diff
    [
      ...
    + {
    +      "author": "My name...",
-   +      "dependencies": ["MyAppName"],
    +      "description": "My app description...",
+   +      "files": [
+   +        "USER/MyAppName.js",
+   +        "USER/MyAppName/my-asset.json",
+   +        "USER_BOOT/MyBootCode.js"
+   +      ],
    +      "homepage": "",
    +      "id": "MyAppName",
    +      "instructions": "My app instructions & controls...",
@@ -190,7 +192,7 @@ To create a new app/game, follow these steps:
    | Key            | Description                                                 |
    | :------------- | :---------------------------------------------------------- |
    | `author`       | Your name or handle.                                        |
-   | `dependencies` | The array of folder names for any assets your app uses.     |
+   | `files`        | The array of files that the app uses.                       |
    | `description`  | A brief description of your app.                            |
    | `homepage`     | A link to your website or social media, can be empty.       |
    | `id`           | A unique app id that also should match the `.js` file name. |
@@ -223,7 +225,6 @@ Thank you for any and all contributions!
     ├─ docs                        # The App Loader web app (GitHub Pages hosted)
     ├─ node_modules                # Node.js dependencies (ignored).
     ├─ USER                        # The directory for user created apps and games.
-    │  ├─ _registry.json           # The app registry file for user created apps.
     │  ├─ <...>                    # Asset folders for user created apps.
     │  └─ *.js                     # User created apps and games (entry file).
     ├─ .gitignore                  # Git ignore configuration file.
@@ -232,6 +233,7 @@ Thank you for any and all contributions!
     ├─ package-lock.json           # Node.js package lock file.
     ├─ package.json                # Node.js package file.
     ├─ prettier.config.cjs         # Prettier configuration file.
+    ├─ registry.json           # The app registry file for user created apps.
     ├─ README.md                   # The project README file.
     └─ TERMS.md                    # The project terms of use file.
 
@@ -278,7 +280,7 @@ your own risk.
 
 Thank you to Bethesda & The Wand Company for such a fun device to tinker with!
 If you have any questions, please let me know by opening an issue
-[here][url-new-issue].
+[here][link-new-issue].
 
 | Type                                                                      | Info                                                           |
 | :------------------------------------------------------------------------ | :------------------------------------------------------------- |
@@ -302,6 +304,7 @@ Cody Tolene
 
 <!-- LINK REFERENCES -->
 
+[link-bootloader-info]: https://log.robco-industries.org/log/entry016/
 [link-license]: /LICENSE.md
+[link-new-issue]: https://github.com/CodyTolene/pip-apps/issues
 [link-terms]: /TERMS.md
-[url-new-issue]: https://github.com/CodyTolene/pip-apps/issues
