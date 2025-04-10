@@ -5,6 +5,8 @@
 !.github/CODEOWNERS
 !README.md
 !USER/
+!USER_BOOT/
+!registry.json
 !docs/
 
 # Re-ignore sub-directories from the above exempt directories:

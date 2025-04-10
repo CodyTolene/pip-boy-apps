@@ -5,12 +5,12 @@
   "version": "1.0.0",
   "homepage": "https://pip-boy.com/",
   "type": "module",
-  "main": "docs/scripts/main.js",
+  "main": "docs/main.js",
   "scripts": {
     "prepare": "husky",
     "prettier": "prettier --write .",
     "prettier:check": "prettier --check .",
-    "start": "node docs/scripts/main.js"
+    "start": "node docs/main.js"
   },
   "devDependencies": {
     "@types/node": "^22.13.11",

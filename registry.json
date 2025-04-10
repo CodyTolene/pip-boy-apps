@@ -107,5 +107,17 @@
     "tip": "Press play again to stop currently playing media.",
     "type": "APP",
     "version": "1.1.0"
+  },
+  {
+    "author": "rikkuness",
+    "description": "Update the UI theme to an orange color scheme. See here for more information https://log.robco-industries.org/log/entry016/",
+    "files": ["USER_BOOT/ui_color.js"],
+    "homepage": "https://log.robco-industries.org/",
+    "id": "UIColor",
+    "instructions": "Be sure to install the bootloader prior to using this mod.",
+    "name": "UI Color",
+    "tip": "",
+    "type": "BOOT",
+    "version": "1.0.0"
   }
 ]

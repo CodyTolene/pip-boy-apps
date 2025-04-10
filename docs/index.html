@@ -17,54 +17,69 @@
       <section>
         <h3>Connection</h3>
         <p>Connect to the Pip-Boy.</p>
-        <button id="connect">Connect</button>
+        <button id="connect-btn">Connect</button>
       </section>
 
       <section>
         <h3>Upload app or game files</h3>
         <p>Select and upload files to the <code>USER/</code> folder.</p>
         <div class="input-container">
-          <label id="js-files-input-label" for="js-files-input" class="disabled"
+          <label
+            id="user-files-input-label"
+            for="user-files-input"
+            class="disabled"
             >Upload File(s)</label
           >
-          <input id="js-files-input" type="file" disabled multiple />
+          <input id="user-files-input" type="file" disabled multiple />
         </div>
         <div class="input-container">
-          <label id="js-file-input-label" for="js-file-input" class="disabled"
+          <label
+            id="user-file-input-label"
+            for="user-file-input"
+            class="disabled"
             >Upload and Launch File</label
           >
-          <input id="js-file-input" type="file" disabled accept=".js" />
+          <input id="user-file-input" type="file" disabled accept=".js" />
         </div>
-        <div id="js-file-progress-container">
-          <div id="js-file-progress"></div>
+        <div id="user-files-progress-container">
+          <div id="user-files-progress"></div>
         </div>
-        <button id="delete-dir-user">Delete all in "USER" folder</button>
       </section>
 
       <section>
         <h3>Upload bootloader files</h3>
         <p>Select and upload files to the <code>USER_BOOT/</code> folder.</p>
         <div class="input-container">
+          <button id="install-bootloader-btn">Install Bootloader</button>
           <label
-            id="js-boot-file-input-label"
-            for="js-boot-file-input"
+            id="boot-files-input-label"
+            for="boot-files-input"
             class="disabled"
             >Upload File(s)</label
           >
-          <input id="js-boot-file-input" type="file" disabled multiple />
+          <input id="boot-files-input" type="file" disabled multiple />
         </div>
-        <div id="js-boot-file-progress-container">
-          <div id="js-boot-file-progress"></div>
+        <div id="boot-files-progress-container">
+          <div id="boot-files-progress"></div>
         </div>
-        <button id="delete-dir-user-boot">
-          Delete all in "USER_BOOT" folder
-        </button>
       </section>
 
       <section>
         <h3>Refreshing</h3>
         <p>Click below to restart your device between tests.</p>
         <button id="restart-btn" disabled>Restart</button>
+      </section>
+
+      <section>
+        <h3>☢️ Danger Zone ☢️</h3>
+        <p>Clearing Apps and Games data.</p>
+        <button id="delete-dir-user-btn">Delete all in "USER" folder</button>
+        <button id="delete-dir-user-btn-boot-btn">
+          Delete all in "USER_BOOT" folder
+        </button>
+        <button id="delete-dir-appinfo-btn">
+          Delete all in "APPINFO" folder
+        </button>
       </section>
     </main>
 

@@ -85,6 +85,10 @@ button {
   width: 100%;
 }
 
+section button:not(:last-child) {
+  margin-bottom: 1rem;
+}
+
 button:disabled {
   background-color: #003300;
   color: #111111;
@@ -96,8 +100,8 @@ button:not(:disabled):hover,
   background-color: #00cc00;
 }
 
-#js-file-progress-container,
-#js-boot-file-progress-container {
+#user-files-progress-container,
+#boot-files-progress-container {
   background: #003300;
   border: 1px solid #0f0;
   border-radius: 0.25rem;
@@ -108,8 +112,8 @@ button:not(:disabled):hover,
   width: 100%;
 }
 
-#js-file-progress,
-#js-boot-file-progress {
+#user-files-progress,
+#boot-files-progress {
   background: #0f0;
   height: 100%;
   transition: width 0.2s ease;

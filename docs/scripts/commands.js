@@ -111,4 +111,24 @@ export const Commands = {
       }, 100);
     })()
   `,
+  setBootloader: () => `
+    (() => {
+      try {
+        require("Storage").write(".boot0", \`
+          E.on("init", function () {
+            require("fs")
+              .readdir("USER_BOOT")
+              .forEach(function (f) {
+                if (f.endsWith(".js")) {
+                  eval(require("fs").readFile("USER_BOOT/" + f));
+                }
+              });
+          });
+        \`);
+        return { success: true, message: "Bootloader set successfully!" };
+      } catch (e) {
+        return { success: false, message: e.message };
+      }
+    })()
+  `,
 };

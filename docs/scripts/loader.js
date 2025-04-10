@@ -1,85 +1,15 @@
 import JSZip from 'https://cdn.jsdelivr.net/npm/jszip@3.10.1/+esm';
+import {
+  Buttons,
+  Inputs,
+  Labels,
+  ProgressBars,
+  ProgressBarContainer,
+} from './elements.js';
 import { Commands } from './commands.js';
 
 let connection = null;
-
 const wait = (ms) => new Promise((res) => setTimeout(res, ms));
-
-// Buttons
-const connectBtn = document.getElementById('connect');
-const restartBtn = document.getElementById('restart-btn');
-const deleteDirUserBtn = document.getElementById('delete-dir-user');
-const deleteDirUserBootBtn = document.getElementById('delete-dir-user-boot');
-
-// Inputs
-const jsFilesInput = document.getElementById('js-files-input');
-const jsFileInput = document.getElementById('js-file-input');
-const jsBootFileInput = document.getElementById('js-boot-file-input');
-
-// Input labels
-const jsFilesInputLabel = document.getElementById('js-files-input-label');
-const jsFileInputLabel = document.getElementById('js-file-input-label');
-const jsBootFileInputLabel = document.getElementById(
-  'js-boot-file-input-label',
-);
-
-const jsFileProgressContainer = document.getElementById(
-  'js-file-progress-container',
-);
-const jsBootFileProgressContainer = document.getElementById(
-  'js-boot-file-progress-container',
-);
-
-// Progress bars
-const jsFileProgress = document.getElementById('js-file-progress');
-const jsBootFileProgress = document.getElementById('js-boot-file-progress');
-
-// Click listeners
-connectBtn.addEventListener('click', async () => await onConnectButtonClick());
-restartBtn.addEventListener('click', async () => await onRestartButtonClick());
-deleteDirUserBtn.addEventListener(
-  'click',
-  async () => await onDeleteDirUserButtonClick(),
-);
-deleteDirUserBootBtn.addEventListener(
-  'click',
-  async () => await onDeleteDirUserBootButtonClick(),
-);
-
-// File input change listeners
-jsFilesInput.addEventListener(
-  'change',
-  async (e) =>
-    await uploadFilesToDevice(
-      e,
-      'USER',
-      jsFileProgress,
-      jsFileProgressContainer,
-      false,
-    ),
-);
-jsFileInput.addEventListener(
-  'change',
-  async (e) =>
-    await uploadFilesToDevice(
-      e,
-      'USER',
-      jsFileProgress,
-      jsFileProgressContainer,
-      true,
-    ),
-);
-jsBootFileInput.addEventListener(
-  'change',
-  async (e) =>
-    await uploadFilesToDevice(
-      e,
-      'USER_BOOT',
-      jsBootFileProgress,
-      jsBootFileProgressContainer,
-      false,
-    ),
-);
 
 async function deleteDirectory(basePath) {
   if (!connection?.isOpen) {
@@ -129,17 +59,23 @@ async function onConnectButtonClick() {
       alert('Connection failed.');
     }
   } catch (err) {
-    alert('Connection error: ' + err.message);
-    console.error(err);
+    console.info(err);
   }
 }
 
-async function onDeleteDirUserButtonClick() {
-  await deleteDirectory('USER');
-}
+async function onSetBootloaderButtonClick() {
+  if (!connection?.isOpen) {
+    alert('Please connect to the device first.');
+    return;
+  }
 
-async function onDeleteDirUserBootButtonClick() {
-  await deleteDirectory('USER_BOOT');
+  const result = await connection.espruinoEval(Commands.setBootloader());
+  if (result?.success) {
+    console.log(result.message);
+  } else {
+    alert('Error setting bootloader: ' + result?.message);
+    console.error(result?.message);
+  }
 }
 
 async function uploadFilesToDevice(
@@ -241,11 +177,11 @@ async function uploadFilesToDevice(
   // Cleanup UI
   switch (basePath) {
     case 'USER':
-      jsFilesInput.value = '';
-      jsFileInput.value = '';
+      Inputs.userFiles.value = '';
+      Inputs.userFile.value = '';
       break;
     case 'USER_BOOT':
-      jsBootFileInput.value = '';
+      Inputs.bootFiles.value = '';
       break;
     default:
       throw new Error('Invalid base path: ' + basePath);
@@ -265,16 +201,18 @@ async function onRestartButtonClick() {
   }
 
   // Disable all
-  connectBtn.disabled = true;
-  jsFilesInput.disabled = true;
-  jsFileInput.disabled = true;
-  jsBootFileInput.disabled = true;
-  restartBtn.disabled = true;
-  deleteDirUserBtn.disabled = true;
-  deleteDirUserBootBtn.disabled = true;
-  jsFilesInputLabel.classList.add('disabled');
-  jsFileInputLabel.classList.add('disabled');
-  jsBootFileInputLabel.classList.add('disabled');
+  Buttons.connect.disabled = true;
+  Inputs.userFiles.disabled = true;
+  Inputs.userFile.disabled = true;
+  Inputs.bootFiles.disabled = true;
+  Buttons.setBootloader.disabled = true;
+  Buttons.restart.disabled = true;
+  Buttons.deleteDirAppInfo.disabled = true;
+  Buttons.deleteDirUser.disabled = true;
+  Buttons.deleteDirUserBoot.disabled = true;
+  Labels.userFiles.classList.add('disabled');
+  Labels.userFile.classList.add('disabled');
+  Labels.bootFiles.classList.add('disabled');
 
   try {
     console.log('Rebooting device...');
@@ -287,31 +225,100 @@ async function onRestartButtonClick() {
   }
 }
 
+function setButtonClickHandlers() {
+  Buttons.connect.addEventListener(
+    'click',
+    async () => await onConnectButtonClick(),
+  );
+  Buttons.deleteDirAppInfo.addEventListener(
+    'click',
+    async () => await deleteDirectory('APPINFO'),
+  );
+  Buttons.deleteDirUser.addEventListener(
+    'click',
+    async () => await deleteDirectory('USER'),
+  );
+  Buttons.deleteDirUserBoot.addEventListener(
+    'click',
+    async () => await deleteDirectory('USER_BOOT'),
+  );
+  Buttons.restart.addEventListener(
+    'click',
+    async () => await onRestartButtonClick(),
+  );
+  Buttons.setBootloader.addEventListener(
+    'click',
+    async () => await onSetBootloaderButtonClick(),
+  );
+}
+
+function setFileInputHandlers() {
+  Inputs.userFiles.addEventListener(
+    'change',
+    async (e) =>
+      await uploadFilesToDevice(
+        e,
+        'USER',
+        ProgressBars.userFiles,
+        ProgressBarContainer.userFiles,
+        false,
+      ),
+  );
+  Inputs.userFile.addEventListener(
+    'change',
+    async (e) =>
+      await uploadFilesToDevice(
+        e,
+        'USER',
+        ProgressBars.userFiles,
+        ProgressBarContainer.userFiles,
+        true,
+      ),
+  );
+  Inputs.bootFiles.addEventListener(
+    'change',
+    async (e) =>
+      await uploadFilesToDevice(
+        e,
+        'USER_BOOT',
+        ProgressBars.bootFiles,
+        ProgressBarContainer.bootFiles,
+        false,
+      ),
+  );
+}
+
 function toggleConnectionState() {
   const isConnected = connection?.isOpen === true;
 
-  connectBtn.innerText = isConnected ? 'Connected' : 'Connect';
-  connectBtn.disabled = isConnected;
+  Buttons.connect.innerText = isConnected ? 'Connected' : 'Connect';
+  Buttons.connect.disabled = isConnected;
 
-  jsFilesInput.disabled = !isConnected;
-  jsFileInput.disabled = !isConnected;
-  jsBootFileInput.disabled = !isConnected;
-  jsFilesInputLabel.classList.toggle('disabled', !isConnected);
-  jsFileInputLabel.classList.toggle('disabled', !isConnected);
-  jsBootFileInputLabel.classList.toggle('disabled', !isConnected);
-  restartBtn.disabled = !isConnected;
-  deleteDirUserBtn.disabled = !isConnected;
-  deleteDirUserBootBtn.disabled = !isConnected;
+  Inputs.userFiles.disabled = !isConnected;
+  Inputs.userFile.disabled = !isConnected;
+  Inputs.bootFiles.disabled = !isConnected;
+  Labels.userFiles.classList.toggle('disabled', !isConnected);
+  Labels.userFile.classList.toggle('disabled', !isConnected);
+  Labels.bootFiles.classList.toggle('disabled', !isConnected);
+  Buttons.setBootloader.disabled = !isConnected;
+  Buttons.restart.disabled = !isConnected;
+  Buttons.deleteDirAppInfo.disabled = !isConnected;
+  Buttons.deleteDirUser.disabled = !isConnected;
+  Buttons.deleteDirUserBoot.disabled = !isConnected;
 
   if (!isConnected) {
-    jsFileProgress.style.width = '0%';
-    jsBootFileProgress.style.width = '0%';
-    jsFileProgressContainer.style.display = 'none';
-    jsBootFileProgressContainer.style.display = 'none';
-    jsFilesInput.value = '';
-    jsFileInput.value = '';
-    jsBootFileInput.value = '';
+    ProgressBars.userFiles.style.width = '0%';
+    ProgressBars.bootFiles.style.width = '0%';
+    ProgressBarContainer.userFiles.style.display = 'none';
+    ProgressBarContainer.bootFiles.style.display = 'none';
+    Inputs.userFiles.value = '';
+    Inputs.userFile.value = '';
+    Inputs.bootFiles.value = '';
   }
 }
 
-toggleConnectionState();
+window.addEventListener('DOMContentLoaded', () => {
+  setButtonClickHandlers();
+  setFileInputHandlers();
+  toggleConnectionState();
+});
