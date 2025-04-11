@@ -69,9 +69,10 @@ async function onSetBootloaderButtonClick() {
     return;
   }
 
-  const result = await connection.espruinoEval(Commands.setBootloader());
+  const result = await connection.espruinoEval(Commands.installBootloader());
   if (result?.success) {
     console.log(result.message);
+    alert(result.message);
   } else {
     alert('Error setting bootloader: ' + result?.message);
     console.error(result?.message);
@@ -205,7 +206,7 @@ async function onRestartButtonClick() {
   Inputs.userFiles.disabled = true;
   Inputs.userFile.disabled = true;
   Inputs.bootFiles.disabled = true;
-  Buttons.setBootloader.disabled = true;
+  Buttons.installBootloader.disabled = true;
   Buttons.restart.disabled = true;
   Buttons.deleteDirAppInfo.disabled = true;
   Buttons.deleteDirUser.disabled = true;
@@ -246,7 +247,7 @@ function setButtonClickHandlers() {
     'click',
     async () => await onRestartButtonClick(),
   );
-  Buttons.setBootloader.addEventListener(
+  Buttons.installBootloader.addEventListener(
     'click',
     async () => await onSetBootloaderButtonClick(),
   );
@@ -300,7 +301,7 @@ function toggleConnectionState() {
   Labels.userFiles.classList.toggle('disabled', !isConnected);
   Labels.userFile.classList.toggle('disabled', !isConnected);
   Labels.bootFiles.classList.toggle('disabled', !isConnected);
-  Buttons.setBootloader.disabled = !isConnected;
+  Buttons.installBootloader.disabled = !isConnected;
   Buttons.restart.disabled = !isConnected;
   Buttons.deleteDirAppInfo.disabled = !isConnected;
   Buttons.deleteDirUser.disabled = !isConnected;

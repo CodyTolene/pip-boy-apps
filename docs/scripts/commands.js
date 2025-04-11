@@ -22,7 +22,7 @@ export const Commands = {
       } catch (e) {
         return "Clear error: " + e.message;
       }
-    })()
+    })();
   `,
   createDirectory: (path) => `
     (() => {
@@ -93,25 +93,7 @@ export const Commands = {
       }
     })();
   `,
-  launch: (appPath) => `
-    (() => {
-      var fs = require("fs");
-      try {
-        eval(fs.readFile("${appPath}"));
-        return { success: true, message: "App launched successfully!" };
-      } catch (error) {
-        return { success: false, message: error.message };
-      }
-    })()
-  `,
-  reboot: `
-    (() => {
-      setTimeout(() => { 
-        E.reboot(); 
-      }, 100);
-    })()
-  `,
-  setBootloader: () => `
+  installBootloader: () => `
     (() => {
       try {
         require("Storage").write(".boot0", \`
@@ -125,10 +107,28 @@ export const Commands = {
               });
           });
         \`);
-        return { success: true, message: "Bootloader set successfully!" };
+        return { success: true, message: "Bootloader installed successfully!" };
       } catch (e) {
         return { success: false, message: e.message };
       }
-    })()
+    })();
+  `,
+  launch: (appPath) => `
+    (() => {
+      var fs = require("fs");
+      try {
+        eval(fs.readFile("${appPath}"));
+        return { success: true, message: "App launched successfully!" };
+      } catch (error) {
+        return { success: false, message: error.message };
+      }
+    })();
+  `,
+  reboot: `
+    (() => {
+      setTimeout(() => { 
+        E.reboot(); 
+      }, 100);
+    })();
   `,
 };

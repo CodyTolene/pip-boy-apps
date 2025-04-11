@@ -14,7 +14,7 @@ export const Buttons = {
   get deleteDirUserBoot() {
     return document.getElementById('delete-dir-user-btn-boot-btn');
   },
-  get setBootloader() {
+  get installBootloader() {
     return document.getElementById('install-bootloader-btn');
   },
 };

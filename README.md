@@ -181,13 +181,13 @@ To create a new app/game, follow these steps:
    [
    ...
    + {
-   +      "author": "...",
+   +      "authors": ["..."],
    +      "description": "...",
    +      "files": [
    +        "USER/MyAppName.js",
-   +        "USER/MyAppName/my-asset.json"
+   +        "USER/MyAppName/my-asset.json",
+   +        "USER_BOOT/MyAppName.js"
    +      ],
-   +      "homepage": "...",
    +      "id": "MyAppName",
    +      "instructions": "...",
    +      "name": "My App Name",
@@ -207,13 +207,12 @@ To create a new app/game, follow these steps:
    [
    ...
    + {
-   +      "author": "...",
+   +      "authors": ["..."],
    +      "description": "...",
    +      "files": [
    +        "USER/MyGameName.js",
    +        "USER/MyGameName/my-asset.json"
    +      ],
-   +      "homepage": "",
    +      "id": "MyGameName",
    +      "instructions": "...",
    +      "name": "My Game Name",
@@ -226,42 +225,16 @@ To create a new app/game, follow these steps:
 
    </details>
 
-   <details>
-   <summary>Boot App</summary>
-
-   ```diff
-   [
-   ...
-   + {
-   +      "author": "...",
-   +      "description": "...",
-   +      "files": [
-   +        "USER_BOOT/MyBootAppName.js"
-   +      ],
-   +      "homepage": "",
-   +      "id": "MyBootAppName",
-   +      "instructions": "...",
-   +      "name": "My Boot App Name",
-   +      "tip": "",
-   +      "type": "BOOT",
-   +      "version": "1.0.0"
-   + }
-   ]
-   ```
-
-   </details>
-
    | Key            | Description                                                 |
    | :------------- | :---------------------------------------------------------- |
-   | `author`       | Your name or handle.                                        |
+   | `authors`      | The authors of the app.                                     |
    | `files`        | The array of files that the app uses.                       |
    | `description`  | A brief description of your app.                            |
-   | `homepage`     | A link to your website or social media, can be empty.       |
    | `id`           | A unique app id that also should match the `.js` file name. |
    | `instructions` | Instructions and controls for your app.                     |
    | `name`         | The name of your app.                                       |
    | `tip`          | A tip or trick for your app, can be empty.                  |
-   | `type`         | The type of app, "APP", "GAME", or "BOOT".                  |
+   | `type`         | The type of app, either "APP" or "GAME".                    |
    | `version`      | The version of your app.                                    |
 
 5. Add your code using Git and push to a new branch.

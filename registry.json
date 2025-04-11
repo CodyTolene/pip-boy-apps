@@ -1,9 +1,8 @@
 [
   {
-    "author": "Cody Tolene",
+    "authors": ["Cody Tolene <https://www.CodyTolene.com>"],
     "description": "A lightweight file explorer for the Pip-Boy 3000 Mk V. Browse your device's file system and interact with files directly.",
     "files": ["USER/FileExplorer.js"],
-    "homepage": "https://www.CodyTolene.com",
     "id": "FileExplorer",
     "instructions": "Use the top-left or top-right rotary wheels or the front radio tuner to scroll. Press the left rotary wheel or front radio tuner to play or stop media. Press the top torch button to restart the device.",
     "name": "File Explorer",
@@ -12,10 +11,9 @@
     "version": "1.2.0"
   },
   {
-    "author": "Cody Tolene",
+    "authors": ["Cody Tolene <https://www.CodyTolene.com>"],
     "description": "Pip-Pong is a simple game where you control a paddle that hits a ball back and forth.",
     "files": ["USER/PipPong.js"],
-    "homepage": "https://www.CodyTolene.com",
     "id": "PipPong",
     "instructions": "Use any knob to move up and down, and the top torch button to exit the game.",
     "name": "Pip-Pong",
@@ -24,10 +22,9 @@
     "version": "1.1.0"
   },
   {
-    "author": "Cody Tolene",
+    "authors": ["Cody Tolene <https://www.CodyTolene.com>"],
     "description": "Pip-Snake is a simple game where you control a growing snake that eats food and avoids crashing into itself.",
     "files": ["USER/PipSnake.js"],
-    "homepage": "https://www.CodyTolene.com",
     "id": "PipSnake",
     "instructions": "Use any knobs to move clockwise and counter-clockwise, the front radio tuner button to restart, and the top torch button to exit the game.",
     "name": "Pip-Snake",
@@ -36,7 +33,7 @@
     "version": "1.1.0"
   },
   {
-    "author": "gnargle",
+    "authors": ["gnargle <https://athene.gay/>"],
     "description": "The SPECIAL/Skills/Perks menu for the Pip-Boy 3000 Mk V.",
     "files": [
       "USER/StatsDisplay.js",
@@ -88,7 +85,6 @@
       "USER/StatsDisplay/SPECIAL/fAgility.json",
       "USER/StatsDisplay/SPECIAL/gLuck.json"
     ],
-    "homepage": "https://athene.gay/",
     "id": "StatsDisplay",
     "instructions": "Use the scroll wheel to navigate the menu and the right scroller to switch between screens. Clicking the wheel on a stat will allow you to edit its value. Clicking the wheel in the perks page takes you to the perk config screen - to save changes, scroll the right scroller.",
     "name": "Stats Display",
@@ -97,22 +93,9 @@
     "version": "2.1.0"
   },
   {
-    "author": "gnargle",
-    "description": "The SPECIAL/Skills/Perks menu for the Pip-Boy 3000 Mk V.",
-    "files": ["USER/ThemePicker.js"],
-    "homepage": "https://athene.gay/",
-    "id": "ThemePicker",
-    "instructions": "Use the left wheel to select a value and the right wheel to scroll between changing R, G and B values. Press the left wheel to set and rebot, press torch to reset the default theme and reboot. Requires the UI Color boot app and the bootloader installed.",
-    "name": "Theme Picker",
-    "tip": "",
-    "type": "APP",
-    "version": "1.0.0"
-  },
-  {
-    "author": "Cody Tolene",
+    "authors": ["Cody Tolene <https://www.CodyTolene.com>"],
     "description": "A custom music player that allows you to choose the music you want to play from the `/RADIO` directory without restriction.",
     "files": ["USER/CustomRadio.js"],
-    "homepage": "https://www.CodyTolene.com",
     "id": "CustomRadio",
     "instructions": "Use the top-left or top-right rotary wheels or the front radio tuner to scroll. Press the left rotary wheel or front radio tuner to play or stop media. Press the top torch button to exit.",
     "name": "Custom Radio",
@@ -121,15 +104,17 @@
     "version": "1.1.0"
   },
   {
-    "author": "rikkuness & gnargle",
-    "description": "Update the UI theme to an custom color scheme. For use with the theme picker app, see here for more information https://log.robco-industries.org/log/entry016/",
-    "files": ["USER_BOOT/ui_color.js"],
-    "homepage": "https://log.robco-industries.org/",
-    "id": "UIColor",
-    "instructions": "Be sure to install the bootloader prior to using this mod.",
-    "name": "UI Color",
-    "tip": "",
-    "type": "BOOT",
+    "authors": [
+      "rikkuness <https://log.robco-industries.org/>",
+      "gnargle <https://athene.gay/>"
+    ],
+    "description": "The SPECIAL/Skills/Perks menu for the Pip-Boy 3000 Mk V.",
+    "files": ["USER/ThemePicker.js", "USER_BOOT/ThemePicker.js"],
+    "id": "ThemePicker",
+    "instructions": "Use the left wheel to select a value and the right wheel to scroll between changing R, G and B values. Press the left wheel to set and rebot, press torch to reset the default theme and reboot.",
+    "name": "Theme Picker",
+    "tip": "More information here https://log.robco-industries.org/log/entry016/",
+    "type": "APP",
     "version": "1.0.0"
   }
 ]
