@@ -3,7 +3,7 @@
 //  License: CC-BY-NC-4.0
 //  Repository: https://github.com/CodyTolene/pip-apps
 //  Description: A simple pong game for the Pip-Boy 3000 Mk V.
-//  Version: 1.0.0
+//  Version: 1.1.0
 // =============================================================================
 
 const SCREEN_WIDTH = g.getWidth();

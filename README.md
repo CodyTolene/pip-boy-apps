@@ -26,7 +26,7 @@
 - [Development](#development)
   - [Prerequisites](#prerequisites)
   - [Setup](#setup)
-  - [App Loader](#app-loader)
+  - [Pip-App Loader](#pip-app-loader)
   - [Learning app development](#learning-app-development)
   - [Creating a New App/Game](#new-app-game)
 - [Directory Structure](#directory-structure)
@@ -40,13 +40,12 @@
 
 ## Website <a name="website"></a>
 
-[**Pip-Boy.com**](https://pip-boy.com/)
+[**Pip-Boy.com**][link-pip-boy]
 
-Just here to have some fun? Head over to the
-[Apps Inventory](https://pip-boy.com/inv/apps) and start playing right from your
-Pip-Boy’s interface, no fuss, no power armor required. Otherwise you can install
-manually using this repository, follow that guide [here](#manual-installation)
-to get started.
+Just here to have some fun? Head over to the [Apps Inventory][link-pip-boy-apps]
+and start playing right from your Pip-Boy’s interface, no fuss, no power armor
+required. Otherwise you can install manually using this repository, follow that
+guide [here](#manual-installation) to get started.
 
 Feeling like a Vault-Tec engineer? If you’re interested in developing your own
 holotape-style apps, follow the [development guide](#development) below to get
@@ -63,10 +62,10 @@ started. Thanks for being part of the Wasteland's growing arcade!
 ### Website <a name="website-installation"></a>
 
 You can install and play apps directly from https://pip-boy.com/. Just connect
-to your PC using the website and start playing!
+to your PC using the website, upload, and start playing!
 
-> ![Info][img-info] Games will be available under the INV > APPS tabs on your
-> Pip-Boy device once uploaded.
+> ![Info][img-info] Apps and games will be available under the INV > APPS tabs
+> on your Pip-Boy device once uploaded.
 
 <p align="right">[ <a href="#index">Index</a> ]</p>
 
@@ -74,11 +73,11 @@ to your PC using the website and start playing!
 
 To manually install the apps, you have a few options:
 
-1. Download the latest `apps.zip` archive from the
-   [latest build](https://github.com/CodyTolene/pip-apps/actions/workflows/zip-apps.yml)
-   and extract the contents to the root of the SD card. You can use the Zip
-   upload tool here: https://pip-boy.com/data/maintenance. This is the easiest
-   option and doesn't require you to remove the SD card.
+1. Download the latest `apps.zip` archive from the [latest
+   build][link-github-latest-build] and extract the contents to the root of the
+   SD card. You can use the Zip upload tool here:
+   https://pip-boy.com/data/maintenance. This is the easiest option and doesn't
+   require you to remove the SD card.
 
 2. Copy the entire USER folder from this repository over to the root of the SD
    card. This will overwrite any existing apps and settings. This requires you
@@ -121,7 +120,9 @@ To get set up for development, follow these steps:
 
 <p align="right">[ <a href="#index">Index</a> ]</p>
 
-### App Loader <a name="app-loader"></a>
+### Pip-App Loader <a name="pip-app-loader"></a>
+
+<img src=".github/images/pip-app-loader.png" alt="Pip-App Loader" />
 
 Once you have the project and dependencies [set up](#setup) locally, you can
 start the app loader to test your apps and games. To do this, follow these
@@ -135,11 +136,7 @@ steps:
 
 3. From here you can connect and upload your app files for quick testing.
 
-3a. Any file beginning with "boot." will upload to USER_BOOT instead of the USER
-folder. This allows rapid testing of apps meant to run at boot time. For more
-information, see [here](https://log.robco-industries.org/log/entry016/).
-
-> ![Info][img-info] The loader app is also available via GitHub pages here
+> ![Info][img-info] The loader app is also available via GitHub Pages here
 > https://codytolene.github.io/pip-apps
 
 <p align="right">[ <a href="#index">Index</a> ]</p>
@@ -147,12 +144,14 @@ information, see [here](https://log.robco-industries.org/log/entry016/).
 ### Learning app development <a name="learning-app-development"></a>
 
 Interested in learning how to develop apps for the Pip-Boy 3000 Mk V? Check out
-the excellent
-[RobCo Industries Documentation](https://log.robco-industries.org/documentation/pipboy-3000/)
-for everything you need to get started.
+the excellent [RobCo Industries Documentation][link-pip-boy-docs] for everything
+you need to get started.
 
-Special thanks to [@rikkuness](https://github.com/rikkuness) for the hard work
-in providing and maintaining this amazing resource!
+For more information on developing bootloader apps, see the [RobCo Industries
+Bootloader documentation][link-bootloader-docs].
+
+Special thanks to [@rikkuness][link-github-rikkuness] for the hard work in
+providing and maintaining this amazing resource!
 
 <p align="right">[ <a href="#index">Index</a> ]</p>
 
@@ -160,39 +159,77 @@ in providing and maintaining this amazing resource!
 
 To create a new app/game, follow these steps:
 
-1. Create a new js file using pascal casing (ie `MyGame.js`) in the `USER`
-   folder. This will be the entry point for your app.
+1. For apps and games create a new js file using pascal casing in the `USER`
+   folder. This will be the entry point for your app. For bootloader apps, add
+   your js file to the `USER_BOOT` folder.
 
-2. Test by using the upload tool in the [app loader](#app-loader).
+2. Add any additional assets your own `USER/MyAppName/` folder. Be sure to name
+   the folder the same as your app name to keep things organized.
 
-3. Update the `USER/_registry.json` file with the new app information. This meta
-   will be used on the website to help users and possibly on the Pip-Boy at a
-   later date.
+3. Test by using the upload tool in the [app loader](#pip-app-loader).
+
+4. Update the `registry.json` file with your new app information. Be sure to add
+   all files and assets that your app uses to the `files` array in this
+   registry.
+
+   **Examples**
+
+   <details>
+   <summary>Apps</summary>
 
    ```diff
    [
-     ...
+   ...
    + {
-   +      "author": "My name...",
-   +      "dependencies": ["MyAppName"],
-   +      "description": "My app description...",
-   +      "homepage": "",
+   +      "authors": ["..."],
+   +      "description": "...",
+   +      "files": [
+   +        "USER/MyAppName.js",
+   +        "USER/MyAppName/my-asset.json",
+   +        "USER_BOOT/MyAppName.js"
+   +      ],
    +      "id": "MyAppName",
-   +      "instructions": "My app instructions & controls...",
+   +      "instructions": "...",
    +      "name": "My App Name",
-   +      "tip": "",
+   +      "tip": "...",
    +      "type": "APP",
    +      "version": "1.0.0"
    + }
    ]
    ```
 
+   </details>
+
+   <details>
+   <summary>Games</summary>
+
+   ```diff
+   [
+   ...
+   + {
+   +      "authors": ["..."],
+   +      "description": "...",
+   +      "files": [
+   +        "USER/MyGameName.js",
+   +        "USER/MyGameName/my-asset.json"
+   +      ],
+   +      "id": "MyGameName",
+   +      "instructions": "...",
+   +      "name": "My Game Name",
+   +      "tip": "",
+   +      "type": "GAME",
+   +      "version": "1.0.0"
+   + }
+   ]
+   ```
+
+   </details>
+
    | Key            | Description                                                 |
    | :------------- | :---------------------------------------------------------- |
-   | `author`       | Your name or handle.                                        |
-   | `dependencies` | The array of folder names for any assets your app uses.     |
+   | `authors`      | The authors of the app.                                     |
+   | `files`        | The array of files that the app uses.                       |
    | `description`  | A brief description of your app.                            |
-   | `homepage`     | A link to your website or social media, can be empty.       |
    | `id`           | A unique app id that also should match the `.js` file name. |
    | `instructions` | Instructions and controls for your app.                     |
    | `name`         | The name of your app.                                       |
@@ -200,11 +237,11 @@ To create a new app/game, follow these steps:
    | `type`         | The type of app, either "APP" or "GAME".                    |
    | `version`      | The version of your app.                                    |
 
-4. Add your code using Git and push to a new branch.
+5. Add your code using Git and push to a new branch.
 
-5. Open a pull request to the `main` branch.
+6. Open a pull request to the `main` branch.
 
-6. Wait for the pull request to be reviewed and merged.
+7. Wait for the pull request to be reviewed and merged.
 
 Thank you for any and all contributions!
 
@@ -220,10 +257,9 @@ Thank you for any and all contributions!
     ├─ .github                     # GitHub configuration files.
     ├─ .husky                      # Husky configuration files.
     ├─ .vscode                     # VS Code configuration files.
-    ├─ docs                        # The App Loader web app (GitHub Pages hosted)
+    ├─ docs                        # The Pip-App Loader web app (GitHub Pages hosted)
     ├─ node_modules                # Node.js dependencies (ignored).
     ├─ USER                        # The directory for user created apps and games.
-    │  ├─ _registry.json           # The app registry file for user created apps.
     │  ├─ <...>                    # Asset folders for user created apps.
     │  └─ *.js                     # User created apps and games (entry file).
     ├─ .gitignore                  # Git ignore configuration file.
@@ -232,6 +268,7 @@ Thank you for any and all contributions!
     ├─ package-lock.json           # Node.js package lock file.
     ├─ package.json                # Node.js package file.
     ├─ prettier.config.cjs         # Prettier configuration file.
+    ├─ registry.json               # The app registry for user created apps.
     ├─ README.md                   # The project README file.
     └─ TERMS.md                    # The project terms of use file.
 
@@ -278,7 +315,7 @@ your own risk.
 
 Thank you to Bethesda & The Wand Company for such a fun device to tinker with!
 If you have any questions, please let me know by opening an issue
-[here][url-new-issue].
+[here][link-new-issue].
 
 | Type                                                                      | Info                                                           |
 | :------------------------------------------------------------------------ | :------------------------------------------------------------- |
@@ -302,6 +339,13 @@ Cody Tolene
 
 <!-- LINK REFERENCES -->
 
+[link-bootloader-docs]: https://log.robco-industries.org/log/entry016/
+[link-github-latest-build]:
+  https://github.com/CodyTolene/pip-apps/actions/workflows/zip-apps.yml
+[link-github-rikkuness]: https://github.com/rikkuness
 [link-license]: /LICENSE.md
+[link-new-issue]: https://github.com/CodyTolene/pip-apps/issues
+[link-pip-boy-apps]: https://pip-boy.com/inv/apps
+[link-pip-boy-docs]: https://log.robco-industries.org/documentation/pipboy-3000/
+[link-pip-boy]: https://pip-boy.com/
 [link-terms]: /TERMS.md
-[url-new-issue]: https://github.com/CodyTolene/pip-apps/issues
