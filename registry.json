@@ -108,10 +108,10 @@
       "rikkuness <https://log.robco-industries.org/>",
       "gnargle <https://athene.gay/>"
     ],
-    "description": "Update the UI theme to an custom color scheme.",
+    "description": "Update the UI to use a custom color scheme.",
     "files": ["USER/ThemePicker.js", "USER_BOOT/ThemePicker.js"],
     "id": "ThemePicker",
-    "instructions": "Use the left wheel to select a value and the right wheel to scroll between changing R, G and B values. Press the left wheel to set and rebot, press torch to reset the default theme and reboot.",
+    "instructions": "Use the left wheel to select a value and the right wheel to scroll between changing R, G and B values. Press the left wheel to set and reboot, press torch to reset the default theme and reboot.",
     "name": "Theme Picker",
     "tip": "More information here https://log.robco-industries.org/log/entry016/",
     "type": "APP",
