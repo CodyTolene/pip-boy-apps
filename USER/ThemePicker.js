@@ -1,3 +1,11 @@
+// =============================================================================
+//  Name: UI Color - Custom Theme
+//  Link: https://log.robco-industries.org/log/entry016/
+//  Description: Update the Pip-Boy UI color to a custom palette. Custom
+//  palettes can be set with the Theme Picker user app
+//  Version: 1.0.1
+// =============================================================================
+
 let theme = [1, 1, 1];
 let selected = 0;
 
