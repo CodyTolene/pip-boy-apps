@@ -116,5 +116,16 @@
     "tip": "More information here https://log.robco-industries.org/log/entry016/",
     "type": "APP",
     "version": "1.0.1"
+  },
+  {
+    "authors": ["Illes Kokenyesi"],
+    "description": "AsteroPIPs is a simple game where you control a spaceship to shoot and avoid space rocks.",
+    "files": ["USER/AsteroPIPs.js"],
+    "id": "AsteroPIPs",
+    "instructions": "Use the LEFT WHEEL BUTTON to start / shoot, TUNE KNOB UP and DOWN for rotate, and PUSH to move forward. TOP TORCH button to exit the game.",
+    "name": "AsteroPIPs",
+    "tip": "Move and shoot is a good tactic!",
+    "type": "GAME",
+    "version": "1.0.0"
   }
 ]
