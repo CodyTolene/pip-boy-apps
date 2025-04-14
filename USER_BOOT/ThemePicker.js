@@ -1,10 +1,11 @@
-// =============================================================================
+// ============================================================================
 //  Name: UI Color - Custom Theme
-//  Link: https://log.robco-industries.org/log/entry016/
+//  Link: Link(s): https://athene.gay/
+//                 https://log.robco-industries.org/log/entry016/
 //  Description: Update the Pip-Boy UI color to a custom palette. Custom
-//  palettes can be set with the Theme Picker user app
+//               palettes can be set with the Theme Picker user app.
 //  Version: 1.0.1
-// =============================================================================
+// ============================================================================
 
 function readThemeFile() {
   const themeSettingsFolder = 'USER/ThemePicker';

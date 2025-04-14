@@ -1,3 +1,11 @@
+// ============================================================================
+//  Name: Stats Display
+//  Link: Link(s): https://athene.gay/
+//  Description: Display the SPECIAL stats and skills of the player character.
+//               Also allows the user to configure the SPECIAL stats and skills.
+//  Version: 2.1.0
+// ============================================================================
+
 //SECTION: consts
 const entryListDisplayMax = 6;
 const configListDisplayMax = 18;
