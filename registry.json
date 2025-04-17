@@ -127,5 +127,16 @@
     "tip": "Move and shoot is a good tactic!",
     "type": "GAME",
     "version": "1.0.0"
+  },
+  {
+    "authors": ["tetriskid <https://tetriskid48.github.io>"],
+    "description": "A classic brick-breaking game.",
+    "files": ["USER/VaultBreaker.js"],
+    "id": "VaultBreaker",
+    "instructions": "Press down the left wheel to launch the ball. Use the top-right wheel to move the paddle. Press the torch button to quit.",
+    "name": "Vault Breaker",
+    "tip": "Try to get the ball between or behind bricks!",
+    "type": "GAME",
+    "version": "1.0.0"
   }
 ]
