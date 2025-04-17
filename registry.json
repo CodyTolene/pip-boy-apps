@@ -127,7 +127,7 @@
     "tip": "Move and shoot is a good tactic!",
     "type": "GAME",
     "version": "1.0.0"
-  }
+  },
   {
     "authors": ["tetriskid <https://tetriskid48.github.io>"],
     "description": "A classic brick-breaking game.",
