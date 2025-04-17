@@ -1,7 +1,7 @@
 { "id": "text",
   "name": "Custom Text",
   "version":"0.01",
-  "description": "Upload some customised text to your pip-boy",
+  "description": "Upload some customised text to your Pip-boy",
   "icon": "app.png",
   "tags": "",
   "type": "app",
