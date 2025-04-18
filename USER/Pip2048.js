@@ -39,6 +39,7 @@ function initGame() {
   ];
   addRandomTile();
   addRandomTile();
+  g.clear();
   drawBoard();
 }
 
@@ -55,7 +56,6 @@ function addRandomTile() {
 }
 
 function drawBoard() {
-  g.clear();
   for (var y = 0; y < 4; y++) {
     for (var x = 0; x < 4; x++) {
       var val = board[y][x];
