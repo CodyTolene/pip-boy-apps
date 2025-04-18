@@ -64,5 +64,16 @@
     "tip": "Try to get the ball between or behind bricks!",
     "type": "GAME",
     "version": "1.0.0"
+  },
+  {
+    "authors": ["Illes Kokenyesi"],
+    "description": "A classic 2048 game.",
+    "files": ["USER/Pip2048.js"],
+    "id": "Pip2048",
+    "instructions": "Use the LEFT WHEEL to shift the table Up / Down, UPPER RIGHT WHEEL to shift Left / Right. Push LEFT WHEEL Click to Reset. Press TOP TORCH button to exit the game.",
+    "name": "2048",
+    "tip": "Use your brain! =]",
+    "type": "GAME",
+    "version": "1.0.0"
   }
 ]
