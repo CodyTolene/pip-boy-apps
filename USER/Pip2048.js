@@ -12,22 +12,22 @@ var screenHeight = 320;
 var tileSize = 75;
 var tilePadding = 5;
 var offsetX = Math.floor((screenWidth - tileSize * 4) / 2);
-var offsetY = Math.floor((screenHeight - tileSize * 4) / 2); 
+var offsetY = Math.floor((screenHeight - tileSize * 4) / 2);
 var tileColors = {
-  0: "#888",
-  2: "#EEE",
-  4: "#EDD",
-  8: "#F48",
-  16: "#F96",
-  32: "#F75",
-  64: "#F53",
-  128: "#ED7",
-  256: "#EC6",
-  512: "#EB5",
-  1024: "#EA4",
-  2048: "#E93",
-  4096: "#332",
-  8192: "#221"
+  0: '#888',
+  2: '#EEE',
+  4: '#EDD',
+  8: '#F48',
+  16: '#F96',
+  32: '#F75',
+  64: '#F53',
+  128: '#ED7',
+  256: '#EC6',
+  512: '#EB5',
+  1024: '#EA4',
+  2048: '#E93',
+  4096: '#332',
+  8192: '#221',
 };
 
 function initGame() {
@@ -35,7 +35,7 @@ function initGame() {
     [0, 0, 0, 0],
     [0, 0, 0, 0],
     [0, 0, 0, 0],
-    [0, 0, 0, 0]
+    [0, 0, 0, 0],
   ];
   addRandomTile();
   addRandomTile();
@@ -59,12 +59,17 @@ function drawBoard() {
   for (var y = 0; y < 4; y++) {
     for (var x = 0; x < 4; x++) {
       var val = board[y][x];
-      var color = tileColors[val] || "#888"; 
+      var color = tileColors[val] || '#888';
       var tx = x * tileSize + offsetX + tilePadding;
       var ty = y * tileSize + offsetY + tilePadding;
 
       g.setColor(color);
-      g.fillRect(tx, ty, tx + tileSize - tilePadding * 2, ty + tileSize - tilePadding * 2);
+      g.fillRect(
+        tx,
+        ty,
+        tx + tileSize - tilePadding * 2,
+        ty + tileSize - tilePadding * 2,
+      );
 
       if (val !== 0) {
         g.setColor(0, 0, 0);
@@ -72,23 +77,32 @@ function drawBoard() {
         g.setFontVector(fontSize);
         var str = val.toString();
         var strWidth = str.length * fontSize * 0.5;
-        g.drawString(str, tx + (tileSize) / 2 - (tilePadding / 2), ty + tileSize / 2 - (tilePadding / 2) ); 
+        g.drawString(
+          str,
+          tx + tileSize / 2 - tilePadding / 2,
+          ty + tileSize / 2 - tilePadding / 2,
+        );
       }
     }
   }
   if (isGameOver()) {
-    g.setColor("#CCC");
-    g.fillRect(screenWidth / 2 - 100, screenHeight / 2 - 20, screenWidth / 2 + 100, screenHeight / 2 + 20);
+    g.setColor('#CCC');
+    g.fillRect(
+      screenWidth / 2 - 100,
+      screenHeight / 2 - 20,
+      screenWidth / 2 + 100,
+      screenHeight / 2 + 20,
+    );
     g.setColor(255, 0, 0);
     g.setFontVector(28);
-    g.drawString("GAME OVER", screenWidth / 2, screenHeight / 2,);
+    g.drawString('GAME OVER', screenWidth / 2, screenHeight / 2);
   }
 }
 
 function moveLeft(add) {
   var moved = false;
   for (var y = 0; y < 4; y++) {
-    var row = board[y].filter(n => n);
+    var row = board[y].filter((n) => n);
     for (var i = 0; i < row.length - 1; i++) {
       if (row[i] === row[i + 1]) {
         row[i] *= 2;
@@ -96,7 +110,7 @@ function moveLeft(add) {
         moved = true;
       }
     }
-    row = row.filter(n => n);
+    row = row.filter((n) => n);
     while (row.length < 4) row.push(0);
     if (board[y].join() !== row.join()) moved = true;
     board[y] = row;
@@ -140,7 +154,6 @@ function moveDown() {
   }
 }
 
-
 function transposeBoard() {
   var newBoard = [];
   for (var y = 0; y < 4; y++) {
@@ -171,7 +184,7 @@ function isGameOver() {
 
 Pip.removeAllListeners('knob1');
 Pip.on('knob1', function (dir) {
-  Pip.knob1Click(dir)
+  Pip.knob1Click(dir);
   if (dir < 0) moveDown();
   else if (dir > 0) moveUp();
   else initGame();
@@ -179,13 +192,13 @@ Pip.on('knob1', function (dir) {
 
 Pip.removeAllListeners('knob2');
 Pip.on('knob2', function (dir) {
-  Pip.knob2Click(dir)
+  Pip.knob2Click(dir);
   if (dir < 0) moveLeft(1);
   else if (dir > 0) moveRight();
 });
 
 Pip.removeAllListeners('torch');
-Pip.on('torch', function(){
+Pip.on('torch', function () {
   console.log('Game stopping');
   g.clear();
   E.reboot();
