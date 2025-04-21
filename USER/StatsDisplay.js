@@ -3,7 +3,7 @@
 //  Link: Link(s): https://athene.gay/
 //  Description: Display the SPECIAL stats and skills of the player character.
 //               Also allows the user to configure the SPECIAL stats and skills.
-//  Version: 2.1.0
+//  Version: 2.2.0
 // ============================================================================
 
 //SECTION: consts
@@ -26,6 +26,19 @@ const enabledPerkFolder = 'USER/StatsDisplay/PERKS/ENABLED/';
 const allPerkFolder = 'USER/StatsDisplay/PERKS/ALL/';
 const skillsFolder = 'USER/StatsDisplay/SKILLS/';
 const specialFolder = 'USER/StatsDisplay/SPECIAL/';
+
+let isModernVersion = false;
+try {
+  let s = require('Storage');
+  let l = s.list();
+  if (l.includes('VERSION') && l.includes('.bootcde')) {
+    let versionStr = s.read('VERSION') || '';
+    let versionNum = parseFloat(versionStr);
+    isModernVersion = versionNum >= 1.29;
+  }
+} catch (e) {
+  console.log('Unable to determine JS version:', e);
+}
 
 Graphics.prototype.setFontMonofonto14 = function () {
   // Actual height 14 (13 - 0)
@@ -73,10 +86,10 @@ function buildScreen(directory) {
     //time to populate the displayedPerks array and currentPerk
     var files;
     try {
-      files = require('fs').readdirSync(directory);
+      files = require('fs').readdirSync(normalizeDir(directory));
     } catch {
       require('fs').mkdir(directory);
-      files = require('fs').readdirSync(directory);
+      files = require('fs').readdirSync(normalizeDir(directory));
     }
     loadedListMax = files.length;
     if (files.length == 0) {
@@ -91,10 +104,30 @@ function buildScreen(directory) {
       //We need to get the next set of files and display them
       entryListMax = Math.min(entryListDisplayMax * (a + 1), loadedListMax);
     }
-    for (i = a * entryListDisplayMax; i < entryListMax; i++) {
+    for (let i = a * entryListDisplayMax; i < entryListMax; i++) {
       let file = files[i];
-      let fileString = require('fs').readFileSync(directory + file);
-      let fileObj = JSON.parse(fileString);
+
+      // Skip falsy or invalid filenames
+      if (!file || typeof file !== 'string') continue;
+
+      const fullPath = normalizeDir(directory) + '/' + file;
+
+      let fileString;
+      try {
+        fileString = require('fs').readFileSync(fullPath);
+      } catch (e) {
+        console.log('Skipping unreadable file:', fullPath, e);
+        continue;
+      }
+
+      let fileObj;
+      try {
+        fileObj = JSON.parse(fileString);
+      } catch (e) {
+        console.log('Invalid JSON in file:', fullPath);
+        continue;
+      }
+
       if (screenSelected != perkScreen) {
         displayedPerks.push({
           title: fileObj.title,
@@ -112,12 +145,17 @@ function buildScreen(directory) {
     }
     lastReload = entrySelected;
   }
-  if (currentPerk == null) {
-    let currPerkInt = entrySelected % 6;
+  if (currentPerk == null && displayedPerks.length > 0) {
+    let currPerkInt = entrySelected % displayedPerks.length;
     let file = displayedPerks[currPerkInt].filename;
-    let fileString = require('fs').readFileSync(directory + file);
-    let fileObj = JSON.parse(fileString);
-    currentPerk = fileObj;
+    const fullPath = normalizeDir(directory) + '/' + file;
+    try {
+      let fileString = require('fs').readFileSync(fullPath);
+      currentPerk = JSON.parse(fileString);
+    } catch (e) {
+      console.log('Error loading currentPerk file:', fullPath, e);
+      currentPerk = null;
+    }
   }
   for (let i = 0; i < displayedPerks.length; i++) {
     let perkObj = displayedPerks[i];
@@ -174,18 +212,20 @@ function generatePerksConfigLists() {
   //first load of screen, build the full list.
   var files;
   try {
-    files = require('fs').readdirSync(enabledPerkFolder);
+    files = require('fs').readdirSync(normalizeDir(enabledPerkFolder));
   } catch {
     require('fs').mkdir(enabledPerkFolder);
-    files = require('fs').readdirSync(enabledPerkFolder);
+    files = require('fs').readdirSync(normalizeDir(enabledPerkFolder));
   }
   for (file of files) {
     enabledPerks.push(file);
   }
-  files = require('fs').readdirSync(allPerkFolder);
+  files = require('fs').readdirSync(normalizeDir(allPerkFolder));
   loadedListMax = files.length;
   for (file of files) {
-    let fileString = require('fs').readFileSync(allPerkFolder + file);
+    let fileString = require('fs').readFileSync(
+      normalizeDir(allPerkFolder) + '/' + file,
+    );
     let fileObj = JSON.parse(fileString);
     let perkObj = { filename: file, title: fileObj.title };
     allPerks.push(perkObj);
@@ -317,14 +357,14 @@ function drawSelectedEntryOutlineConfig(i, col) {
 
 //SECTION: config saving
 function saveFile(directory) {
-  let files = require('fs').readdirSync(directory);
-  let fileToSave = directory + files[entrySelected];
+  let files = require('fs').readdirSync(normalizeDir(directory));
+  let fileToSave = normalizeDir(directory) + '/' + files[entrySelected];
   let fileString = require('fs').readFileSync(fileToSave);
   let fileObj = JSON.parse(fileString);
   fileObj.points = pointsOfSelected;
   fileString = JSON.stringify(fileObj);
   require('fs').writeFile(fileToSave, fileString);
-  //update in memory data.
+  // update in-memory data
   displayedPerks[entrySelected % entryListDisplayMax].points = pointsOfSelected;
   currentPerk = fileObj;
 }
@@ -403,6 +443,13 @@ function handleKnob1Config(dir) {
     }
   }
   draw();
+}
+
+function normalizeDir(dir) {
+  if (isModernVersion && dir.endsWith('/')) {
+    return dir.slice(0, -1); // remove trailing slash for >=1.29
+  }
+  return dir;
 }
 
 function handleKnob1(dir) {
