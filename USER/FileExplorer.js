@@ -3,7 +3,7 @@
 //  License: CC-BY-NC-4.0
 //  Repository: https://github.com/CodyTolene/pip-apps
 //  Description: Directory and media file explorer for the Pip-Boy 3000 Mk V.
-//  Version: 1.2.0
+//  Version: 2.0.0
 // =============================================================================
 
 var fs = require('fs');
@@ -22,6 +22,20 @@ let currentIndex = 0;
 let scrollOffset = 0;
 let currentAudio = null;
 let isVideoPlaying = false;
+
+let isModernVersion = false;
+
+try {
+  let s = require('Storage');
+  let l = s.list();
+  if (l.includes('VERSION') && l.includes('.bootcde')) {
+    let versionStr = s.read('VERSION') || '';
+    let versionNum = parseFloat(versionStr);
+    isModernVersion = versionNum >= 1.29;
+  }
+} catch (e) {
+  console.log('Failed to detect JS version:', e);
+}
 
 function resolvePath(dir, file) {
   if (dir === '/' || dir === '') return '/' + file;
@@ -46,8 +60,18 @@ function loadDirectory(dir) {
 
     list.forEach((name) => {
       let path = resolvePath(dir, name);
-      let type = 'file';
 
+      if (
+        isModernVersion &&
+        (name === '.' ||
+          name === '..' ||
+          path.includes('/./') ||
+          path.includes('/../'))
+      ) {
+        return;
+      }
+
+      let type = 'file';
       try {
         fs.readdir(path);
         type = 'dir';
