@@ -24,22 +24,22 @@ const bricks = [];
 let theme = [0, 1, 0];
 
 let paddleX = 240,
-	ballX = 240,
-	ballY = 270,
-	ballSpeed = 15,
-	velX = 0,
-	velY = 0,
-	velYsquared = 0,
-	perX = 0,
-	brickColor = 0,
-	lives = 3,
-	level = 0,
-	sysColor = 0,
-	integer = 0,
-	perCol = 0,
-	hex = "",
-	moved = false,
-	begun = false;
+  ballX = 240,
+  ballY = 270,
+  ballSpeed = 15,
+  velX = 0,
+  velY = 0,
+  velYsquared = 0,
+  perX = 0,
+  brickColor = 0,
+  lives = 3,
+  level = 0,
+  sysColor = 0,
+  integer = 0,
+  perCol = 0,
+  hex = '',
+  moved = false,
+  begun = false;
 
 const level1 = [
   [1, 1, 1, 1, 1, 1, 1, 1],
@@ -107,144 +107,150 @@ const level9 = [
 ];
 
 function gameLoop() {
-	// clear paddle and ball
-	g.setColor('#000');
-	
-	if (moved == true) {
-		g.fillRect(leftWall, paddleY, rightWall, 300);
-		moved = false;
-	}
-	
-	g.fillCircle(ballX, ballY, ballRad);
-	
-	if (begun){
-		// calculate ball's movement
-		if (ballY < 0 + ballRad) {
-			velY = Math.abs(velY);
-			ballY = ballRad;
-		} else if (ballY > paddleY - ballRad) {
-			if (ballX > paddleX - paddleWidth - ballRad && ballX < paddleX + paddleWidth + ballRad) {
-				// calculate exit angle
-				perX = (ballX - paddleX) / (paddleWidth + 2);
-				velX = perX * ballSpeed;
-				velYsquared = Math.pow(ballSpeed, 2) - Math.pow(velX, 2);
-				velY = Math.sqrt(velYsquared);
-				velY = -velY;
-				
-				ballY = paddleY - ballRad;
-				
-				Pip.audioStart("UI/COLUMN.wav");
-			} else {
-				g.clear();
-				lives -= 1;
-				begun = false;
-			}
-		} else if (ballX < leftWall + ballRad) {
-			//bounce off side walls
-			velX = Math.abs(velX);
-		} else if (ballX > rightWall - ballRad) {
-			velX = Math.abs(velX);
-			velX = -velX;
-		}
-	} else {
-		// ball still attached to paddle
-		ballX = paddleX;
-		ballY = paddleY - 10;
-		velX = 0;
-		velY = 0;
-	}
-	
-	// move ball
-		ballY += velY;
-		ballX += velX;
+  // clear paddle and ball
+  g.setColor('#000');
 
-	// draw stuff onto screen
-	bricks.forEach(function(brick, i) {
-		// check bricks for collision
-		if (ballY + ballRad > brick.y && ballY - ballRad < brick.y + brickHeight) {
-			if (ballX + ballRad > brick.x && ballX - ballRad < brick.x + brickWidth) {
-				brick.hits += 1;
-				Pip.audioStart("UI/PREV.wav");
-				// ball  has collided with this brick, find which side
-				
-				if (ballY - velY <= brick.y || ballY - velY >= brick.y + brickHeight) {
-					velY = -velY;
-				} else {
-					velX = -velX;
-				}
-			
-			}
-		}
-		
-		// draw bricks
-		if (brick.hits >= 4) {
-			g.clear();
-			bricks.splice(i, 1); 
-			return;
-		}
-		if (brick.hits > 0) {
-			brickColor = brick.hits / 5;
-		} else if (brick.hits == 0) {
-			brickColor = 0;
-		}
-		
-		g.setColor(theme[0] - brickColor, theme[1] - brickColor, theme[2] - brickColor);
-		g.fillRect(brick.x, brick.y, brick.x + brickWidth, brick.y + brickHeight);
-	});
-	
-	g.setColor(theme[0], theme[1], theme[2]);
-	
-	g.drawRect(0, 0, leftWall - 5, 320);
-	g.drawRect(rightWall + 5, 0, 480, 320);
+  if (moved == true) {
+    g.fillRect(leftWall, paddleY, rightWall, 300);
+    moved = false;
+  }
 
-	g.drawRect(paddleX - paddleWidth, paddleY, paddleX + paddleWidth, 300);
-	g.drawCircle(ballX, ballY, ballRad);
-	
-	g.drawString('Lives:' + lives, 100, 20);
-	g.drawString('Level:' + level, 380, 20);
-	
-	// next level
-	if (bricks.length == 0) {
-		begun = false;
-		level += 1;
-		if (level == 2) {
-			pushLevel(level2);
-		} else if (level == 3) {
-			pushLevel(level3);
-		} else if (level == 4) {
-			pushLevel(level4);
-		} else if (level == 5) {
-			pushLevel(level5);
-		} else if (level == 6) {
-			ballSpeed = 18;
-			pushLevel(level6);
-		} else if (level == 7) {
-			pushLevel(level7);
-		} else if (level == 8) {
-			pushLevel(level8);
-		} else if (level == 9) {
-			pushLevel(level9);
-		} else if (level == 10) {
-			stopGame();
-		} 
-	}
-	
-	// LOSER!!!
-	if (lives < 0) {
-		stopGame();
-	}
-	
-	// bug fix
-	if (isNaN(velY)) {
-		g.clear();
-		lives -= 1;
-		begun = false;
-	}
-	
-	if (BTN_PLAY.read() && begun == false) {
-		begun = true;
-		velY = -ballSpeed;
-	}
+  g.fillCircle(ballX, ballY, ballRad);
+
+  if (begun) {
+    // calculate ball's movement
+    if (ballY < 0 + ballRad) {
+      velY = Math.abs(velY);
+      ballY = ballRad;
+    } else if (ballY > paddleY - ballRad) {
+      if (
+        ballX > paddleX - paddleWidth - ballRad &&
+        ballX < paddleX + paddleWidth + ballRad
+      ) {
+        // calculate exit angle
+        perX = (ballX - paddleX) / (paddleWidth + 2);
+        velX = perX * ballSpeed;
+        velYsquared = Math.pow(ballSpeed, 2) - Math.pow(velX, 2);
+        velY = Math.sqrt(velYsquared);
+        velY = -velY;
+
+        ballY = paddleY - ballRad;
+
+        Pip.audioStart('UI/COLUMN.wav');
+      } else {
+        g.clear();
+        lives -= 1;
+        begun = false;
+      }
+    } else if (ballX < leftWall + ballRad) {
+      //bounce off side walls
+      velX = Math.abs(velX);
+    } else if (ballX > rightWall - ballRad) {
+      velX = Math.abs(velX);
+      velX = -velX;
+    }
+  } else {
+    // ball still attached to paddle
+    ballX = paddleX;
+    ballY = paddleY - 10;
+    velX = 0;
+    velY = 0;
+  }
+
+  // move ball
+  ballY += velY;
+  ballX += velX;
+
+  // draw stuff onto screen
+  bricks.forEach(function (brick, i) {
+    // check bricks for collision
+    if (ballY + ballRad > brick.y && ballY - ballRad < brick.y + brickHeight) {
+      if (ballX + ballRad > brick.x && ballX - ballRad < brick.x + brickWidth) {
+        brick.hits += 1;
+        Pip.audioStart('UI/PREV.wav');
+        // ball  has collided with this brick, find which side
+
+        if (ballY - velY <= brick.y || ballY - velY >= brick.y + brickHeight) {
+          velY = -velY;
+        } else {
+          velX = -velX;
+        }
+      }
+    }
+
+    // draw bricks
+    if (brick.hits >= 4) {
+      g.clear();
+      bricks.splice(i, 1);
+      return;
+    }
+    if (brick.hits > 0) {
+      brickColor = brick.hits / 5;
+    } else if (brick.hits == 0) {
+      brickColor = 0;
+    }
+
+    g.setColor(
+      theme[0] - brickColor,
+      theme[1] - brickColor,
+      theme[2] - brickColor,
+    );
+    g.fillRect(brick.x, brick.y, brick.x + brickWidth, brick.y + brickHeight);
+  });
+
+  g.setColor(theme[0], theme[1], theme[2]);
+
+  g.drawRect(0, 0, leftWall - 5, 320);
+  g.drawRect(rightWall + 5, 0, 480, 320);
+
+  g.drawRect(paddleX - paddleWidth, paddleY, paddleX + paddleWidth, 300);
+  g.drawCircle(ballX, ballY, ballRad);
+
+  g.drawString('Lives:' + lives, 100, 20);
+  g.drawString('Level:' + level, 380, 20);
+
+  // next level
+  if (bricks.length == 0) {
+    begun = false;
+    level += 1;
+    if (level == 2) {
+      pushLevel(level2);
+    } else if (level == 3) {
+      pushLevel(level3);
+    } else if (level == 4) {
+      pushLevel(level4);
+    } else if (level == 5) {
+      pushLevel(level5);
+    } else if (level == 6) {
+      ballSpeed = 18;
+      pushLevel(level6);
+    } else if (level == 7) {
+      pushLevel(level7);
+    } else if (level == 8) {
+      pushLevel(level8);
+    } else if (level == 9) {
+      pushLevel(level9);
+    } else if (level == 10) {
+      stopGame();
+    }
+  }
+
+  // LOSER!!!
+  if (lives < 0) {
+    stopGame();
+  }
+
+  // bug fix
+  if (isNaN(velY)) {
+    g.clear();
+    lives -= 1;
+    begun = false;
+  }
+
+  if (BTN_PLAY.read() && begun == false) {
+    begun = true;
+    velY = -ballSpeed;
+  }
 }
 
 function initializeGame() {
@@ -288,17 +294,17 @@ function stopGame() {
 }
 
 function getTheme() {
-	sysColor = g.getColor();
-	sysColor = sysColor.toString(16);
-	
-	for (let i = 0; i < 3; i++) {
-		hex = sysColor.charAt(i);
-		integer = parseInt(hex, 16);
-		perCol = integer / 15;
-		theme[i] = perCol;
-	}
-		
-	return;
+  sysColor = g.getColor();
+  sysColor = sysColor.toString(16);
+
+  for (let i = 0; i < 3; i++) {
+    hex = sysColor.charAt(i);
+    integer = parseInt(hex, 16);
+    perCol = integer / 15;
+    theme[i] = perCol;
+  }
+
+  return;
 }
 
 function pushLevel(array) {
@@ -344,14 +350,18 @@ getTheme();
 
 g.clear();
 
-Pip.typeText("Welcome to Vault Breaker!\nYou have 3 lives to beat 9 levels.").then(() =>
-	setTimeout(() => {
-		Pip.typeText("Press the radio knob to launch the ball.\nControl the paddle with the top-right knob.\nPress the torch button to exit. Good luck.").then(() =>
-			setTimeout(() => {
-				initializeGame();
-			}, 3000),
-		);
-	}, 2000),
+Pip.typeText(
+  'Welcome to Vault Breaker!\nYou have 3 lives to beat 9 levels.',
+).then(() =>
+  setTimeout(() => {
+    Pip.typeText(
+      'Press the radio knob to launch the ball.\nControl the paddle with the top-right knob.\nPress the torch button to exit. Good luck.',
+    ).then(() =>
+      setTimeout(() => {
+        initializeGame();
+      }, 3000),
+    );
+  }, 2000),
 );
 
 Pip.on('knob1', handleKnob1);
