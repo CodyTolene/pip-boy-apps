@@ -34,8 +34,11 @@ let paddleX = 240,
   brickColor = 0,
   lives = 3,
   level = 0,
+  sysColor = 0,
+  integer = 0,
+  perCol = 0,
+  hex = '',
   moved = false,
-  stuck = false,
   begun = false;
 
 const level1 = [
@@ -182,7 +185,7 @@ function gameLoop() {
       return;
     }
     if (brick.hits > 0) {
-      brickColor = brick.hits / 10;
+      brickColor = brick.hits / 5;
     } else if (brick.hits == 0) {
       brickColor = 0;
     }
@@ -236,6 +239,18 @@ function gameLoop() {
   if (lives < 0) {
     stopGame();
   }
+
+  // bug fix
+  if (isNaN(velY)) {
+    g.clear();
+    lives -= 1;
+    begun = false;
+  }
+
+  if (BTN_PLAY.read() && begun == false) {
+    begun = true;
+    velY = -ballSpeed;
+  }
 }
 
 function initializeGame() {
@@ -278,22 +293,18 @@ function stopGame() {
   }
 }
 
-function readThemeFile() {
-  //try to read directory first, if we error, make the directory and return, nothing to read.
-  try {
-    require('fs').readdirSync(themeSettingsFolder);
-  } catch {
-    require('fs').mkdir(themeSettingsFolder);
-    return;
+function getTheme() {
+  sysColor = g.getColor();
+  sysColor = sysColor.toString(16);
+
+  for (let i = 0; i < 3; i++) {
+    hex = sysColor.charAt(i);
+    integer = parseInt(hex, 16);
+    perCol = integer / 15;
+    theme[i] = perCol;
   }
-  try {
-    let fileString = require('fs').readFileSync(themeSettingsFile);
-    let fileObj = JSON.parse(fileString);
-    theme = fileObj;
-  } catch {
-    //folder created but no theme file yet, ignore
-    return;
-  }
+
+  return;
 }
 
 function pushLevel(array) {
@@ -335,18 +346,24 @@ function handleTorch() {
   stopGame();
 }
 
+getTheme();
+
+g.clear();
+
+Pip.typeText(
+  'Welcome to Vault Breaker!\nYou have 3 lives to beat 9 levels.',
+).then(() =>
+  setTimeout(() => {
+    Pip.typeText(
+      'Press the radio knob to launch the ball.\nControl the paddle with the top-right knob.\nPress the torch button to exit. Good luck.',
+    ).then(() =>
+      setTimeout(() => {
+        initializeGame();
+      }, 3000),
+    );
+  }, 2000),
+);
+
 Pip.on('knob1', handleKnob1);
 Pip.on('knob2', handleKnob2);
 Pip.on('torch', handleTorch);
-
-readThemeFile();
-
-Pip.typeText(
-  'Welcome to Vault Breaker!\nPress the left knob to launch the ball.\nControl the paddle with the top-right knob.\nPress the torch button to exit.\nYou have 3 lives to beat 9 levels.\nGood luck.',
-).then(() => {
-  setTimeout(() => {
-    // 3 seconds after that, return to the apps menu
-    begun = false;
-    initializeGame();
-  }, 5000);
-});
