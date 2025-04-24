@@ -8,7 +8,7 @@
     "name": "File Explorer",
     "tip": "Press play again to stop currently playing media.",
     "type": "APP",
-    "version": "1.2.0"
+    "version": "2.0.0"
   },
   {
     "authors": ["Cody Tolene <https://www.CodyTolene.com>"],
@@ -33,66 +33,6 @@
     "version": "1.1.0"
   },
   {
-    "authors": ["gnargle <https://athene.gay/>"],
-    "description": "The SPECIAL/Skills/Perks menu for the Pip-Boy 3000 Mk V.",
-    "files": [
-      "USER/StatsDisplay.js",
-      "USER/StatsDisplay/PERKS/ALL/actionboy.json",
-      "USER/StatsDisplay/PERKS/ALL/actiongirl.json",
-      "USER/StatsDisplay/PERKS/ALL/blackwidow.json",
-      "USER/StatsDisplay/PERKS/ALL/cannibal.json",
-      "USER/StatsDisplay/PERKS/ALL/cherchez.json",
-      "USER/StatsDisplay/PERKS/ALL/childatheart.json",
-      "USER/StatsDisplay/PERKS/ALL/comprehension.json",
-      "USER/StatsDisplay/PERKS/ALL/computerwhiz.json",
-      "USER/StatsDisplay/PERKS/ALL/confirmedbachelor.json",
-      "USER/StatsDisplay/PERKS/ALL/educated.json",
-      "USER/StatsDisplay/PERKS/ALL/entomologist.json",
-      "USER/StatsDisplay/PERKS/ALL/fortunefinder.json",
-      "USER/StatsDisplay/PERKS/ALL/foureyes.json",
-      "USER/StatsDisplay/PERKS/ALL/friendofthenight.json",
-      "USER/StatsDisplay/PERKS/ALL/heaveho.json",
-      "USER/StatsDisplay/PERKS/ALL/hunter.json",
-      "USER/StatsDisplay/PERKS/ALL/intensetraining.json",
-      "USER/StatsDisplay/PERKS/ALL/ladykiller.json",
-      "USER/StatsDisplay/PERKS/ALL/missfortune.json",
-      "USER/StatsDisplay/PERKS/ALL/mysteriousstranger.json",
-      "USER/StatsDisplay/PERKS/ALL/radchild.json",
-      "USER/StatsDisplay/PERKS/ALL/rapidreload.json",
-      "USER/StatsDisplay/PERKS/ALL/retention.json",
-      "USER/StatsDisplay/PERKS/ALL/runngun.json",
-      "USER/StatsDisplay/PERKS/ALL/stealthgirl.json",
-      "USER/StatsDisplay/PERKS/ALL/swiftlearner.json",
-      "USER/StatsDisplay/PERKS/ALL/weaponhandling.json",
-      "USER/StatsDisplay/SKILLS/barter.json",
-      "USER/StatsDisplay/SKILLS/energyweapons.json",
-      "USER/StatsDisplay/SKILLS/explosives.json",
-      "USER/StatsDisplay/SKILLS/guns.json",
-      "USER/StatsDisplay/SKILLS/lockpicks.json",
-      "USER/StatsDisplay/SKILLS/medicine.json",
-      "USER/StatsDisplay/SKILLS/meleeweapons.json",
-      "USER/StatsDisplay/SKILLS/repair.json",
-      "USER/StatsDisplay/SKILLS/science.json",
-      "USER/StatsDisplay/SKILLS/sneak.json",
-      "USER/StatsDisplay/SKILLS/speech.json",
-      "USER/StatsDisplay/SKILLS/survival.json",
-      "USER/StatsDisplay/SKILLS/unarmed.json",
-      "USER/StatsDisplay/SPECIAL/aStrength.json",
-      "USER/StatsDisplay/SPECIAL/bPerception.json",
-      "USER/StatsDisplay/SPECIAL/cEndurance.json",
-      "USER/StatsDisplay/SPECIAL/dCharisma.json",
-      "USER/StatsDisplay/SPECIAL/eIntelligence.json",
-      "USER/StatsDisplay/SPECIAL/fAgility.json",
-      "USER/StatsDisplay/SPECIAL/gLuck.json"
-    ],
-    "id": "StatsDisplay",
-    "instructions": "Use the scroll wheel to navigate the menu and the right scroller to switch between screens. Clicking the wheel on a stat will allow you to edit its value. Clicking the wheel in the perks page takes you to the perk config screen - to save changes, scroll the right scroller.",
-    "name": "Stats Display",
-    "tip": "",
-    "type": "APP",
-    "version": "2.1.0"
-  },
-  {
     "authors": ["Cody Tolene <https://www.CodyTolene.com>"],
     "description": "A custom music player that allows you to choose the music you want to play from the `/RADIO` directory without restriction.",
     "files": ["USER/CustomRadio.js"],
@@ -104,20 +44,6 @@
     "version": "1.1.0"
   },
   {
-    "authors": [
-      "rikkuness <https://log.robco-industries.org/>",
-      "gnargle <https://athene.gay/>"
-    ],
-    "description": "Update the UI to use a custom color scheme.",
-    "files": ["USER/ThemePicker.js", "USER_BOOT/ThemePicker.js"],
-    "id": "ThemePicker",
-    "instructions": "Use the left wheel to select a value and the right wheel to scroll between changing R, G and B values. Press the left wheel to set and reboot, press torch to reset the default theme and reboot.",
-    "name": "Theme Picker",
-    "tip": "More information here https://log.robco-industries.org/log/entry016/",
-    "type": "APP",
-    "version": "1.0.1"
-  },
-  {
     "authors": ["Illes Kokenyesi"],
     "description": "AsteroPIPs is a simple game where you control a spaceship to shoot and avoid space rocks.",
     "files": ["USER/AsteroPIPs.js"],
@@ -127,7 +53,7 @@
     "tip": "Move and shoot is a good tactic!",
     "type": "GAME",
     "version": "1.0.0"
-  }
+  },
   {
     "authors": ["tetriskid <https://tetriskid48.github.io>"],
     "description": "A classic brick-breaking game.",
@@ -138,5 +64,17 @@
     "tip": "Try to get the ball between or behind bricks!",
     "type": "GAME",
     "version": "1.0.1"
+
+  },
+  {
+    "authors": ["Illes Kokenyesi"],
+    "description": "A classic 2048 game.",
+    "files": ["USER/Pip2048.js"],
+    "id": "Pip2048",
+    "instructions": "Use the LEFT WHEEL to shift the table Up / Down, UPPER RIGHT WHEEL to shift Left / Right. Push LEFT WHEEL Click to Reset. Press TOP TORCH button to exit the game.",
+    "name": "2048",
+    "tip": "Use your brain! =]",
+    "type": "GAME",
+    "version": "1.0.0"
   }
 ]

@@ -40,16 +40,71 @@ let paddleX = 240,
 	hex = "",
 	moved = false,
 	begun = false;
-	
-const level1 = [[1, 1, 1, 1, 1, 1, 1, 1], [4, 4, 4, 4, 4, 4, 4, 4], [2, 2, 2, 2, 2, 2, 2, 2], [4, 4, 4, 4, 4, 4, 4, 4], [3, 3, 3, 3, 3, 3, 3, 3]];
-const level2 = [[4, 1, 1, 4, 4, 1, 1, 4], [4, 1, 1, 1, 1, 1, 1, 4], [4, 4, 4, 4, 4, 4, 4, 4], [3, 3, 3, 3, 3, 3, 3, 3], [3, 3, 3, 3, 3, 3, 3, 3]];
-const level3 = [[4, 2, 2, 2, 2, 2, 2, 4], [3, 0, 0, 0, 0, 0, 0, 3], [3, 2, 2, 2, 2, 2, 2, 3], [4, 3, 3, 3, 3, 3, 3, 4]];
-const level4 = [[4, 2, 4, 2, 4, 2, 4, 2], [2, 4, 2, 4, 2, 4, 2, 4], [4, 2, 4, 2, 4, 2, 4, 2], [2, 4, 2, 4, 2, 4, 2, 4], [4, 2, 4, 2, 4, 2, 4, 2]];
-const level5 = [[4, 1, 1, 1, 1, 1, 1, 4], [1, 1, 4, 1, 1, 4, 1, 1], [2, 2, 2, 2, 2, 2, 2, 2], [4, 4, 0, 4, 4, 0, 4, 4], [4, 0, 4, 0, 0, 4, 0, 4]];
-const level6 = [[4, 4, 4, 2, 2, 4, 4, 4], [1, 1, 1, 4, 4, 1, 1, 1], [1, 4, 1, 4, 4, 1, 4, 1], [1, 4, 4, 1, 1, 4, 4, 1], [4, 4, 4, 1, 1, 4, 4, 4], [4, 4, 1, 4, 4, 1, 4, 4]];
-const level7 = [[4, 0, 4, 0, 4, 0, 4, 0], [0, 4, 0, 4, 0, 4, 0, 4], [4, 0, 4, 0, 4, 0, 4, 0], [0, 4, 0, 4, 0, 4, 0, 4], [4, 0, 4, 0, 4, 0, 4, 0]];
-const level8 = [[4, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 4, 1], [1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1], [2, 2, 4, 4, 4, 4, 1, 1], [2, 2, 4, 4, 4, 4, 4, 4]];
-const level9 = [[2, 2, 2, 2, 2, 2, 2, 2], [2, 0, 0, 0, 0, 0, 0, 2], [2, 0, 0, 0, 0, 0, 0, 2], [2, 0, 0, 0, 0, 0, 0, 2], [2, 2, 2, 2, 2, 2, 2, 2]];
+
+const level1 = [
+  [1, 1, 1, 1, 1, 1, 1, 1],
+  [4, 4, 4, 4, 4, 4, 4, 4],
+  [2, 2, 2, 2, 2, 2, 2, 2],
+  [4, 4, 4, 4, 4, 4, 4, 4],
+  [3, 3, 3, 3, 3, 3, 3, 3],
+];
+const level2 = [
+  [4, 1, 1, 4, 4, 1, 1, 4],
+  [4, 1, 1, 1, 1, 1, 1, 4],
+  [4, 4, 4, 4, 4, 4, 4, 4],
+  [3, 3, 3, 3, 3, 3, 3, 3],
+  [3, 3, 3, 3, 3, 3, 3, 3],
+];
+const level3 = [
+  [4, 2, 2, 2, 2, 2, 2, 4],
+  [3, 0, 0, 0, 0, 0, 0, 3],
+  [3, 2, 2, 2, 2, 2, 2, 3],
+  [4, 3, 3, 3, 3, 3, 3, 4],
+];
+const level4 = [
+  [4, 2, 4, 2, 4, 2, 4, 2],
+  [2, 4, 2, 4, 2, 4, 2, 4],
+  [4, 2, 4, 2, 4, 2, 4, 2],
+  [2, 4, 2, 4, 2, 4, 2, 4],
+  [4, 2, 4, 2, 4, 2, 4, 2],
+];
+const level5 = [
+  [4, 1, 1, 1, 1, 1, 1, 4],
+  [1, 1, 4, 1, 1, 4, 1, 1],
+  [2, 2, 2, 2, 2, 2, 2, 2],
+  [4, 4, 0, 4, 4, 0, 4, 4],
+  [4, 0, 4, 0, 0, 4, 0, 4],
+];
+const level6 = [
+  [4, 4, 4, 2, 2, 4, 4, 4],
+  [1, 1, 1, 4, 4, 1, 1, 1],
+  [1, 4, 1, 4, 4, 1, 4, 1],
+  [1, 4, 4, 1, 1, 4, 4, 1],
+  [4, 4, 4, 1, 1, 4, 4, 4],
+  [4, 4, 1, 4, 4, 1, 4, 4],
+];
+const level7 = [
+  [4, 0, 4, 0, 4, 0, 4, 0],
+  [0, 4, 0, 4, 0, 4, 0, 4],
+  [4, 0, 4, 0, 4, 0, 4, 0],
+  [0, 4, 0, 4, 0, 4, 0, 4],
+  [4, 0, 4, 0, 4, 0, 4, 0],
+];
+const level8 = [
+  [4, 1, 1, 1, 1, 1, 1, 1],
+  [1, 1, 1, 1, 1, 1, 4, 1],
+  [1, 1, 1, 1, 1, 1, 1, 1],
+  [1, 1, 1, 1, 1, 1, 1, 1],
+  [2, 2, 4, 4, 4, 4, 1, 1],
+  [2, 2, 4, 4, 4, 4, 4, 4],
+];
+const level9 = [
+  [2, 2, 2, 2, 2, 2, 2, 2],
+  [2, 0, 0, 0, 0, 0, 0, 2],
+  [2, 0, 0, 0, 0, 0, 0, 2],
+  [2, 0, 0, 0, 0, 0, 0, 2],
+  [2, 2, 2, 2, 2, 2, 2, 2],
+];
 
 function gameLoop() {
 	// clear paddle and ball
@@ -192,44 +247,44 @@ function gameLoop() {
 	}
 }
 
-function initializeGame(){
-	g.clear();
-	g.setColor(theme[0], theme[1], theme[2]);
-	g.setFont('6x8', 1);
-	
-	level = 1;
-	pushLevel(level1);
-	
-	gameLoopInterval = setInterval(gameLoop, gameSpeed);
-	gameLoop();
+function initializeGame() {
+  g.clear();
+  g.setColor(theme[0], theme[1], theme[2]);
+  g.setFont('6x8', 1);
+
+  level = 1;
+  pushLevel(level1);
+
+  gameLoopInterval = setInterval(gameLoop, gameSpeed);
+  gameLoop();
 }
 
-function stopGame(){
-	if (gameLoopInterval) clearInterval(gameLoopInterval);
-	g.clear();
-	
-	if (lives < 0) {
-		Pip.typeText("Game Over!").then(() => {
-		  setTimeout(() => {
-			// 3 seconds after that, return to the apps menu
-			E.reboot();
-		  }, 3000)
-		})
-	} else if (level == 10) {
-		Pip.typeText("You Win!").then(() => {
-		  setTimeout(() => {
-			// 3 seconds after that, return to the apps menu
-			E.reboot();
-		  }, 3000)
-		})
-	} else {
-		Pip.typeText("Goodbye!").then(() => {
-		  setTimeout(() => {
-			// 3 seconds after that, return to the apps menu
-			E.reboot();
-		  }, 3000)
-		})
-	}
+function stopGame() {
+  if (gameLoopInterval) clearInterval(gameLoopInterval);
+  g.clear();
+
+  if (lives < 0) {
+    Pip.typeText('Game Over!').then(() => {
+      setTimeout(() => {
+        // 3 seconds after that, return to the apps menu
+        E.reboot();
+      }, 3000);
+    });
+  } else if (level == 10) {
+    Pip.typeText('You Win!').then(() => {
+      setTimeout(() => {
+        // 3 seconds after that, return to the apps menu
+        E.reboot();
+      }, 3000);
+    });
+  } else {
+    Pip.typeText('Goodbye!').then(() => {
+      setTimeout(() => {
+        // 3 seconds after that, return to the apps menu
+        E.reboot();
+      }, 3000);
+    });
+  }
 }
 
 function getTheme() {
@@ -247,23 +302,23 @@ function getTheme() {
 }
 
 function pushLevel(array) {
-	for (let row = 0; row < array.length; row++) {
-		for (let col = 0; col < array[row].length; col++) {
-			let hit = array[row][col];
+  for (let row = 0; row < array.length; row++) {
+    for (let col = 0; col < array[row].length; col++) {
+      let hit = array[row][col];
 
-			bricks.push({
-			  x: leftWall + (brickWidth + brickGap) * col,
-			  y: 40 + (brickHeight + brickGap) * row,
-			  hits: hit,
-			});
-		}
-	}
+      bricks.push({
+        x: leftWall + (brickWidth + brickGap) * col,
+        y: 40 + (brickHeight + brickGap) * row,
+        hits: hit,
+      });
+    }
+  }
 }
 
 function handleKnob1(dir) {
   if (dir == 0 && begun == false) {
-	  begun = true;
-	  velY = -ballSpeed;
+    begun = true;
+    velY = -ballSpeed;
   }
 }
 
@@ -275,9 +330,9 @@ function handleKnob2(dir) {
   } else if (paddleX + paddleWidth > rightWall) {
     paddleX = rightWall - paddleWidth;
   }
-  
+
   if (dir != 0) {
-	  moved = true;
+    moved = true;
   }
 }
 
@@ -302,5 +357,3 @@ Pip.typeText("Welcome to Vault Breaker!\nYou have 3 lives to beat 9 levels.").th
 Pip.on('knob1', handleKnob1);
 Pip.on('knob2', handleKnob2);
 Pip.on('torch', handleTorch);
-  
-
