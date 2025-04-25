@@ -258,7 +258,7 @@ function generatePerksConfigLists() {
       fileString = require('fs').readFileSync(fullPath);
     } catch (e) {
       console.log('Skipping missing perk file:', fullPath, e);
-      continue; // 🔥 skip bad files gracefully!
+      continue;
     }
     let fileObj;
     try {
@@ -396,12 +396,13 @@ function drawSelectedEntryOutlineConfig(i, col) {
 }
 
 //SECTION: config saving
+
 function saveFile(directory) {
   if (entrySelected >= displayedPerks.length) {
     console.log('Invalid entrySelected index');
     return;
   }
-  let file = displayedPerks[entrySelected % entryListDisplayMax].filename;
+  let file = displayedPerks[entrySelected].filename;
   let fileToSave = normalizeDir(directory) + '/' + file;
 
   let fileString;
@@ -504,6 +505,7 @@ function togglePerkEnabled() {
 }
 
 //SECTION: Button handlers
+
 function handleKnob1Config(dir) {
   //first, play the click.
   Pip.knob1Click(dir);
