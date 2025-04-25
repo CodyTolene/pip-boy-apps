@@ -646,5 +646,3 @@ let intervalId = setInterval(() => {
     gracefulClose();
   }
 }, 16);
-
-setTimeout(draw, 250);
