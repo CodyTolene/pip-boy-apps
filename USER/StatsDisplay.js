@@ -231,7 +231,7 @@ function buildPerkSelectionScreen() {
 }
 
 function generatePerksConfigLists() {
-  //first load of screen, build the full list
+  //first load of screen, build the full list.
   var files;
   try {
     files = require('fs').readdirSync(normalizeDir(enabledPerkFolder));
@@ -398,7 +398,7 @@ function drawSelectedEntryOutlineConfig(i, col) {
 //SECTION: config saving
 
 function saveFile(directory) {
-  if (entrySelected >= displayedPerks.length) {
+  if (entrySelected % entryListDisplayMax >= displayedPerks.length) {
     console.log('Invalid entrySelected index');
     return;
   }
