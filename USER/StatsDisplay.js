@@ -402,7 +402,7 @@ function saveFile(directory) {
     console.log('Invalid entrySelected index');
     return;
   }
-  let file = displayedPerks[entrySelected].filename;
+  let file = displayedPerks[entrySelected % entryListDisplayMax].filename;
   let fileToSave = normalizeDir(directory) + '/' + file;
 
   let fileString;
