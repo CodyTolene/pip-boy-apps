@@ -185,8 +185,9 @@ function buildScreen(directory) {
       }
     }
     drawEntryTitle(perkObj.title, i, perkObj.entryNum == entrySelected);
-    if (screenSelected != perkScreen)
+    if (screenSelected != perkScreen) {
       drawEntryPoints(perkObj.points, i, perkObj.entryNum == entrySelected);
+    }
   }
 }
 
