@@ -3,7 +3,7 @@
 //  Link: https://athene.gay/
 //  Description: Display the SPECIAL stats and skills of the player character.
 //               Also allows the user to configure the SPECIAL stats and skills.
-//  Version: 2.2.0
+//  Version: 2.2.1
 // ============================================================================
 
 //SECTION: consts
@@ -41,8 +41,12 @@ try {
 }
 
 function normalizeDir(dir) {
-  if (isModernVersion && dir.endsWith('/')) return dir.slice(0, -1);
-  if (!isModernVersion && !dir.endsWith('/')) return dir + '/';
+  if (isModernVersion && dir.endsWith('/')) {
+    return dir.slice(0, -1);
+  }
+  if (!isModernVersion && !dir.endsWith('/')) {
+    return dir + '/';
+  }
   return dir;
 }
 
@@ -66,6 +70,7 @@ Graphics.prototype.setFontMonofonto14 = function () {
 };
 
 //SECTION: Screen drawing
+
 function draw() {
   if (drawing) return;
   drawing = true;
@@ -226,7 +231,7 @@ function buildPerkSelectionScreen() {
 }
 
 function generatePerksConfigLists() {
-  //first load of screen, build the full list.
+  //first load of screen, build the full list
   var files;
   try {
     files = require('fs').readdirSync(normalizeDir(enabledPerkFolder));
@@ -234,16 +239,34 @@ function generatePerksConfigLists() {
     require('fs').mkdir(enabledPerkFolder);
     files = require('fs').readdirSync(normalizeDir(enabledPerkFolder));
   }
-  for (file of files) {
+  for (let file of files) {
     enabledPerks.push(file);
   }
-  files = require('fs').readdirSync(normalizeDir(allPerkFolder));
+
+  try {
+    files = require('fs').readdirSync(normalizeDir(allPerkFolder));
+  } catch {
+    console.log('ERROR: Missing ALL perk folder!');
+    files = [];
+  }
   loadedListMax = files.length;
-  for (file of files) {
-    let fileString = require('fs').readFileSync(
-      normalizeDir(allPerkFolder) + '/' + file,
-    );
-    let fileObj = JSON.parse(fileString);
+
+  for (let file of files) {
+    let fullPath = normalizeDir(allPerkFolder) + '/' + file;
+    let fileString;
+    try {
+      fileString = require('fs').readFileSync(fullPath);
+    } catch (e) {
+      console.log('Skipping missing perk file:', fullPath, e);
+      continue; // 🔥 skip bad files gracefully!
+    }
+    let fileObj;
+    try {
+      fileObj = JSON.parse(fileString);
+    } catch (e) {
+      console.log('Skipping invalid JSON perk file:', fullPath, e);
+      continue;
+    }
     let perkObj = { filename: file, title: fileObj.title };
     allPerks.push(perkObj);
   }
@@ -374,13 +397,38 @@ function drawSelectedEntryOutlineConfig(i, col) {
 
 //SECTION: config saving
 function saveFile(directory) {
-  let files = require('fs').readdirSync(normalizeDir(directory));
-  let fileToSave = normalizeDir(directory) + '/' + files[entrySelected];
-  let fileString = require('fs').readFileSync(fileToSave);
-  let fileObj = JSON.parse(fileString);
+  if (entrySelected >= displayedPerks.length) {
+    console.log('Invalid entrySelected index');
+    return;
+  }
+  let file = displayedPerks[entrySelected % entryListDisplayMax].filename;
+  let fileToSave = normalizeDir(directory) + '/' + file;
+
+  let fileString;
+  try {
+    fileString = require('fs').readFileSync(fileToSave);
+  } catch (e) {
+    console.log('Error reading file to save:', fileToSave, e);
+    return;
+  }
+
+  let fileObj;
+  try {
+    fileObj = JSON.parse(fileString);
+  } catch (e) {
+    console.log('Error parsing JSON in file to save:', fileToSave, e);
+    return;
+  }
+
   fileObj.points = pointsOfSelected;
   fileString = JSON.stringify(fileObj);
-  require('fs').writeFile(fileToSave, fileString);
+
+  try {
+    require('fs').writeFile(fileToSave, fileString);
+  } catch (e) {
+    console.log('Error writing file:', fileToSave, e);
+  }
+
   // update in-memory data
   displayedPerks[entrySelected % entryListDisplayMax].points = pointsOfSelected;
   currentPerk = fileObj;
@@ -396,12 +444,27 @@ function saveNewValue() {
 
 function saveEnabledPerk(filename) {
   //"USER/PERKS/ALL"
-  let fileString = require('fs').readFileSync(allPerkFolder + filename);
-  require('fs').writeFile(enabledPerkFolder + filename, fileString);
+  let fileString = require('fs').readFileSync(
+    normalizeDir(allPerkFolder) + '/' + filename,
+  );
+  require('fs').writeFile(
+    normalizeDir(enabledPerkFolder) + '/' + filename,
+    fileString,
+  );
 }
 
 function saveNewPerkSelection() {
-  let enabledFiles = require('fs').readdirSync(enabledPerkFolder);
+  let enabledFiles;
+  try {
+    enabledFiles = require('fs').readdirSync(normalizeDir(enabledPerkFolder));
+  } catch (e) {
+    console.log('Enabled folder missing, creating...');
+    require('fs').mkdir(normalizeDir(enabledPerkFolder));
+    enabledFiles = [];
+  }
+
+  enabledFiles = enabledFiles.filter((f) => f !== '.' && f !== '..');
+
   for (let i = 0; i < allPerks.length; i++) {
     let perk = allPerks[i];
     if (
@@ -420,7 +483,9 @@ function saveNewPerkSelection() {
       enabledFiles.includes(perk.filename)
     ) {
       //was enabled, no longer is, delete the file from ENABLED
-      require('fs').unlink(enabledPerkFolder + perk.filename);
+      require('fs').unlink(
+        normalizeDir(enabledPerkFolder) + '/' + perk.filename,
+      );
     }
   }
   //everything done, wipe out the in-memory enabled/disabled lists.
@@ -564,8 +629,9 @@ let registeredKnob1Func = handleKnob1;
 Pip.on('knob1', registeredKnob1Func);
 Pip.on('knob2', handleKnob2);
 Pip.on('torch', handleTorch);
+
 setWatch(powerHandler, BTN_POWER, { repeat: false });
-draw();
+
 let intervalId = setInterval(() => {
   checkMode();
   if (Pip.mode == 2) {
@@ -574,3 +640,5 @@ let intervalId = setInterval(() => {
     gracefulClose();
   }
 }, 16);
+
+setTimeout(draw, 250);
