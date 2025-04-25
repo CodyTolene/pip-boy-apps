@@ -239,12 +239,16 @@ function generatePerksConfigLists() {
     require('fs').mkdir(enabledPerkFolder);
     files = require('fs').readdirSync(normalizeDir(enabledPerkFolder));
   }
+
+  files = files.filter((f) => f !== '.' && f !== '..');
+
   for (let file of files) {
     enabledPerks.push(file);
   }
 
   try {
     files = require('fs').readdirSync(normalizeDir(allPerkFolder));
+    files = files.filter((f) => f !== '.' && f !== '..');
   } catch {
     console.log('ERROR: Missing ALL perk folder!');
     files = [];
@@ -642,5 +646,3 @@ let intervalId = setInterval(() => {
     gracefulClose();
   }
 }, 16);
-
-setTimeout(draw, 250);
