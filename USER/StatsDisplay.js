@@ -98,6 +98,8 @@ function buildScreen(directory) {
       files = require('fs').readdirSync(normalizeDir(directory));
     }
 
+    files = files.filter((f) => f !== '.' && f !== '..');
+
     if (isModernVersion) {
       files = files.filter((file) => {
         try {
@@ -110,8 +112,6 @@ function buildScreen(directory) {
           return false;
         }
       });
-    } else {
-      files = files.filter((f) => f !== '.' && f !== '..');
     }
 
     loadedListMax = files.length;
@@ -163,9 +163,8 @@ function buildScreen(directory) {
     }
     lastReload = entrySelected;
   }
-
-  if (currentPerk == null && displayedPerks.length > 0) {
-    let currPerkInt = entrySelected % displayedPerks.length;
+  if (currentPerk == null) {
+    let currPerkInt = entrySelected % 6;
     let file = displayedPerks[currPerkInt].filename;
     const fullPath = normalizeDir(directory) + '/' + file;
     try {
@@ -176,14 +175,14 @@ function buildScreen(directory) {
       currentPerk = null;
     }
   }
-
   for (let i = 0; i < displayedPerks.length; i++) {
     let perkObj = displayedPerks[i];
     if (perkObj.entryNum == entrySelected) {
       drawEntry(currentPerk);
       drawSelectedEntryOutline(i);
-      if (!configMode && screenSelected != perkScreen)
+      if (!configMode && screenSelected != perkScreen) {
         pointsOfSelected = perkObj.points;
+      }
     }
     drawEntryTitle(perkObj.title, i, perkObj.entryNum == entrySelected);
     if (screenSelected != perkScreen)
