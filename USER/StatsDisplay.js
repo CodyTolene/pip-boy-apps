@@ -462,13 +462,6 @@ function handleKnob1Config(dir) {
   draw();
 }
 
-function normalizeDir(dir) {
-  if (isModernVersion && dir.endsWith('/')) {
-    return dir.slice(0, -1); // remove trailing slash for >=1.29
-  }
-  return dir;
-}
-
 function handleKnob1(dir) {
   //first, play the click.
   Pip.knob1Click(dir);
