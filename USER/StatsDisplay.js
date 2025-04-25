@@ -1,6 +1,6 @@
 // ============================================================================
 //  Name: Stats Display
-//  Link: Link(s): https://athene.gay/
+//  Link: https://athene.gay/
 //  Description: Display the SPECIAL stats and skills of the player character.
 //               Also allows the user to configure the SPECIAL stats and skills.
 //  Version: 2.2.0
@@ -38,6 +38,12 @@ try {
   }
 } catch (e) {
   console.log('Unable to determine JS version:', e);
+}
+
+function normalizeDir(dir) {
+  if (isModernVersion && dir.endsWith('/')) return dir.slice(0, -1);
+  if (!isModernVersion && !dir.endsWith('/')) return dir + '/';
+  return dir;
 }
 
 Graphics.prototype.setFontMonofonto14 = function () {
@@ -88,14 +94,32 @@ function buildScreen(directory) {
     try {
       files = require('fs').readdirSync(normalizeDir(directory));
     } catch {
-      require('fs').mkdir(directory);
+      require('fs').mkdir(normalizeDir(directory));
       files = require('fs').readdirSync(normalizeDir(directory));
     }
+
+    if (isModernVersion) {
+      files = files.filter((file) => {
+        try {
+          let stat = require('fs').statSync(
+            normalizeDir(directory) + '/' + file,
+          );
+          return !stat.isDirectory;
+        } catch (e) {
+          console.log('Skipping bad file or folder:', file);
+          return false;
+        }
+      });
+    } else {
+      files = files.filter((f) => f !== '.' && f !== '..');
+    }
+
     loadedListMax = files.length;
     if (files.length == 0) {
       drawEmptyScreen();
       return;
     }
+
     let entryListMax = Math.min(entryListDisplayMax, loadedListMax);
     let a = 0;
     while (entrySelected >= entryListMax) {
@@ -104,14 +128,10 @@ function buildScreen(directory) {
       //We need to get the next set of files and display them
       entryListMax = Math.min(entryListDisplayMax * (a + 1), loadedListMax);
     }
+
     for (let i = a * entryListDisplayMax; i < entryListMax; i++) {
       let file = files[i];
-
-      // Skip falsy or invalid filenames
-      if (!file || typeof file !== 'string') continue;
-
       const fullPath = normalizeDir(directory) + '/' + file;
-
       let fileString;
       try {
         fileString = require('fs').readFileSync(fullPath);
@@ -119,7 +139,6 @@ function buildScreen(directory) {
         console.log('Skipping unreadable file:', fullPath, e);
         continue;
       }
-
       let fileObj;
       try {
         fileObj = JSON.parse(fileString);
@@ -127,7 +146,6 @@ function buildScreen(directory) {
         console.log('Invalid JSON in file:', fullPath);
         continue;
       }
-
       if (screenSelected != perkScreen) {
         displayedPerks.push({
           title: fileObj.title,
@@ -145,6 +163,7 @@ function buildScreen(directory) {
     }
     lastReload = entrySelected;
   }
+
   if (currentPerk == null && displayedPerks.length > 0) {
     let currPerkInt = entrySelected % displayedPerks.length;
     let file = displayedPerks[currPerkInt].filename;
@@ -157,20 +176,18 @@ function buildScreen(directory) {
       currentPerk = null;
     }
   }
+
   for (let i = 0; i < displayedPerks.length; i++) {
     let perkObj = displayedPerks[i];
     if (perkObj.entryNum == entrySelected) {
       drawEntry(currentPerk);
       drawSelectedEntryOutline(i);
-      if (!configMode && screenSelected != perkScreen) {
-        //only update pointsOfSelected when not actively configuring.
+      if (!configMode && screenSelected != perkScreen)
         pointsOfSelected = perkObj.points;
-      }
     }
     drawEntryTitle(perkObj.title, i, perkObj.entryNum == entrySelected);
-    if (screenSelected != perkScreen) {
+    if (screenSelected != perkScreen)
       drawEntryPoints(perkObj.points, i, perkObj.entryNum == entrySelected);
-    }
   }
 }
 
