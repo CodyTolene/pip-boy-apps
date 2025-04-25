@@ -459,7 +459,6 @@ function handleKnob1Config(dir) {
       entrySelected = 0;
     }
   }
-  draw();
 }
 
 function handleKnob1(dir) {
@@ -488,6 +487,9 @@ function handleKnob1(dir) {
     currentPerk = null;
     if (entrySelected < 0) {
       entrySelected = loadedListMax - 1;
+      if (loadedListMax > entryListDisplayMax) {
+        lastReload = null; //always reload page if wrapping.
+      }
     } else if (entrySelected >= loadedListMax) {
       entrySelected = 0;
     }
@@ -501,8 +503,6 @@ function handleKnob1(dir) {
       lastReload = null; //reset lastReload value, that's our cue that we need to pull from SD card.
     }
   }
-
-  draw();
 }
 
 function handleKnob2(dir) {
@@ -526,7 +526,6 @@ function handleKnob2(dir) {
   } else if (screenSelected < 0) {
     screenSelected = maxScreen;
   }
-  draw();
 }
 
 function handleTorch() {
