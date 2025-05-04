@@ -105,7 +105,7 @@
     "name": "Custom Radio",
     "tip": "Press play again to stop currently playing media. Do not put more than ~50 songs in the `/RADIO` directory.",
     "type": "APP",
-    "version": "2.1.0"
+    "version": "2.1.1"
   },
   {
     "authors": ["Illes Kokenyesi"],
