@@ -6,98 +6,97 @@
 //  Version: 2.1.0
 // =============================================================================
 
-/***************
- * GLOBAL VARS *
- ***************/
+Pip.CustomRadio = {
+  // Varaibles
+  animationAngle: 0,
+  currentAudio: null,
+  waveformGfx: null,
+  waveformInterval: null,
+  waveformPoints: null,
+  // Functions
+  drawWaveformBorder: function () {
+    for (let i = 0; i < 40; i++) {
+      const color = i % 5 === 0 ? 3 : 1;
+      const height = i % 5 === 0 ? 2 : 1;
+      bC.setColor(color);
+      bC.drawLine(245 + i * 3, 143 - height, 245 + i * 3, 143);
+      bC.drawLine(367 - height, 22 + i * 3, 367, 22 + i * 3);
+    }
+    bC.setColor(3).drawLine(245, 144, 367, 144).drawLine(368, 144, 368, 22);
+    bC.flip();
+  },
+  drawCurrentlyPlaying: function () {
+    bC.setColor(0).fillRect(244, 154, 400, 180);
 
-E.animationAngle = 0;
-E.currentAudio = null;
-E.waveformGfx = null;
-E.waveformInterval = null;
-E.waveformPoints = null;
+    if (Pip.CustomRadio.currentAudio) {
+      const song = Pip.CustomRadio.currentAudio
+        .split('/')
+        .pop()
+        .replace(/\.wav$/i, '');
+      const displayName = song.length > 19 ? song.slice(0, 16) + '...' : song;
 
-/********************
- * GLOBAL FUNCTIONS *
- ********************/
-
-E.drawWaveformBorder = function () {
-  for (let i = 0; i < 40; i++) {
-    const color = i % 5 === 0 ? 3 : 1;
-    const height = i % 5 === 0 ? 2 : 1;
-    bC.setColor(color);
-    bC.drawLine(245 + i * 3, 143 - height, 245 + i * 3, 143);
-    bC.drawLine(367 - height, 22 + i * 3, 367, 22 + i * 3);
-  }
-  bC.setColor(3).drawLine(245, 144, 367, 144).drawLine(368, 144, 368, 22);
-  bC.flip();
-};
-
-E.drawCurrentlyPlaying = function () {
-  bC.setColor(0).fillRect(244, 154, 400, 180);
-
-  if (E.currentAudio) {
-    const song = E.currentAudio
-      .split('/')
-      .pop()
-      .replace(/\.wav$/i, '');
-    const displayName = song.length > 19 ? song.slice(0, 16) + '...' : song;
-
-    bC.setFontMonofonto16()
-      .setColor(3)
-      .drawString(displayName, 244, 155)
-      .flip();
-  }
-};
-
-E.startWaveform = function () {
-  E.stopWaveform();
-  E.animationAngle = 0;
-  E.waveformGfx = Graphics.createArrayBuffer(120, 120, 2, { msb: true });
-  if (E.getAddressOf(E.waveformGfx, 0) === 0) {
-    E.waveformGfx = undefined;
-    E.defrag();
-    E.waveformGfx = Graphics.createArrayBuffer(120, 120, 2, { msb: true });
-  }
-
-  E.waveformPoints = new Uint16Array(60);
-  for (let i = 0; i < 60; i += 2) E.waveformPoints[i] = i * 2;
-
-  E.waveformInterval = setInterval(() => {
-    if (!E.waveformGfx) return;
-
-    E.waveformGfx.clearRect(0, 0, 119, 119);
-
-    if (Pip.radioClipPlaying) {
-      Pip.getAudioWaveform(E.waveformPoints, 20, 100);
-    } else if (Pip.radioOn && typeof RADIO_AUDIO !== 'undefined') {
-      for (let i = 1; i < 60; i += 2) {
-        E.waveformPoints[i] = E.clip(
-          60 + (analogRead(RADIO_AUDIO) - 0.263) * 600,
-          0,
-          119,
-        );
-      }
-    } else {
-      let a = E.animationAngle;
-      for (let i = 1; i < 60; i += 2) {
-        E.waveformPoints[i] =
-          60 + Math.sin(a) * 45 * Math.sin((a += 0.6) * 0.13);
-      }
+      bC.setFontMonofonto16()
+        .setColor(3)
+        .drawString(displayName, 244, 155)
+        .flip();
+    }
+  },
+  startWaveform: function () {
+    Pip.CustomRadio.stopWaveform();
+    Pip.CustomRadio.animationAngle = 0;
+    Pip.CustomRadio.waveformGfx = Graphics.createArrayBuffer(120, 120, 2, {
+      msb: true,
+    });
+    if (E.getAddressOf(Pip.CustomRadio.waveformGfx, 0) === 0) {
+      Pip.CustomRadio.waveformGfx = undefined;
+      E.defrag();
+      Pip.CustomRadio.waveformGfx = Graphics.createArrayBuffer(120, 120, 2, {
+        msb: true,
+      });
     }
 
-    E.waveformGfx.drawPolyAA(E.waveformPoints);
-    E.animationAngle += 0.3;
-    Pip.blitImage(E.waveformGfx, 285, 85, { noScanEffect: true });
-  }, 50);
-};
+    Pip.CustomRadio.waveformPoints = new Uint16Array(60);
+    for (let i = 0; i < 60; i += 2) Pip.CustomRadio.waveformPoints[i] = i * 2;
 
-E.stopWaveform = function () {
-  if (E.waveformInterval) clearInterval(E.waveformInterval);
-  E.waveformInterval = null;
-  if (E.waveformGfx) {
-    E.waveformGfx = null;
-    E.defrag();
-  }
+    Pip.CustomRadio.waveformInterval = setInterval(() => {
+      if (!Pip.CustomRadio.waveformGfx) return;
+
+      Pip.CustomRadio.waveformGfx.clearRect(0, 0, 119, 119);
+
+      if (Pip.radioClipPlaying) {
+        Pip.getAudioWaveform(Pip.CustomRadio.waveformPoints, 20, 100);
+      } else if (Pip.radioOn && typeof RADIO_AUDIO !== 'undefined') {
+        for (let i = 1; i < 60; i += 2) {
+          Pip.CustomRadio.waveformPoints[i] = E.clip(
+            60 + (analogRead(RADIO_AUDIO) - 0.263) * 600,
+            0,
+            119,
+          );
+        }
+      } else {
+        let a = Pip.CustomRadio.animationAngle;
+        for (let i = 1; i < 60; i += 2) {
+          Pip.CustomRadio.waveformPoints[i] =
+            60 + Math.sin(a) * 45 * Math.sin((a += 0.6) * 0.13);
+        }
+      }
+
+      Pip.CustomRadio.waveformGfx.drawPolyAA(Pip.CustomRadio.waveformPoints);
+      Pip.CustomRadio.animationAngle += 0.3;
+      Pip.blitImage(Pip.CustomRadio.waveformGfx, 285, 85, {
+        noScanEffect: true,
+      });
+    }, 50);
+  },
+  stopWaveform: function () {
+    if (Pip.CustomRadio.waveformInterval)
+      clearInterval(Pip.CustomRadio.waveformInterval);
+    Pip.CustomRadio.waveformInterval = null;
+    if (Pip.CustomRadio.waveformGfx) {
+      Pip.CustomRadio.waveformGfx = null;
+      E.defrag();
+    }
+  },
 };
 
 /*******************
@@ -110,9 +109,9 @@ function submenuCustomRadio() {
 
   if (!rd._options) rd.setupI2C();
 
-  if (E.currentAudio) {
+  if (Pip.CustomRadio.currentAudio) {
     Pip.audioStop();
-    E.currentAudio = null;
+    Pip.CustomRadio.currentAudio = null;
     Pip.radioClipPlaying = false;
   }
 
@@ -143,7 +142,8 @@ function submenuCustomRadio() {
     '': {
       x2: 200,
       predraw: () => {
-        if (E.waveformGfx) bC.drawImage(E.waveformGfx, 245, 20);
+        if (Pip.CustomRadio.waveformGfx)
+          bC.drawImage(Pip.CustomRadio.waveformGfx, 245, 20);
       },
     },
   };
@@ -162,21 +162,21 @@ function submenuCustomRadio() {
       randomIndex = 0;
     }
 
-    if (E.currentAudio) {
+    if (Pip.CustomRadio.currentAudio) {
       Pip.audioStop();
-      E.currentAudio = null;
+      Pip.CustomRadio.currentAudio = null;
       Pip.radioClipPlaying = false;
     }
 
     const f = randomQueue[randomIndex++];
-    E.currentAudio = '/RADIO/' + f;
-    Pip.audioStart(E.currentAudio);
+    Pip.CustomRadio.currentAudio = '/RADIO/' + f;
+    Pip.audioStart(Pip.CustomRadio.currentAudio);
     Pip.radioClipPlaying = true;
 
     Pip.removeListener('audioStopped', handleAudioStopped);
     Pip.on('audioStopped', handleAudioStopped);
 
-    E.drawCurrentlyPlaying();
+    Pip.CustomRadio.drawCurrentlyPlaying();
   }
 
   function handleKnob1(dir) {
@@ -188,22 +188,22 @@ function submenuCustomRadio() {
     if (dir > 0 || dir < 0) {
       playingRandom = false;
 
-      if (E.currentAudio) {
+      if (Pip.CustomRadio.currentAudio) {
         Pip.audioStop();
-        E.currentAudio = null;
+        Pip.CustomRadio.currentAudio = null;
         Pip.radioClipPlaying = false;
         bC.setColor(0).fillRect(244, 154, 400, 180);
         bC.flip();
       }
     } else {
-      if (selectedFile && E.currentAudio === selectedFile) {
+      if (selectedFile && Pip.CustomRadio.currentAudio === selectedFile) {
         Pip.audioStop();
-        E.currentAudio = null;
+        Pip.CustomRadio.currentAudio = null;
         Pip.radioClipPlaying = false;
         bC.setColor(0).fillRect(244, 154, 400, 180);
         bC.flip();
       }
-      E.drawCurrentlyPlaying();
+      Pip.CustomRadio.drawCurrentlyPlaying();
     }
   }
 
@@ -238,17 +238,17 @@ function submenuCustomRadio() {
         selectedFile = '/RADIO/' + f;
         suppressKnob1 = true;
 
-        if (E.currentAudio === selectedFile) {
+        if (Pip.CustomRadio.currentAudio === selectedFile) {
           Pip.audioStop();
-          E.currentAudio = null;
+          Pip.CustomRadio.currentAudio = null;
           Pip.radioClipPlaying = false;
           bC.setColor(0).fillRect(244, 154, 400, 180);
           bC.flip();
         } else {
-          E.currentAudio = selectedFile;
-          Pip.audioStart(E.currentAudio);
+          Pip.CustomRadio.currentAudio = selectedFile;
+          Pip.audioStart(Pip.CustomRadio.currentAudio);
           Pip.radioClipPlaying = true;
-          E.drawCurrentlyPlaying();
+          Pip.CustomRadio.drawCurrentlyPlaying();
         }
       };
     });
@@ -256,25 +256,25 @@ function submenuCustomRadio() {
     if (page > 0) {
       menu['< PREV'] = () => {
         page--;
-        E.stopWaveform();
+        Pip.CustomRadio.stopWaveform();
         renderMenu();
-        E.startWaveform();
-        E.drawWaveformBorder();
+        Pip.CustomRadio.startWaveform();
+        Pip.CustomRadio.drawWaveformBorder();
       };
     }
 
     if ((page + 1) * PAGE_SIZE < files.length) {
       menu['NEXT >'] = () => {
         page++;
-        E.stopWaveform();
+        Pip.CustomRadio.stopWaveform();
         renderMenu();
-        E.startWaveform();
-        E.drawWaveformBorder();
+        Pip.CustomRadio.startWaveform();
+        Pip.CustomRadio.drawWaveformBorder();
       };
     }
 
     E.showMenu(menu);
-    E.drawCurrentlyPlaying();
+    Pip.CustomRadio.drawCurrentlyPlaying();
 
     Pip.removeListener('knob1', handleKnob1);
     Pip.on('knob1', handleKnob1);
@@ -284,12 +284,12 @@ function submenuCustomRadio() {
 
     const previousSubmenu = Pip.removeSubmenu;
     Pip.removeSubmenu = function customRadioClose() {
-      E.stopWaveform();
+      Pip.CustomRadio.stopWaveform();
       bC.clear(1);
       bC.flip();
 
       Pip.audioStop();
-      E.currentAudio = null;
+      Pip.CustomRadio.currentAudio = null;
       Pip.radioClipPlaying = false;
       playingRandom = false;
 
@@ -310,23 +310,23 @@ function submenuCustomRadio() {
 
   renderMenu();
 
-  E.stopWaveform();
-  E.startWaveform();
-  E.drawWaveformBorder();
+  Pip.CustomRadio.stopWaveform();
+  Pip.CustomRadio.startWaveform();
+  Pip.CustomRadio.drawWaveformBorder();
 }
 
 function submenuLocalRadio() {
   if (!rd._options) rd.setupI2C();
 
-  if (E.currentAudio) {
+  if (Pip.CustomRadio.currentAudio) {
     Pip.audioStop();
-    E.currentAudio = null;
+    Pip.CustomRadio.currentAudio = null;
     Pip.radioClipPlaying = false;
   }
 
   Pip.radioKPSS = false;
 
-  E.stopWaveform();
+  Pip.CustomRadio.stopWaveform();
 
   bC.clear(1);
 
@@ -336,7 +336,7 @@ function submenuLocalRadio() {
     rd.drawFreq();
   }
 
-  E.startWaveform();
+  Pip.CustomRadio.startWaveform();
 
   let tuneDelayTimeout = null;
   let knobInputTimeout = null;
@@ -373,7 +373,7 @@ function submenuLocalRadio() {
     '': {
       x2: 200,
       predraw: () => {
-        bC.drawImage(E.waveformGfx, 245, 20);
+        bC.drawImage(Pip.CustomRadio.waveformGfx, 245, 20);
         rd.drawFreq(bC);
       },
     },
@@ -400,11 +400,11 @@ function submenuLocalRadio() {
     },
   });
 
-  E.drawWaveformBorder();
+  Pip.CustomRadio.drawWaveformBorder();
 
   const originalClose = Pip.removeSubmenu;
   Pip.removeSubmenu = function () {
-    E.stopWaveform();
+    Pip.CustomRadio.stopWaveform();
     if (rd.tuningInterval) clearInterval(rd.tuningInterval);
     if (rd.rdsTimer) clearInterval(rd.rdsTimer);
     Pip.removeListener('knob2', handleKnob2);
