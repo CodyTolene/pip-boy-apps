@@ -152,10 +152,6 @@ function submenuCustomRadio() {
     if (playingRandom) playRandom();
   }
 
-  function handleKnob2(dir) {
-    // Do nothing. Yet.
-  }
-
   function playRandom() {
     if (randomIndex >= randomQueue.length) {
       randomQueue = files.slice().sort(() => Math.random() - 0.5);
@@ -279,9 +275,6 @@ function submenuCustomRadio() {
     Pip.removeListener('knob1', handleKnob1);
     Pip.on('knob1', handleKnob1);
 
-    Pip.removeListener('knob2', handleKnob2);
-    Pip.on('knob2', handleKnob2);
-
     const previousSubmenu = Pip.removeSubmenu;
     Pip.removeSubmenu = function customRadioClose() {
       Pip.CustomRadio.stopWaveform();
@@ -295,7 +288,6 @@ function submenuCustomRadio() {
 
       Pip.removeListener('audioStopped', handleAudioStopped);
       Pip.removeListener('knob1', handleKnob1);
-      Pip.removeListener('knob2', handleKnob2);
 
       if (Pip.removeSubmenu === customRadioClose) delete Pip.removeSubmenu;
 
