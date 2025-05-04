@@ -32,7 +32,6 @@
     "type": "GAME",
     "version": "1.1.0"
   },
-
   {
     "authors": ["gnargle <https://athene.gay/>"],
     "description": "The SPECIAL/Skills/Perks menu for the Pip-Boy 3000 Mk V.",
@@ -96,13 +95,17 @@
   {
     "authors": ["Cody Tolene <https://www.CodyTolene.com>"],
     "description": "A custom music player that allows you to choose the music you want to play from the `/RADIO` directory without restriction.",
-    "files": ["USER/CustomRadio.js"],
+    "files": [
+      "USER/CustomRadio.js",
+      "USER/CustomRadio/options.json",
+      "USER_BOOT/CustomRadio.js"
+    ],
     "id": "CustomRadio",
     "instructions": "Use the top-left or top-right rotary wheels or the front radio tuner to scroll. Press the left rotary wheel or front radio tuner to play or stop media. Press the top torch button to exit.",
     "name": "Custom Radio",
-    "tip": "Press play again to stop currently playing media.",
+    "tip": "Press play again to stop currently playing media. Do not put more than ~50 songs in the `/RADIO` directory.",
     "type": "APP",
-    "version": "1.1.0"
+    "version": "2.0.0"
   },
   {
     "authors": ["Illes Kokenyesi"],
