@@ -7,7 +7,7 @@
 // =============================================================================
 
 Pip.CustomRadio = {
-  // Varaibles
+  // Variables
   animationAngle: 0,
   currentAudio: null,
   waveformGfx: null,
