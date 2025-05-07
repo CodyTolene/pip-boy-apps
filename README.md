@@ -284,7 +284,16 @@ This project is licensed under the Creative Commons Attribution-NonCommercial
 4.0 International License. See the [license][link-license] file for more
 information.
 
-`SPDX-License-Identifiers: CC-BY-NC-4.0`
+This project uses sounds found on FreeSound.org. The sounds are licensed under
+the Creative Commons 0 License. The list of sounds can be found below:
+
+- [`OOF.wav`](https://freesound.org/people/tonsil5/sounds/416839/) by tonsil5
+- [`F_STEP.wav`](https://freesound.org/people/MikeFozzy98/sounds/670102/) by
+  MikeFozzy98
+- [`F_STEP_2.wav`](https://freesound.org/people/gobbe57/sounds/746681/) by
+  gobbe57
+
+`SPDX-License-Identifiers: CC-BY-NC-4.0, CC0-1.0`
 
 > ![Warn][img-warn] By using this software, you acknowledge and agree to the
 > terms of these licenses.
