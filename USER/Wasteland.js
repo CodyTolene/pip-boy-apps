@@ -88,10 +88,10 @@ function moveForward() {
   if (!isWall(nx, ny)) {
     player.x = nx;
     player.y = ny;
-    Pip.audioStart('USER/DoomLite/F_STEP.wav');
+    Pip.audioStart('USER/Wasteland/F_STEP.wav');
     console.log('Moved forward');
   } else {
-    Pip.audioStart('USER/DoomLite/OOF.wav');
+    Pip.audioStart('USER/Wasteland/OOF.wav');
     console.log('Hit a wall!');
   }
 
@@ -107,10 +107,10 @@ function moveBackward() {
   if (!isWall(nx, ny)) {
     player.x = nx;
     player.y = ny;
-    Pip.audioStart('USER/DoomLite/F_STEP.wav');
+    Pip.audioStart('USER/Wasteland/F_STEP.wav');
     console.log('Moved backward');
   } else {
-    Pip.audioStart('USER/DoomLite/OOF.wav');
+    Pip.audioStart('USER/Wasteland/OOF.wav');
     console.log('Hit a wall!');
   }
 
@@ -128,7 +128,7 @@ function rotate(dir) {
     console.log('Rotated right');
   }
 
-  Pip.audioStart('USER/DoomLite/F_STEP_2.wav');
+  Pip.audioStart('USER/Wasteland/F_STEP_2.wav');
   drawFrame();
 }
 
