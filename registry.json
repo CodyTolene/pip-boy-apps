@@ -139,5 +139,21 @@
     "tip": "Use your brain! =]",
     "type": "GAME",
     "version": "1.0.0"
+  },
+  {
+    "authors": ["Cody Tolene <https://www.CodyTolene.com>"],
+    "description": "A DOOM inspired RPG engine for the Pip-Boy 3000 Mk V.",
+    "files": [
+      "USER/Wasteland.js",
+      "USER/Wasteland/OOF.wav",
+      "USER/Wasteland/F_STEP.wav",
+      "USER/Wasteland/F_STEP_2.wav"
+    ],
+    "id": "Wasteland",
+    "instructions": "Use the front radio on/off button to move forward. Turn top left or top right knob to rotate character 45 degrees. Press top left knob to move backwards. Press the top torch button to exit.",
+    "name": "Wasteland",
+    "tip": "",
+    "type": "GAME",
+    "version": "1.0.0"
   }
 ]
