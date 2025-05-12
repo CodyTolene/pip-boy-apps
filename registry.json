@@ -155,5 +155,33 @@
     "tip": "",
     "type": "GAME",
     "version": "1.0.0"
+  },
+  {
+    "authors": ["Mercy <https://github.com/MercurialPony>"],
+    "description": "Pip UI+ aims to add some of the missing in-game tabs (such as special, perks, and so on) to the Pip-Boy 3000 Mk V.",
+    "files": [
+      "USER_BOOT/PipUiPlusLoader.min.js",
+      "USER_BOOT/PipUiPlus/Special.min.js",
+      "USER_BOOT/PipUiPlus/Special/a_strength.json",
+      "USER_BOOT/PipUiPlus/Special/b_perception.json",
+      "USER_BOOT/PipUiPlus/Special/c_endurance.json",
+      "USER_BOOT/PipUiPlus/Special/d_charisma.json",
+      "USER_BOOT/PipUiPlus/Special/e_intelligence.json",
+      "USER_BOOT/PipUiPlus/Special/f_agility.json",
+      "USER_BOOT/PipUiPlus/Special/g_luck.json",
+      "USER_BOOT/PipUiPlus/Special/a_strength.avi",
+      "USER_BOOT/PipUiPlus/Special/b_perception.avi",
+      "USER_BOOT/PipUiPlus/Special/c_endurance.avi",
+      "USER_BOOT/PipUiPlus/Special/d_charisma.avi",
+      "USER_BOOT/PipUiPlus/Special/e_intelligence.avi",
+      "USER_BOOT/PipUiPlus/Special/f_agility.avi",
+      "USER_BOOT/PipUiPlus/Special/g_luck.avi"
+    ],
+    "id": "PipUiPlus",
+    "instructions": "The 'STAT' page will now have the 'SPECIAL' tab which you can interact with.",
+    "name": "Pip UI+",
+    "tip": "Click the left knob to edit the value of an attribute.",
+    "type": "APP",
+    "version": "1.0.0"
   }
 ]

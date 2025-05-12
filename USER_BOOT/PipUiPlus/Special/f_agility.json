@@ -1,0 +1,8 @@
+{
+	"t": "Agility",
+	"d": "Agility is a measure of your overall finesse and reflexes. It affects the number of Action Points in V.A.T.S. and your ability to sneak.",
+	"v": 3,
+	"w": 102,
+	"h": 98,
+	"f": "USER_BOOT/PipUiPlus/Special/f_agility.avi"
+}

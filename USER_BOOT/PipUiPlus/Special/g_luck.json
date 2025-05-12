@@ -1,0 +1,8 @@
+{
+	"t": "Luck",
+	"d": "Luck is a measure of your general good fortune, and affects the recharge rate of Critical Hits.",
+	"v": 5,
+	"w": 94,
+	"h": 107,
+	"f": "USER_BOOT/PipUiPlus/Special/g_luck.avi"
+}

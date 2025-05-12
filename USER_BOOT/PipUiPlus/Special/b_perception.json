@@ -1,0 +1,8 @@
+{
+	"t": "Perception",
+	"d": "Perception is your environmental awareness and \"sixth sense\", and affects weapon accuracy in V.A.T.S.",
+	"v": 6,
+	"w": 101,
+	"h": 117,
+	"f": "USER_BOOT/PipUiPlus/Special/b_perception.avi"
+}

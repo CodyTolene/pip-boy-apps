@@ -1,0 +1,8 @@
+{
+	"t": "Charisma",
+	"d": "Charisma is your ability to charm and convince others. It affects your success to persuade in dialogue and prices when your barter.",
+	"v": 4,
+	"w": 66,
+	"h": 97,
+	"f": "USER_BOOT/PipUiPlus/Special/d_charisma.avi"
+}

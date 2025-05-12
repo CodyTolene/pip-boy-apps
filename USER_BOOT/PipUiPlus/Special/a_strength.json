@@ -1,0 +1,8 @@
+{
+	"t": "Strength",
+	"d": "Strength is a measure of your raw physical power. It affects how much you can carry, and the damage of all melee attacks.",
+	"v": 2,
+	"w": 71,
+	"h": 104,
+	"f": "USER_BOOT/PipUiPlus/Special/a_strength.avi"
+}
