@@ -158,7 +158,7 @@
   },
   {
     "authors": ["Mercy <https://github.com/MercurialPony>"],
-    "description": "Pip UI+ aims to add some of the missing in-game tabs (such as special, perks, and so on) to the Pip-Boy 3000 Mk V.",
+    "description": "Pip UI+ aims to add some of the missing in-game tabs (such as special, perks, and so on) to the Pip-Boy 3000 Mk V. Inspired by gnargle's Stats Display.",
     "files": [
       "USER_BOOT/PipUiPlusLoader.min.js",
       "USER_BOOT/PipUiPlus/Special.min.js",
