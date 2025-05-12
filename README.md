@@ -1,3 +1,5 @@
+<<<<<<< HEAD
+
 <div align="center">
   <img align="center" src=".github/images/logo.png" />
   <h1 align="center">Pip-Apps</h1>
