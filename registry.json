@@ -157,6 +157,17 @@
     "version": "1.0.0"
   },
   {
+    "authors": ["pip-4111 <https://github.com/pip-4111>"],
+    "description": "A fun Tic-Tac-Toe game for the Pip-Boy 3000 Mk V.",
+    "files": ["USER/PipTacToe.js"],
+    "id": "PipTacToe",
+    "instructions": "",
+    "name": "Pip-Tac-Toe",
+    "tip": "",
+    "type": "GAME",
+    "version": "1.0.0"
+  },
+  {
     "authors": ["Mercy <https://github.com/MercurialPony>"],
     "description": "Pip UI+ aims to add some of the missing in-game tabs (such as special, perks, and so on) to the Pip-Boy 3000 Mk V. Inspired by gnargle's Stats Display.",
     "files": [
