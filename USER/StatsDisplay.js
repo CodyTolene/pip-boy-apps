@@ -101,7 +101,7 @@ function bS(s) {
   }
   for (let e = 0; e < dp.length; e++) {
     var o = dp[e];
-    o.en == es && (dE(cp), dSEO(e), cm || scs == ps || (p = o.p)),
+    o.en == es && (dE(cp), dSEO(e), cm || scs == ps || (pos = o.p)),
       dET(o.t, e, o.en == es),
       scs != ps && dEP(o.p, e, o.en == es);
   }
@@ -193,11 +193,11 @@ function dETC(e, n, o, s, t) {
 function dEP(e, n, o) {
   bC.setFontMonofonto18(),
     o ? bC.setColor(cb) : bC.setColor(cw),
-    cm &&
-      o &&
-      (bC.fillPoly([129, toy * n + 12, 140, toy * n + 12, 135, toy * n + 5]),
-      bC.fillPoly([141, toy * n + 12, 151, toy * n + 12, 146, toy * n + 17])),
-    bC.drawString(e, 160, toy * n + 5);
+    cm && o
+      ? (bC.fillPoly([129, toy * n + 12, 140, toy * n + 12, 135, toy * n + 5]),
+        bC.fillPoly([141, toy * n + 12, 151, toy * n + 12, 146, toy * n + 17]),
+        bC.drawString(pos, 160, toy * n + 5))
+      : bC.drawString(e, 160, toy * n + 5);
 }
 function dED(e) {
   bC.setFontMonofonto14(), bC.setColor(cw), bC.drawString(e, 10, 150);
@@ -228,13 +228,13 @@ function sF(o) {
     } catch (e) {
       return void console.log('Error parsing JSON in file to save:', o, e);
     }
-    (n.p = p), (e = JSON.stringify(n));
+    (n.p = pos), (e = JSON.stringify(n));
     try {
       fs.writeFile(o, e);
     } catch (e) {
       console.log('Error writing file:', o, e);
     }
-    (dp[es % eldm].p = p), (cp = n);
+    (dp[es % eldm].p = pos), (cp = n);
   }
 }
 function sNV() {
@@ -278,9 +278,9 @@ function hK1C(e) {
         Pip.removeListener('knob1', hK1C),
         Pip.on('knob1', hK1),
         (rk1f = hK1))
-      : (p += e) < 0
-        ? (p = 100)
-        : 100 < p && (es = 0);
+      : (pos += e) < 0
+        ? (pos = 100)
+        : 100 < pos && (es = 0);
 }
 function hK1(e) {
   Pip.knob1Click(e),
@@ -342,7 +342,7 @@ Graphics.prototype.setFontMonofonto14 = function () {
 let llm = 0,
   es = 0,
   scs = 0,
-  p = 0,
+  pos = 0,
   dr = !1,
   cm = !1,
   ap = [],
