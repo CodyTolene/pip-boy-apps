@@ -1,7 +1,7 @@
 {
-  "title": "Template Perk",
-  "description": "This perk is a template",
-  "img": "",
-  "xSize": 1,
-  "ySize": 1
+  "t": "Template Perk",
+  "d": "This perk is a template",
+  "i": "",
+  "x": 1,
+  "y": 1
 }

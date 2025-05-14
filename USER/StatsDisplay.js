@@ -1,58 +1,329 @@
-// ============================================================================
-//  Name: Stats Display
-//  Link: https://athene.gay/
-//  Description: Display the SPECIAL stats and skills of the player character.
-//               Also allows the user to configure the SPECIAL stats and skills.
-//  Version: 2.2.1
-// ============================================================================
-
-//SECTION: consts
-const entryListDisplayMax = 6;
-const configListDisplayMax = 18;
-const configColumnDisplayMax = 9; //half of config display max
-const titleOffsetY = 22;
-const perkImageXMaxSize = 167;
-const perkImageYMaxSize = 153;
-const colourBlack = 0;
-const colourGray1 = 1;
-const colourGray2 = 2;
-const colourWhite = 3;
-const maxScreen = 2;
-const perkScreen = 2;
-const statScreen = 1;
-const SPECIALScreen = 0;
-const perkSelectionScreen = 3;
-const enabledPerkFolder = 'USER/StatsDisplay/PERKS/ENABLED/';
-const allPerkFolder = 'USER/StatsDisplay/PERKS/ALL/';
-const skillsFolder = 'USER/StatsDisplay/SKILLS/';
-const specialFolder = 'USER/StatsDisplay/SPECIAL/';
-
-let isModernVersion = false;
-try {
-  let s = require('Storage');
-  let l = s.list();
-  if (l.includes('VERSION') && l.includes('.bootcde')) {
-    let versionStr = s.read('VERSION') || '';
-    let versionNum = parseFloat(versionStr);
-    isModernVersion = versionNum >= 1.29;
-  }
-} catch (e) {
-  console.log('Unable to determine JS version:', e);
+const eldm = 6,
+  cldm = 18,
+  ccdm = 9,
+  toy = 22,
+  pixm = 167,
+  piym = 153,
+  cb = 0,
+  cg = 2,
+  cw = 3,
+  ms = 2,
+  ps = 2,
+  ss = 1,
+  sps = 0,
+  pss = 3,
+  epf = 'USER/StatsDisplay/PERKS/ENABLED/',
+  apf = 'USER/StatsDisplay/PERKS/ALL/',
+  sf = 'USER/StatsDisplay/SKILLS/',
+  spf = 'USER/StatsDisplay/SPECIAL/';
+function nD(e) {
+  return imv && e.endsWith('/')
+    ? e.slice(0, -1)
+    : imv || e.endsWith('/')
+      ? e
+      : e + '/';
 }
-
-function normalizeDir(dir) {
-  if (isModernVersion && dir.endsWith('/')) {
-    return dir.slice(0, -1);
-  }
-  if (!isModernVersion && !dir.endsWith('/')) {
-    return dir + '/';
-  }
-  return dir;
+function draw() {
+  dr ||
+    ((dr = !0),
+    bC.clear(),
+    scs == ps
+      ? bS(epf)
+      : scs == ss
+        ? bS(sf)
+        : scs == sps
+          ? bS(spf)
+          : scs == pss && bPSS(),
+    bH.flip(),
+    bF.flip(),
+    bC.flip(),
+    (dr = !1));
 }
-
+function bS(s) {
+  if (null == lr) {
+    var t;
+    dp = [];
+    try {
+      t = fs.readdirSync(nD(s));
+    } catch {
+      fs.mkdir(nD(s)), (t = fs.readdirSync(nD(s)));
+    }
+    if (
+      ((t = t.filter((e) => '.' !== e && '..' !== e)),
+      imv &&
+        (t = t.filter((n) => {
+          try {
+            return !fs.statSync(nD(s) + '/' + n).isDirectory;
+          } catch (e) {
+            return console.log('Skipping bad file or folder:', n), !1;
+          }
+        })),
+      (llm = t.length),
+      0 == t.length)
+    )
+      return void dES();
+    let e = Math.min(eldm, llm),
+      n = 0;
+    for (; es >= e; ) n++, (e = Math.min(eldm * (n + 1), llm));
+    for (let o = n * eldm; o < e; o++) {
+      var l = t[o],
+        i = nD(s) + '/' + l;
+      let e;
+      try {
+        e = fs.readFileSync(i);
+      } catch (e) {
+        console.log('Skipping unreadable file:', i, e);
+        continue;
+      }
+      let n;
+      try {
+        n = JSON.parse(e);
+      } catch (e) {
+        console.log('Invalid JSON in file:', i);
+        continue;
+      }
+      scs != ps
+        ? dp.push({ t: n.t, fn: l, en: o, p: n.p })
+        : dp.push({ t: n.t, fn: l, en: o });
+    }
+    lr = es;
+  }
+  if (null == cp) {
+    var n = es % 6,
+      n = dp[n].fn,
+      n = nD(s) + '/' + n;
+    try {
+      var e = fs.readFileSync(n);
+      cp = JSON.parse(e);
+    } catch (e) {
+      console.log('Error loading currentPerk file:', n, e), (cp = null);
+    }
+  }
+  for (let e = 0; e < dp.length; e++) {
+    var o = dp[e];
+    o.en == es && (dE(cp), dSEO(e), cm || scs == ps || (pos = o.p)),
+      dET(o.t, e, o.en == es),
+      scs != ps && dEP(o.p, e, o.en == es);
+  }
+}
+function bPSS() {
+  0 == ap.length && gPCL();
+  let e = Math.min(cldm, llm),
+    n = 0;
+  for (; es >= e; ) n++, (e = Math.min(cldm * (n + 1), llm));
+  let o = 0;
+  for (i = n * cldm; i < e; i++) {
+    i != n * cldm && i % ccdm == 0 && (o = 1);
+    var s = ap[i];
+    i == es && dSEOC(i % cldm, o),
+      dETC(s.t, i % cldm, i == es, o, ep.includes(s.fn));
+  }
+}
+function gPCL() {
+  var e, n, o;
+  try {
+    e = fs.readdirSync(nD(epf));
+  } catch {
+    fs.mkdir(epf), (e = fs.readdirSync(nD(epf)));
+  }
+  for (n of (e = e.filter((e) => '.' !== e && '..' !== e))) ep.push(n);
+  try {
+    e = (e = fs.readdirSync(nD(apf))).filter((e) => '.' !== e && '..' !== e);
+  } catch {
+    console.log('ERROR: Missing ALL perk folder!'), (e = []);
+  }
+  llm = e.length;
+  for (o of e) {
+    var s = nD(apf) + '/' + o;
+    let e;
+    try {
+      e = fs.readFileSync(s);
+    } catch (e) {
+      console.log('Skipping missing perk file:', s, e);
+      continue;
+    }
+    let n;
+    try {
+      n = JSON.parse(e);
+    } catch (e) {
+      console.log('Skipping invalid JSON perk file:', s, e);
+      continue;
+    }
+    s = { fn: o, t: n.t };
+    ap.push(s);
+  }
+}
+function dES() {
+  bC.setFontMonofonto18(),
+    bC.setColor(cw),
+    bC.drawString('No Perks selected, press wheel to configure.', 2, 100);
+}
+function dE(e) {
+  dEI(e.i, e.x, e.y), dED(e.d);
+}
+function dEI(e, n, o) {
+  var s = Math.floor((pixm - n) / 2),
+    t = Math.floor((piym - o) / 2);
+  bC.setColor(cg),
+    bC.drawImage(
+      {
+        width: n,
+        height: o,
+        bpp: 1,
+        buffer: require('heatshrink').decompress(atob(e)),
+      },
+      200 + s,
+      0 + t,
+    );
+}
+function dET(e, n, o) {
+  bC.setFontMonofonto18(),
+    o ? bC.setColor(cb) : bC.setColor(cw),
+    bC.drawString(e, 10, toy * n + 5);
+}
+function dETC(e, n, o, s, t) {
+  bC.setFontMonofonto18();
+  let l = '';
+  (l = t ? e + ' *' : e),
+    o ? bC.setColor(cb) : bC.setColor(cw),
+    0 == s
+      ? bC.drawString(l, 10, toy * n + 5)
+      : bC.drawString(l, 210, toy * (n - ccdm) + 5);
+}
+function dEP(e, n, o) {
+  bC.setFontMonofonto18(),
+    o ? bC.setColor(cb) : bC.setColor(cw),
+    cm && o
+      ? (bC.fillPoly([129, toy * n + 12, 140, toy * n + 12, 135, toy * n + 5]),
+        bC.fillPoly([141, toy * n + 12, 151, toy * n + 12, 146, toy * n + 17]),
+        bC.drawString(pos, 160, toy * n + 5))
+      : bC.drawString(e, 160, toy * n + 5);
+}
+function dED(e) {
+  bC.setFontMonofonto14(), bC.setColor(cw), bC.drawString(e, 10, 150);
+}
+function dSEO(e) {
+  bC.setColor(cw), bC.fillRect(5, toy * e + 1, 190, toy * e + 23);
+}
+function dSEOC(e, n) {
+  bC.setColor(cw),
+    0 == n
+      ? bC.fillRect(5, toy * e + 1, 190, toy * e + 23)
+      : bC.fillRect(205, toy * (e - ccdm) + 1, 390, toy * (e - ccdm) + 23);
+}
+function sF(o) {
+  if (es % eldm >= dp.length) console.log('Invalid entrySelected index');
+  else {
+    var s = dp[es % eldm].fn,
+      o = nD(o) + '/' + s;
+    let e;
+    try {
+      e = fs.readFileSync(o);
+    } catch (e) {
+      return void console.log('Error reading file to save:', o, e);
+    }
+    let n;
+    try {
+      n = JSON.parse(e);
+    } catch (e) {
+      return void console.log('Error parsing JSON in file to save:', o, e);
+    }
+    (n.p = pos), (e = JSON.stringify(n));
+    try {
+      fs.writeFile(o, e);
+    } catch (e) {
+      console.log('Error writing file:', o, e);
+    }
+    (dp[es % eldm].p = pos), (cp = n);
+  }
+}
+function sNV() {
+  scs == sps ? sF(spf) : scs == ss && sF(sf);
+}
+function sEP(e) {
+  var n = fs.readFileSync(nD(apf) + '/' + e);
+  fs.writeFile(nD(epf) + '/' + e, n);
+}
+function sNPS() {
+  let n;
+  try {
+    n = fs.readdirSync(nD(epf));
+  } catch (e) {
+    console.log('Enabled folder missing, creating...'),
+      fs.mkdir(nD(epf)),
+      (n = []);
+  }
+  n = n.filter((e) => '.' !== e && '..' !== e);
+  for (let e = 0; e < ap.length; e++) {
+    var o = ap[e];
+    (ep.includes(o.fn) && n.includes(o.fn)) ||
+      (ep.includes(o.fn) && !n.includes(o.fn)
+        ? sEP(o.fn)
+        : !ep.includes(o.fn) &&
+          n.includes(o.fn) &&
+          fs.unlink(nD(epf) + '/' + o.fn));
+  }
+  (ep = []), (ap = []);
+}
+function tPE() {
+  var e,
+    n = ap[es];
+  ep.includes(n.fn) ? ((e = ep.indexOf(n.fn)), ep.splice(e, 1)) : ep.push(n.fn);
+}
+function hK1C(e) {
+  Pip.knob1Click(e),
+    0 == e
+      ? ((cm = !cm),
+        sNV(),
+        Pip.removeListener('knob1', hK1C),
+        Pip.on('knob1', hK1),
+        (rk1f = hK1))
+      : (pos += e) < 0
+        ? (pos = 100)
+        : 100 < pos && (es = 0);
+}
+function hK1(e) {
+  Pip.knob1Click(e),
+    0 == e
+      ? scs == ps
+        ? ((es = 0), (scs = pss), (cp = null))
+        : scs == pss
+          ? tPE()
+          : ((cm = !cm),
+            Pip.removeListener('knob1', hK1),
+            Pip.on('knob1', hK1C),
+            (rk1f = hK1C))
+      : ((es -= e),
+        (cp = null),
+        es < 0
+          ? ((es = llm - 1), llm > eldm && (lr = null))
+          : es >= llm && (es = 0),
+        ((0 < e && lr - 1 == es) || (es % eldm == 0 && es != lr)) &&
+          (lr = null));
+}
+function hK2(e) {
+  Pip.knob2Click(e),
+    (cm = !1),
+    scs == pss ? (sNPS(), (scs = ps)) : (scs += e),
+    (es = 0),
+    (cp = null),
+    (lr = null),
+    scs > ms ? (scs = 0) : scs < 0 && (scs = ms);
+}
+function hT() {
+  gC(), torchButtonHandler();
+}
+function pH() {
+  gC();
+}
+function gC() {
+  clearInterval(intervalId),
+    Pip.removeListener('knob1', rk1f),
+    Pip.removeListener('knob2', hK2),
+    Pip.removeListener('torch', hT),
+    E.reboot();
+}
 Graphics.prototype.setFontMonofonto14 = function () {
-  // Actual height 14 (13 - 0)
-  // 1 BPP
   return this.setFontCustom(
     E.toString(
       require('heatshrink').decompress(
@@ -65,584 +336,37 @@ Graphics.prototype.setFontMonofonto14 = function () {
     atob(
       'BwYHCAgICAYHBggIBgcGCAgGCAgICAgICAgGBggICAgICAgICAcICAgICAgICAgICAgICAgICAgICAgICAUICAcICAgICAgICAcHCAYICAgICAgICAgICAgICAgGBwg=',
     ),
-    14 | 65536,
+    65550,
   );
 };
-
-//SECTION: Screen drawing
-
-function draw() {
-  if (drawing) return;
-  drawing = true;
-  bC.clear();
-  if (screenSelected == perkScreen) {
-    buildScreen(enabledPerkFolder);
-  } else if (screenSelected == statScreen) {
-    buildScreen(skillsFolder);
-  } else if (screenSelected == SPECIALScreen) {
-    buildScreen(specialFolder);
-  } else if (screenSelected == perkSelectionScreen) {
-    buildPerkSelectionScreen();
+let llm = 0,
+  es = 0,
+  scs = 0,
+  pos = 0,
+  dr = !1,
+  cm = !1,
+  ap = [],
+  ep = [],
+  dp = [],
+  cp = null,
+  lr = null,
+  rk1f = hK1,
+  imv = !1;
+try {
+  let o = require('Storage'),
+    e = o.list();
+  if (e.includes('VERSION') && e.includes('.bootcde')) {
+    let e = o.read('VERSION') || '',
+      n = parseFloat(e);
+    imv = 1.29 <= n;
   }
-  bH.flip();
-  bF.flip();
-  bC.flip();
-  drawing = false;
+} catch (e) {
+  console.log('Unable to determine JS version:', e);
 }
-
-function buildScreen(directory) {
-  //directory will only be used when we need to go to SD, which will be when perk changes or we scroll to the next page.
-  if (lastReload == null) {
-    displayedPerks = [];
-    //time to populate the displayedPerks array and currentPerk
-    var files;
-    try {
-      files = require('fs').readdirSync(normalizeDir(directory));
-    } catch {
-      require('fs').mkdir(normalizeDir(directory));
-      files = require('fs').readdirSync(normalizeDir(directory));
-    }
-
-    files = files.filter((f) => f !== '.' && f !== '..');
-
-    if (isModernVersion) {
-      files = files.filter((file) => {
-        try {
-          let stat = require('fs').statSync(
-            normalizeDir(directory) + '/' + file,
-          );
-          return !stat.isDirectory;
-        } catch (e) {
-          console.log('Skipping bad file or folder:', file);
-          return false;
-        }
-      });
-    }
-
-    loadedListMax = files.length;
-    if (files.length == 0) {
-      drawEmptyScreen();
-      return;
-    }
-
-    let entryListMax = Math.min(entryListDisplayMax, loadedListMax);
-    let a = 0;
-    while (entrySelected >= entryListMax) {
-      a++;
-      //We're beyond the number of entries we can see on one page.
-      //We need to get the next set of files and display them
-      entryListMax = Math.min(entryListDisplayMax * (a + 1), loadedListMax);
-    }
-
-    for (let i = a * entryListDisplayMax; i < entryListMax; i++) {
-      let file = files[i];
-      const fullPath = normalizeDir(directory) + '/' + file;
-      let fileString;
-      try {
-        fileString = require('fs').readFileSync(fullPath);
-      } catch (e) {
-        console.log('Skipping unreadable file:', fullPath, e);
-        continue;
-      }
-      let fileObj;
-      try {
-        fileObj = JSON.parse(fileString);
-      } catch (e) {
-        console.log('Invalid JSON in file:', fullPath);
-        continue;
-      }
-      if (screenSelected != perkScreen) {
-        displayedPerks.push({
-          title: fileObj.title,
-          filename: file,
-          entryNum: i,
-          points: fileObj.points,
-        });
-      } else {
-        displayedPerks.push({
-          title: fileObj.title,
-          filename: file,
-          entryNum: i,
-        });
-      }
-    }
-    lastReload = entrySelected;
-  }
-  if (currentPerk == null) {
-    let currPerkInt = entrySelected % 6;
-    let file = displayedPerks[currPerkInt].filename;
-    const fullPath = normalizeDir(directory) + '/' + file;
-    try {
-      let fileString = require('fs').readFileSync(fullPath);
-      currentPerk = JSON.parse(fileString);
-    } catch (e) {
-      console.log('Error loading currentPerk file:', fullPath, e);
-      currentPerk = null;
-    }
-  }
-  for (let i = 0; i < displayedPerks.length; i++) {
-    let perkObj = displayedPerks[i];
-    if (perkObj.entryNum == entrySelected) {
-      drawEntry(currentPerk);
-      drawSelectedEntryOutline(i);
-      if (!configMode && screenSelected != perkScreen) {
-        pointsOfSelected = perkObj.points;
-      }
-    }
-    drawEntryTitle(perkObj.title, i, perkObj.entryNum == entrySelected);
-    if (screenSelected != perkScreen) {
-      drawEntryPoints(perkObj.points, i, perkObj.entryNum == entrySelected);
-    }
-  }
-}
-
-function buildPerkSelectionScreen() {
-  if (allPerks.length == 0) {
-    generatePerksConfigLists();
-  }
-  //ok, now for each element in allPerks, we draw it.
-  //I think we can draw two columns of 8 titles, so sixteen on screen
-  //at a time. Then scroll further and it's a new screen of sixteen.
-  let entryListMax = Math.min(configListDisplayMax, loadedListMax);
-  let a = 0;
-  while (entrySelected >= entryListMax) {
-    a++;
-    //We're beyond the number of entries we can see on one page.
-    //We need to get the next set of files and display them
-    entryListMax = Math.min(configListDisplayMax * (a + 1), loadedListMax);
-  }
-  let col = 0;
-  for (i = a * configListDisplayMax; i < entryListMax; i++) {
-    if (i != a * configListDisplayMax && i % configColumnDisplayMax == 0) {
-      col = 1;
-    }
-    let perk = allPerks[i];
-    if (i == entrySelected) {
-      drawSelectedEntryOutlineConfig(i % configListDisplayMax, col);
-    }
-    drawEntryTitleConfig(
-      perk.title,
-      i % configListDisplayMax,
-      i == entrySelected,
-      col,
-      enabledPerks.includes(perk.filename),
-    );
-  }
-}
-
-function generatePerksConfigLists() {
-  //first load of screen, build the full list.
-  var files;
-  try {
-    files = require('fs').readdirSync(normalizeDir(enabledPerkFolder));
-  } catch {
-    require('fs').mkdir(enabledPerkFolder);
-    files = require('fs').readdirSync(normalizeDir(enabledPerkFolder));
-  }
-
-  files = files.filter((f) => f !== '.' && f !== '..');
-
-  for (let file of files) {
-    enabledPerks.push(file);
-  }
-
-  try {
-    files = require('fs').readdirSync(normalizeDir(allPerkFolder));
-    files = files.filter((f) => f !== '.' && f !== '..');
-  } catch {
-    console.log('ERROR: Missing ALL perk folder!');
-    files = [];
-  }
-  loadedListMax = files.length;
-
-  for (let file of files) {
-    let fullPath = normalizeDir(allPerkFolder) + '/' + file;
-    let fileString;
-    try {
-      fileString = require('fs').readFileSync(fullPath);
-    } catch (e) {
-      console.log('Skipping missing perk file:', fullPath, e);
-      continue;
-    }
-    let fileObj;
-    try {
-      fileObj = JSON.parse(fileString);
-    } catch (e) {
-      console.log('Skipping invalid JSON perk file:', fullPath, e);
-      continue;
-    }
-    let perkObj = { filename: file, title: fileObj.title };
-    allPerks.push(perkObj);
-  }
-}
-
-//SECTION: Element Drawing
-
-function drawEmptyScreen() {
-  bC.setFontMonofonto18();
-  bC.setColor(colourWhite);
-  bC.drawString('No Perks selected, press wheel to configure.', 2, 100);
-}
-
-function drawEntry(perkObj) {
-  drawEntryImage(perkObj.img, perkObj.xSize, perkObj.ySize);
-  drawEntryDesc(perkObj.description);
-}
-
-function drawEntryImage(imgStr, xSize, ySize) {
-  //so we want to try and draw as central as possible.
-  //our 'window' for how big the perk can be is 167x153 (y truncated for the desc at the bottom)
-  //to figure out how to centre the image we need to get the difference
-  //between the size of the image and our window, halve it, and add it on
-  //to the location.
-  let xOffset = Math.floor((perkImageXMaxSize - xSize) / 2);
-  let yOffset = Math.floor((perkImageYMaxSize - ySize) / 2);
-  bC.setColor(colourGray2);
-  bC.drawImage(
-    {
-      width: xSize,
-      height: ySize,
-      bpp: 1,
-      buffer: require('heatshrink').decompress(atob(imgStr)),
-    },
-    200 + xOffset,
-    0 + yOffset,
-  );
-}
-
-function drawEntryTitle(title, i, selected) {
-  bC.setFontMonofonto18();
-  if (selected) {
-    bC.setColor(colourBlack);
-  } else {
-    bC.setColor(colourWhite);
-  }
-  bC.drawString(title, 10, titleOffsetY * i + 5);
-}
-
-function drawEntryTitleConfig(title, i, selected, col, enabled) {
-  bC.setFontMonofonto18();
-  let finalTitle = '';
-  if (enabled) {
-    finalTitle = title + ' *';
-  } else {
-    finalTitle = title;
-  }
-  if (selected) {
-    bC.setColor(colourBlack);
-  } else {
-    bC.setColor(colourWhite);
-  }
-  if (col == 0) {
-    bC.drawString(finalTitle, 10, titleOffsetY * i + 5);
-  } else {
-    bC.drawString(
-      finalTitle,
-      210,
-      titleOffsetY * (i - configColumnDisplayMax) + 5,
-    );
-  }
-}
-
-function drawEntryPoints(points, i, selected) {
-  bC.setFontMonofonto18();
-  if (selected) {
-    bC.setColor(colourBlack);
-  } else {
-    bC.setColor(colourWhite);
-  }
-  if (configMode && selected) {
-    bC.fillPoly([
-      129,
-      titleOffsetY * i + 12,
-      140,
-      titleOffsetY * i + 12,
-      135,
-      titleOffsetY * i + 5,
-    ]);
-    bC.fillPoly([
-      141,
-      titleOffsetY * i + 12,
-      151,
-      titleOffsetY * i + 12,
-      146,
-      titleOffsetY * i + 17,
-    ]);
-    bC.drawString(pointsOfSelected, 160, titleOffsetY * i + 5);
-  } else {
-    bC.drawString(points, 160, titleOffsetY * i + 5);
-  }
-}
-
-function drawEntryDesc(desc) {
-  bC.setFontMonofonto14();
-  bC.setColor(colourWhite);
-  bC.drawString(desc, 10, 150);
-}
-
-function drawSelectedEntryOutline(i) {
-  bC.setColor(colourWhite);
-  bC.fillRect(5, titleOffsetY * i + 1, 190, titleOffsetY * i + 23);
-}
-
-function drawSelectedEntryOutlineConfig(i, col) {
-  bC.setColor(colourWhite);
-  if (col == 0) {
-    bC.fillRect(5, titleOffsetY * i + 1, 190, titleOffsetY * i + 23);
-  } else {
-    bC.fillRect(
-      205,
-      titleOffsetY * (i - configColumnDisplayMax) + 1,
-      390,
-      titleOffsetY * (i - configColumnDisplayMax) + 23,
-    );
-  }
-}
-
-//SECTION: config saving
-
-function saveFile(directory) {
-  if (entrySelected % entryListDisplayMax >= displayedPerks.length) {
-    console.log('Invalid entrySelected index');
-    return;
-  }
-  let file = displayedPerks[entrySelected % entryListDisplayMax].filename;
-  let fileToSave = normalizeDir(directory) + '/' + file;
-
-  let fileString;
-  try {
-    fileString = require('fs').readFileSync(fileToSave);
-  } catch (e) {
-    console.log('Error reading file to save:', fileToSave, e);
-    return;
-  }
-
-  let fileObj;
-  try {
-    fileObj = JSON.parse(fileString);
-  } catch (e) {
-    console.log('Error parsing JSON in file to save:', fileToSave, e);
-    return;
-  }
-
-  fileObj.points = pointsOfSelected;
-  fileString = JSON.stringify(fileObj);
-
-  try {
-    require('fs').writeFile(fileToSave, fileString);
-  } catch (e) {
-    console.log('Error writing file:', fileToSave, e);
-  }
-
-  // update in-memory data
-  displayedPerks[entrySelected % entryListDisplayMax].points = pointsOfSelected;
-  currentPerk = fileObj;
-}
-
-function saveNewValue() {
-  if (screenSelected == SPECIALScreen) {
-    saveFile(specialFolder);
-  } else if (screenSelected == statScreen) {
-    saveFile(skillsFolder);
-  }
-}
-
-function saveEnabledPerk(filename) {
-  //"USER/PERKS/ALL"
-  let fileString = require('fs').readFileSync(
-    normalizeDir(allPerkFolder) + '/' + filename,
-  );
-  require('fs').writeFile(
-    normalizeDir(enabledPerkFolder) + '/' + filename,
-    fileString,
-  );
-}
-
-function saveNewPerkSelection() {
-  let enabledFiles;
-  try {
-    enabledFiles = require('fs').readdirSync(normalizeDir(enabledPerkFolder));
-  } catch (e) {
-    console.log('Enabled folder missing, creating...');
-    require('fs').mkdir(normalizeDir(enabledPerkFolder));
-    enabledFiles = [];
-  }
-
-  enabledFiles = enabledFiles.filter((f) => f !== '.' && f !== '..');
-
-  for (let i = 0; i < allPerks.length; i++) {
-    let perk = allPerks[i];
-    if (
-      enabledPerks.includes(perk.filename) &&
-      enabledFiles.includes(perk.filename)
-    ) {
-      continue; //was enabled, still enabled, nothing to do.
-    } else if (
-      enabledPerks.includes(perk.filename) &&
-      !enabledFiles.includes(perk.filename)
-    ) {
-      //wasn't enabled, is enabled now, copy the file to enabled folder.
-      saveEnabledPerk(perk.filename);
-    } else if (
-      !enabledPerks.includes(perk.filename) &&
-      enabledFiles.includes(perk.filename)
-    ) {
-      //was enabled, no longer is, delete the file from ENABLED
-      require('fs').unlink(
-        normalizeDir(enabledPerkFolder) + '/' + perk.filename,
-      );
-    }
-  }
-  //everything done, wipe out the in-memory enabled/disabled lists.
-  enabledPerks = [];
-  allPerks = [];
-}
-
-function togglePerkEnabled() {
-  let perkObj = allPerks[entrySelected];
-  if (enabledPerks.includes(perkObj.filename)) {
-    let index = enabledPerks.indexOf(perkObj.filename);
-    enabledPerks.splice(index, 1);
-  } else {
-    enabledPerks.push(perkObj.filename);
-  }
-}
-
-//SECTION: Button handlers
-
-function handleKnob1Config(dir) {
-  //first, play the click.
-  Pip.knob1Click(dir);
-
-  if (dir == 0) {
-    //pressed in, this is the config trigger.
-    //toggle configuration mode on special/skills screens
-    configMode = !configMode;
-    saveNewValue();
-    Pip.removeListener('knob1', handleKnob1Config);
-    Pip.on('knob1', handleKnob1);
-    registeredKnob1Func = handleKnob1;
-  } else {
-    pointsOfSelected += dir;
-    if (pointsOfSelected < 0) {
-      pointsOfSelected = 100;
-    } else if (pointsOfSelected > 100) {
-      entrySelected = 0;
-    }
-  }
-}
-
-function handleKnob1(dir) {
-  //first, play the click.
-  Pip.knob1Click(dir);
-
-  if (dir == 0) {
-    //pressed in, this is the config trigger.
-    if (screenSelected == perkScreen) {
-      //change screen to perk selection screen.
-      entrySelected = 0;
-      screenSelected = perkSelectionScreen;
-      currentPerk = null;
-    } else if (screenSelected == perkSelectionScreen) {
-      togglePerkEnabled();
-    } else {
-      //toggle configuration mode on special/skills screens
-      configMode = !configMode;
-      Pip.removeListener('knob1', handleKnob1);
-      Pip.on('knob1', handleKnob1Config);
-      registeredKnob1Func = handleKnob1Config;
-    }
-  } else {
-    //then, we need to change our position in the list.
-    entrySelected -= dir; //-1 is scroll down, but our list increases numerically. so we need to subtract
-    currentPerk = null;
-    if (entrySelected < 0) {
-      entrySelected = loadedListMax - 1;
-      if (loadedListMax > entryListDisplayMax) {
-        lastReload = null; //always reload page if wrapping.
-      }
-    } else if (entrySelected >= loadedListMax) {
-      entrySelected = 0;
-    }
-    if (dir > 0 && lastReload - 1 == entrySelected) {
-      //scrolling up, so e.g. 6 -> 5
-      lastReload = null;
-    } else if (
-      entrySelected % entryListDisplayMax == 0 &&
-      entrySelected != lastReload
-    ) {
-      lastReload = null; //reset lastReload value, that's our cue that we need to pull from SD card.
-    }
-  }
-}
-
-function handleKnob2(dir) {
-  //first, play the click.
-  Pip.knob2Click(dir);
-  //if switching screens we need to boot immediately out of config without saving.
-  configMode = false;
-  //then switch stats screen.
-  if (screenSelected == perkSelectionScreen) {
-    //if scrolling away from perk selection screen, save changes and reset to perk screen.
-    saveNewPerkSelection();
-    screenSelected = perkScreen;
-  } else {
-    screenSelected += dir;
-  }
-  entrySelected = 0; //reset to top of list
-  currentPerk = null;
-  lastReload = null;
-  if (screenSelected > maxScreen) {
-    screenSelected = 0;
-  } else if (screenSelected < 0) {
-    screenSelected = maxScreen;
-  }
-}
-
-function handleTorch() {
-  gracefulClose();
-  torchButtonHandler();
-}
-
-function powerHandler() {
-  gracefulClose();
-}
-
-function gracefulClose() {
-  //shut down interval triggers first in case one fires while we're tearing down
-  clearInterval(intervalId);
-  Pip.removeListener('knob1', registeredKnob1Func);
-  Pip.removeListener('knob2', handleKnob2);
-  Pip.removeListener('torch', handleTorch);
-  E.reboot(); //we're using too much memory, we gotta full reboot now.
-}
-
-//SECTION: main entry point
-
-let loadedListMax = 0;
-let entrySelected = 0;
-let screenSelected = 0;
-let pointsOfSelected = 0;
-let drawing = false;
-let configMode = false;
-let allPerks = [];
-let enabledPerks = [];
-let displayedPerks = []; //contains title and filename.
-let currentPerk = null; //contains all data
-let lastReload = null;
-let registeredKnob1Func = handleKnob1;
-
-Pip.on('knob1', registeredKnob1Func);
-Pip.on('knob2', handleKnob2);
-Pip.on('torch', handleTorch);
-
-setWatch(powerHandler, BTN_POWER, { repeat: false });
-
+Pip.on('knob1', rk1f),
+  Pip.on('knob2', hK2),
+  Pip.on('torch', hT),
+  setWatch(pH, BTN_POWER, { repeat: !1 });
 let intervalId = setInterval(() => {
-  checkMode();
-  if (Pip.mode == 2) {
-    draw();
-  } else {
-    gracefulClose();
-  }
+  checkMode(), (2 == Pip.mode ? draw : (gC(), delete gC, showMainMenu))();
 }, 16);
