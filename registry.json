@@ -105,7 +105,7 @@
     "name": "Custom Radio",
     "tip": "Avoid adding more than 50 songs to the `/RADIO` folder to keep performance smooth. Press the knob again to stop playback.",
     "type": "APP",
-    "version": "2.1.1"
+    "version": "2.2.0"
   },
   {
     "authors": ["Illes Kokenyesi"],
