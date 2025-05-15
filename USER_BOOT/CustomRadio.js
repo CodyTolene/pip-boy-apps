@@ -3,7 +3,7 @@
 //  License: CC-BY-NC-4.0
 //  Repository: https://github.com/CodyTolene/pip-apps
 //  Description: Custom Radio overrides and functions for the Pip-Boy 3000 Mk V.
-//  Version: 2.1.1
+//  Version: 2.2.0
 // =============================================================================
 
 Pip.CustomRadio = {
@@ -107,6 +107,9 @@ function submenuCustomRadio() {
   let selectedFile = null;
   let suppressKnob1 = false;
 
+  let previousKnob1Click = Pip.knob1Click;
+  const customKnob1Click = function () {};
+
   if (!rd._options) rd.setupI2C();
 
   if (Pip.CustomRadio.currentAudio) {
@@ -121,6 +124,9 @@ function submenuCustomRadio() {
   Pip.radioClipPlaying = false;
 
   bC.clear(1);
+
+  previousKnob1Click = Pip.knob1Click;
+  Pip.knob1Click = customKnob1Click;
 
   let files = [];
   try {
@@ -183,13 +189,8 @@ function submenuCustomRadio() {
 
     if (dir > 0 || dir < 0) {
       playingRandom = false;
-
-      if (Pip.CustomRadio.currentAudio) {
-        Pip.audioStop();
-        Pip.CustomRadio.currentAudio = null;
-        Pip.radioClipPlaying = false;
-        bC.setColor(0).fillRect(244, 154, 400, 180);
-        bC.flip();
+      if (Pip.knob1Click !== customKnob1Click) {
+        Pip.knob1Click = customKnob1Click;
       }
     } else {
       if (selectedFile && Pip.CustomRadio.currentAudio === selectedFile) {
@@ -275,6 +276,10 @@ function submenuCustomRadio() {
     Pip.removeListener('knob1', handleKnob1);
     Pip.on('knob1', handleKnob1);
 
+    if (Pip.knob1Click !== customKnob1Click) {
+      Pip.knob1Click = customKnob1Click;
+    }
+
     const previousSubmenu = Pip.removeSubmenu;
     Pip.removeSubmenu = function customRadioClose() {
       Pip.CustomRadio.stopWaveform();
@@ -297,6 +302,8 @@ function submenuCustomRadio() {
       ) {
         previousSubmenu();
       }
+
+      Pip.knob1Click = previousKnob1Click;
     };
   }
 
@@ -409,61 +416,34 @@ function submenuLocalRadio() {
  * RADIO OVERRIDES *
  *******************/
 
-(function () {
-  const optionsPath = 'USER/CustomRadio/options.json';
-
-  function readCustomRadioOptions() {
-    try {
-      let file = require('fs').readFileSync(optionsPath);
-      return JSON.parse(file);
-    } catch {
-      return null;
-    }
+function customRadio() {
+  let options;
+  try {
+    const path = 'USER/CustomRadio/options.json';
+    const raw = fs.readFileSync(path);
+    options = JSON.parse(raw);
+  } catch (err) {
+    print('Could not read options.json', err);
+    options = null;
   }
 
-  const options = readCustomRadioOptions();
-  if (options && options.enabled) {
-    MODEINFO = [
-      0,
-      {
-        name: 'STAT',
-        submenu: {
-          STATUS: submenuStatus,
-          CONNECT: submenuConnect,
-          DIAGNOSTICS: submenuDiagnostics,
-        },
-      },
-      {
-        name: 'INV',
-        submenu: {
-          ATTACHMENTS: submenuInvAttach,
-          APPAREL: submenuApparel,
-          APPS: submenuApps,
-          AID: showVaultAssignment,
-        },
-      },
-      {
-        name: 'DATA',
-        submenu: {
-          CLOCK: submenuClock,
-          STATS: submenuStats,
-          MAINTENANCE: submenuMaintenance,
-        },
-      },
-      {
-        name: 'MAP',
-        fn: submenuMap,
-      },
-      {
-        name: 'RADIO',
-        submenu: {
-          LOCAL: submenuLocalRadio,
-          CUSTOM: submenuCustomRadio,
-        },
-      },
-    ];
+  if (
+    options &&
+    options.enabled &&
+    typeof MODEINFO !== 'undefined' &&
+    typeof MODE !== 'undefined' &&
+    MODEINFO[MODE.RADIO]
+  ) {
+    const radioTab = MODEINFO[MODE.RADIO];
+    if (radioTab.fn) delete radioTab.fn;
+
+    radioTab.submenu = {
+      LOCAL: submenuLocalRadio,
+      CUSTOM: submenuCustomRadio,
+    };
   }
 
-  delete readCustomRadioOptions;
   delete options;
-})();
+}
+
+customRadio();
