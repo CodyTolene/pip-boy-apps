@@ -189,15 +189,6 @@ function submenuCustomRadio() {
 
     if (dir > 0 || dir < 0) {
       playingRandom = false;
-
-      // if (Pip.CustomRadio.currentAudio) {
-      //   Pip.audioStop();
-      //   Pip.CustomRadio.currentAudio = null;
-      //   Pip.radioClipPlaying = false;
-      //   bC.setColor(0).fillRect(244, 154, 400, 180);
-      //   bC.flip();
-      // }
-
       if (Pip.knob1Click !== customKnob1Click) {
         Pip.knob1Click = customKnob1Click;
       }
