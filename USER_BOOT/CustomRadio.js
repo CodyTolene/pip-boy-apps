@@ -425,9 +425,6 @@ function customRadio() {
   } catch (err) {
     print('Could not read options.json', err);
     options = null;
-  } finally {
-    delete path;
-    delete raw;
   }
 
   if (
@@ -447,7 +444,6 @@ function customRadio() {
   }
 
   delete options;
-  delete customRadio;
 }
 
 customRadio();
