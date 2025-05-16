@@ -418,7 +418,10 @@ Pip.Radio.Custom = {
     Pip.removeSubmenu = function customRadioClose() {
       debug('[customRadioClose] Closing custom radio menu');
 
-      Pip.fadeOff([LED_TUNING], Math.pow(2, Pip.brightness / 2) / 1024);
+      if (LED_TUNING.read()) {
+        // Turn off the LED if it was on
+        LED_TUNING.write(0);
+      }
 
       Pip.Radio.Waveform.stop();
       bC.clear(1);
