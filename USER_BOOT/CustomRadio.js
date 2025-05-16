@@ -3,18 +3,23 @@
 //  License: CC-BY-NC-4.0
 //  Repository: https://github.com/CodyTolene/pip-apps
 //  Description: Custom Radio overrides and functions for the Pip-Boy 3000 Mk V.
-//  Version: 2.2.0
+//  Version: 2.3.0
 // =============================================================================
 
-Pip.CustomRadio = {
-  // Variables
-  animationAngle: 0,
+const DEBUG = false;
+
+Pip.Radio = {
   currentAudio: null,
+  lastDrawnSong: null,
   waveformGfx: null,
-  waveformInterval: null,
+};
+
+Pip.Radio.Waveform = {
+  animationAngle: 0,
+  interval: null,
   waveformPoints: null,
-  // Functions
-  drawWaveformBorder: function () {
+  drawBorder: function () {
+    if (DEBUG) print('[drawBorder] Drawing waveform border');
     for (let i = 0; i < 40; i++) {
       const color = i % 5 === 0 ? 3 : 1;
       const height = i % 5 === 0 ? 2 : 1;
@@ -26,202 +31,293 @@ Pip.CustomRadio = {
     bC.flip();
   },
   drawCurrentlyPlaying: function () {
-    bC.setColor(0).fillRect(244, 154, 400, 180);
+    if (Pip.Radio.currentAudio !== Pip.Radio.lastDrawnSong) {
+      if (DEBUG)
+        print('[drawCurrentlyPlaying] Song changed, clearing song display');
+      bC.setColor(0).fillRect(244, 154, 400, 180);
+      Pip.Radio.lastDrawnSong = Pip.Radio.currentAudio;
+    }
 
-    if (Pip.CustomRadio.currentAudio) {
-      const song = Pip.CustomRadio.currentAudio
+    if (Pip.Radio.currentAudio) {
+      const song = Pip.Radio.currentAudio
         .split('/')
         .pop()
         .replace(/\.wav$/i, '');
       const displayName = song.length > 19 ? song.slice(0, 16) + '...' : song;
-
+      if (DEBUG)
+        print(
+          '[drawCurrentlyPlaying] Drawing currently playing song:',
+          displayName,
+        );
       bC.setFontMonofonto16()
         .setColor(3)
         .drawString(displayName, 244, 155)
         .flip();
     }
   },
-  startWaveform: function () {
-    Pip.CustomRadio.stopWaveform();
-    Pip.CustomRadio.animationAngle = 0;
-    Pip.CustomRadio.waveformGfx = Graphics.createArrayBuffer(120, 120, 2, {
+  start: function () {
+    if (DEBUG) print('[start] Starting waveform');
+
+    Pip.Radio.Waveform.animationAngle = 0;
+    Pip.Radio.waveformGfx = Graphics.createArrayBuffer(120, 120, 2, {
       msb: true,
     });
-    if (E.getAddressOf(Pip.CustomRadio.waveformGfx, 0) === 0) {
-      Pip.CustomRadio.waveformGfx = undefined;
+    if (E.getAddressOf(Pip.Radio.waveformGfx, 0) === 0) {
+      Pip.Radio.waveformGfx = undefined;
       E.defrag();
-      Pip.CustomRadio.waveformGfx = Graphics.createArrayBuffer(120, 120, 2, {
+      Pip.Radio.waveformGfx = Graphics.createArrayBuffer(120, 120, 2, {
         msb: true,
       });
     }
 
-    Pip.CustomRadio.waveformPoints = new Uint16Array(60);
-    for (let i = 0; i < 60; i += 2) Pip.CustomRadio.waveformPoints[i] = i * 2;
+    Pip.Radio.Waveform.waveformPoints = new Uint16Array(60);
+    for (let i = 0; i < 60; i += 2)
+      Pip.Radio.Waveform.waveformPoints[i] = i * 2;
 
-    Pip.CustomRadio.waveformInterval = setInterval(() => {
-      if (!Pip.CustomRadio.waveformGfx) return;
+    Pip.Radio.Waveform.interval = setInterval(() => {
+      if (!Pip.Radio.waveformGfx) return;
 
-      Pip.CustomRadio.waveformGfx.clearRect(0, 0, 119, 119);
+      Pip.Radio.waveformGfx.clearRect(0, 0, 119, 119);
 
       if (Pip.radioClipPlaying) {
-        Pip.getAudioWaveform(Pip.CustomRadio.waveformPoints, 20, 100);
+        Pip.getAudioWaveform(Pip.Radio.Waveform.waveformPoints, 20, 100);
       } else if (Pip.radioOn && typeof RADIO_AUDIO !== 'undefined') {
         for (let i = 1; i < 60; i += 2) {
-          Pip.CustomRadio.waveformPoints[i] = E.clip(
+          Pip.Radio.Waveform.waveformPoints[i] = E.clip(
             60 + (analogRead(RADIO_AUDIO) - 0.263) * 600,
             0,
             119,
           );
         }
       } else {
-        let a = Pip.CustomRadio.animationAngle;
+        let a = Pip.Radio.Waveform.animationAngle;
         for (let i = 1; i < 60; i += 2) {
-          Pip.CustomRadio.waveformPoints[i] =
+          Pip.Radio.Waveform.waveformPoints[i] =
             60 + Math.sin(a) * 45 * Math.sin((a += 0.6) * 0.13);
         }
       }
 
-      Pip.CustomRadio.waveformGfx.drawPolyAA(Pip.CustomRadio.waveformPoints);
-      Pip.CustomRadio.animationAngle += 0.3;
-      Pip.blitImage(Pip.CustomRadio.waveformGfx, 285, 85, {
+      Pip.Radio.waveformGfx.drawPolyAA(Pip.Radio.Waveform.waveformPoints);
+      Pip.Radio.Waveform.animationAngle += 0.3;
+      Pip.blitImage(Pip.Radio.waveformGfx, 285, 85, {
         noScanEffect: true,
       });
     }, 50);
   },
-  stopWaveform: function () {
-    if (Pip.CustomRadio.waveformInterval)
-      clearInterval(Pip.CustomRadio.waveformInterval);
-    Pip.CustomRadio.waveformInterval = null;
-    if (Pip.CustomRadio.waveformGfx) {
-      Pip.CustomRadio.waveformGfx = null;
+  stop: function () {
+    if (DEBUG) print('[stop] Stopping waveform');
+
+    if (Pip.Radio.Waveform.interval) clearInterval(Pip.Radio.Waveform.interval);
+    Pip.Radio.Waveform.interval = null;
+    if (Pip.Radio.waveformGfx) {
+      Pip.Radio.waveformGfx = null;
       E.defrag();
     }
   },
 };
 
-/*******************
- * RADIO FUNCTIONS *
- *******************/
-
-function submenuCustomRadio() {
-  let selectedFile = null;
-  let suppressKnob1 = false;
-
-  let previousKnob1Click = Pip.knob1Click;
-  const customKnob1Click = function () {};
-
-  if (!rd._options) rd.setupI2C();
-
-  if (Pip.CustomRadio.currentAudio) {
-    Pip.audioStop();
-    Pip.CustomRadio.currentAudio = null;
-    Pip.radioClipPlaying = false;
-  }
-
-  Pip.radioKPSS = false;
-  if (rd.isOn()) rd.enable(false);
-
-  Pip.radioClipPlaying = false;
-
-  bC.clear(1);
-
-  previousKnob1Click = Pip.knob1Click;
-  Pip.knob1Click = customKnob1Click;
-
-  let files = [];
-  try {
-    files = require('fs')
-      .readdir('/RADIO')
-      .filter((f) => f.endsWith('.wav'))
-      .sort();
-  } catch (e) {
-    print('Failed to load radio files:', e);
-  }
-
-  const PAGE_SIZE = 5;
-  let page = 0;
-  let playingRandom = false;
-  let randomQueue = [];
-  let randomIndex = 0;
-
-  const menuHeader = {
-    '': {
-      x2: 200,
-      predraw: () => {
-        if (Pip.CustomRadio.waveformGfx)
-          bC.drawImage(Pip.CustomRadio.waveformGfx, 245, 20);
-      },
-    },
-  };
-
-  function handleAudioStopped() {
-    if (playingRandom) playRandom();
-  }
-
-  function playRandom() {
-    if (randomIndex >= randomQueue.length) {
-      randomQueue = files.slice().sort(() => Math.random() - 0.5);
-      randomIndex = 0;
+Pip.Radio.Custom = {
+  page: null,
+  pageSize: 5,
+  playingRandom: false,
+  previousKnob1Click: null,
+  randomIndex: null,
+  randomQueue: null,
+  selectedFile: null,
+  suppressKnob1: false,
+  customKnob1Click: function (val) {
+    if (DEBUG) print('[customKnob1Click] Custom knob1 click:', val);
+  },
+  handleAudioStopped: function (files) {
+    if (DEBUG) print('[handleAudioStopped] Audio stop event triggered');
+    if (Pip.Radio.Custom.playingRandom) {
+      if (DEBUG) print('[handleAudioStopped] Playing next random song');
+      Pip.Radio.Custom.playRandom(files);
     }
+  },
+  handleKnob1: function (dir) {
+    if (DEBUG) print('[handleKnob1] Knob1 event triggered:', dir);
 
-    if (Pip.CustomRadio.currentAudio) {
-      Pip.audioStop();
-      Pip.CustomRadio.currentAudio = null;
-      Pip.radioClipPlaying = false;
-    }
-
-    const f = randomQueue[randomIndex++];
-    Pip.CustomRadio.currentAudio = '/RADIO/' + f;
-    Pip.audioStart(Pip.CustomRadio.currentAudio);
-    Pip.radioClipPlaying = true;
-
-    Pip.removeListener('audioStopped', handleAudioStopped);
-    Pip.on('audioStopped', handleAudioStopped);
-
-    Pip.CustomRadio.drawCurrentlyPlaying();
-  }
-
-  function handleKnob1(dir) {
-    if (suppressKnob1) {
-      suppressKnob1 = false;
+    if (Pip.Radio.Custom.suppressKnob1) {
+      if (DEBUG) print('[handleKnob1] Suppressing knob1 event');
+      Pip.Radio.Custom.suppressKnob1 = false;
       return;
     }
 
-    if (dir > 0 || dir < 0) {
-      playingRandom = false;
-      if (Pip.knob1Click !== customKnob1Click) {
-        Pip.knob1Click = customKnob1Click;
+    if (dir !== 0) {
+      if (DEBUG) print('[handleKnob1] Scrolling', dir > 0 ? 'up' : 'down');
+      if (Pip.knob1Click !== Pip.Radio.Custom.customKnob1Click) {
+        if (DEBUG) print('[handleKnob1] Overriding default knob1 click');
+        Pip.knob1Click = Pip.Radio.Custom.customKnob1Click;
       }
     } else {
-      if (selectedFile && Pip.CustomRadio.currentAudio === selectedFile) {
+      if (
+        Pip.Radio.Custom.selectedFile &&
+        Pip.Radio.currentAudio === Pip.Radio.Custom.selectedFile
+      ) {
+        if (DEBUG) {
+          print('[handleKnob1] Selected audio is already playing, stopping it');
+        }
+
+        Pip.Radio.Custom.playingRandom = false;
         Pip.audioStop();
-        Pip.CustomRadio.currentAudio = null;
+        Pip.Radio.currentAudio = null;
         Pip.radioClipPlaying = false;
         bC.setColor(0).fillRect(244, 154, 400, 180);
         bC.flip();
       }
-      Pip.CustomRadio.drawCurrentlyPlaying();
+      Pip.Radio.Waveform.drawCurrentlyPlaying();
     }
-  }
+  },
+  init: function () {
+    if (DEBUG) print('[init] Initializing custom radio');
 
-  function renderMenu() {
+    let options;
+    try {
+      const path = 'USER/CustomRadio/options.json';
+      const raw = fs.readFileSync(path);
+      options = JSON.parse(raw);
+    } catch (err) {
+      print('Could not read options.json', err);
+      options = null;
+    }
+
+    if (
+      options &&
+      options.enabled &&
+      typeof MODEINFO !== 'undefined' &&
+      typeof MODE !== 'undefined' &&
+      MODEINFO[MODE.RADIO]
+    ) {
+      const radioTab = MODEINFO[MODE.RADIO];
+      if (radioTab.fn) delete radioTab.fn;
+
+      radioTab.submenu = {
+        LOCAL: Pip.Radio.Default.Extended.menu,
+        CUSTOM: Pip.Radio.Custom.menu,
+      };
+    }
+
+    delete options;
+    if (DEBUG) print('[init] Custom radio initialized');
+  },
+  menu: function () {
+    if (DEBUG) print('[menu] Custom radio menu triggered');
+
+    if (!rd._options) rd.setupI2C();
+
+    if (Pip.Radio.currentAudio) {
+      Pip.audioStop();
+      Pip.Radio.currentAudio = null;
+      Pip.radioClipPlaying = false;
+    }
+
+    Pip.radioKPSS = false;
+    if (rd.isOn()) rd.enable(false);
+    Pip.radioClipPlaying = false;
+
+    bC.clear(1);
+
+    Pip.Radio.Custom.previousKnob1Click = Pip.knob1Click;
+    Pip.knob1Click = Pip.Radio.Custom.customKnob1Click;
+
+    let files = [];
+    try {
+      files = require('fs')
+        .readdir('/RADIO')
+        .filter((f) => f.endsWith('.wav'))
+        .sort();
+      if (DEBUG) print('[menu] Files loaded from "/radio":', files.length);
+    } catch (e) {
+      print('Failed to load radio files:', e);
+      files = [];
+    }
+
+    Pip.Radio.Custom.page = 0;
+    Pip.Radio.Custom.randomQueue = [];
+    Pip.Radio.Custom.randomIndex = 0;
+
+    const menuHeader = {
+      '': {
+        x2: 200,
+        predraw: () => {
+          if (Pip.Radio.Waveform.waveformGfx) {
+            if (DEBUG) print('[menuHeader] Predrawing waveform graphics');
+            bC.drawImage(Pip.Radio.Waveform.waveformGfx, 245, 20);
+          }
+        },
+      },
+    };
+
+    Pip.Radio.Custom.renderMenu(files);
+    Pip.Radio.Waveform.stop();
+    Pip.Radio.Waveform.start();
+    Pip.Radio.Waveform.drawBorder();
+
+    if (DEBUG) print('[menu] Custom radio menu rendered');
+  },
+  playRandom: function (files) {
+    if (DEBUG) print('[playRandom] Playing random song');
+
+    if (Pip.Radio.Custom.randomIndex >= Pip.Radio.Custom.randomQueue.length) {
+      Pip.Radio.Custom.randomQueue = files
+        .slice()
+        .sort(() => Math.random() - 0.5);
+      Pip.Radio.Custom.randomIndex = 0;
+    }
+
+    if (Pip.Radio.currentAudio) {
+      Pip.audioStop();
+      Pip.Radio.currentAudio = null;
+      Pip.radioClipPlaying = false;
+    }
+
+    const f = Pip.Radio.Custom.randomQueue[Pip.Radio.Custom.randomIndex++];
+    Pip.Radio.currentAudio = '/RADIO/' + f;
+    Pip.audioStart(Pip.Radio.currentAudio);
+    Pip.radioClipPlaying = true;
+
+    Pip.removeListener('audioStopped', Pip.Radio.Custom.handleAudioStopped);
+    Pip.on('audioStopped', Pip.Radio.Custom.handleAudioStopped);
+
+    Pip.Radio.Waveform.drawCurrentlyPlaying();
+  },
+  renderMenu: function (files) {
+    if (DEBUG) print('[renderMenu] Rendering menu with files:', files.length);
+
     Pip.radioClipPlaying = false;
     bC.clear(1);
 
-    const maxPage = Math.floor((files.length - 1) / PAGE_SIZE);
-    if (page < 0) page = 0;
-    if (page > maxPage) page = maxPage;
+    const maxPage = Math.floor((files.length - 1) / Pip.Radio.Custom.pageSize);
+    if (Pip.Radio.Custom.page < 0) Pip.Radio.Custom.page = 0;
+    if (Pip.Radio.Custom.page > maxPage) Pip.Radio.Custom.page = maxPage;
 
-    const start = page * PAGE_SIZE;
-    const pageFiles = files.slice(start, start + PAGE_SIZE);
-    const menu = Object.assign({}, menuHeader);
+    const start = Pip.Radio.Custom.page * Pip.Radio.Custom.pageSize;
+    const pageFiles = files.slice(start, start + Pip.Radio.Custom.pageSize);
+    const menu = Object.assign(
+      {},
+      {
+        '': {
+          x2: 200,
+          predraw: () => {
+            if (Pip.Radio.Waveform.waveformGfx) {
+              if (DEBUG) print('[renderMenu] Predrawing waveform graphics');
+              bC.drawImage(Pip.Radio.Waveform.waveformGfx, 245, 20);
+            }
+          },
+        },
+      },
+    );
 
-    if (page === 0) {
+    if (Pip.Radio.Custom.page === 0) {
+      if (DEBUG) print('[renderMenu] Adding "RANDOM" option');
       menu['RANDOM'] = () => {
-        playingRandom = true;
-        randomQueue = files.slice().sort(() => Math.random() - 0.5);
-        randomIndex = 0;
-        playRandom();
+        Pip.Radio.Custom.playingRandom = true;
+        Pip.Radio.Custom.randomQueue = files
+          .slice()
+          .sort(() => Math.random() - 0.5);
+        Pip.Radio.Custom.randomIndex = 0;
+        Pip.Radio.Custom.playRandom(files);
       };
     }
 
@@ -229,70 +325,84 @@ function submenuCustomRadio() {
       const name = f.replace(/\.wav$/i, '');
       const display = name.length > 19 ? name.slice(0, 16) + '...' : name;
       menu[display] = () => {
+        if (DEBUG) print('[renderMenu] Menu item callback, playing file:', f);
+
         Pip.radioClipPlaying = false;
-        playingRandom = false;
+        Pip.Radio.Custom.playingRandom = false;
 
-        selectedFile = '/RADIO/' + f;
-        suppressKnob1 = true;
+        Pip.Radio.Custom.selectedFile = '/RADIO/' + f;
+        Pip.Radio.Custom.suppressKnob1 = true;
 
-        if (Pip.CustomRadio.currentAudio === selectedFile) {
+        if (Pip.Radio.currentAudio === Pip.Radio.Custom.selectedFile) {
           Pip.audioStop();
-          Pip.CustomRadio.currentAudio = null;
+          Pip.Radio.currentAudio = null;
           Pip.radioClipPlaying = false;
           bC.setColor(0).fillRect(244, 154, 400, 180);
           bC.flip();
         } else {
-          Pip.CustomRadio.currentAudio = selectedFile;
-          Pip.audioStart(Pip.CustomRadio.currentAudio);
+          Pip.Radio.currentAudio = Pip.Radio.Custom.selectedFile;
+          Pip.audioStart(Pip.Radio.currentAudio);
           Pip.radioClipPlaying = true;
-          Pip.CustomRadio.drawCurrentlyPlaying();
+          Pip.Radio.Waveform.drawCurrentlyPlaying();
         }
       };
     });
 
-    if (page > 0) {
+    if (Pip.Radio.Custom.page > 0) {
+      if (DEBUG) print('[renderMenu] Adding "PREV" option & callback');
       menu['< PREV'] = () => {
-        page--;
-        Pip.CustomRadio.stopWaveform();
-        renderMenu();
-        Pip.CustomRadio.startWaveform();
-        Pip.CustomRadio.drawWaveformBorder();
+        Pip.Radio.Custom.page--;
+        Pip.Radio.Waveform.stop();
+        Pip.Radio.Custom.renderMenu(files);
+        Pip.Radio.Waveform.start();
+        Pip.Radio.Waveform.drawBorder();
       };
     }
 
-    if ((page + 1) * PAGE_SIZE < files.length) {
+    if (
+      (Pip.Radio.Custom.page + 1) * Pip.Radio.Custom.pageSize <
+      files.length
+    ) {
+      if (DEBUG) print('[renderMenu] Adding "NEXT" option & callback');
       menu['NEXT >'] = () => {
-        page++;
-        Pip.CustomRadio.stopWaveform();
-        renderMenu();
-        Pip.CustomRadio.startWaveform();
-        Pip.CustomRadio.drawWaveformBorder();
+        Pip.Radio.Custom.page++;
+        Pip.Radio.Waveform.stop();
+        Pip.Radio.Custom.renderMenu(files);
+        Pip.Radio.Waveform.start();
+        Pip.Radio.Waveform.drawBorder();
       };
     }
 
     E.showMenu(menu);
-    Pip.CustomRadio.drawCurrentlyPlaying();
+    Pip.Radio.Waveform.drawCurrentlyPlaying();
 
-    Pip.removeListener('knob1', handleKnob1);
-    Pip.on('knob1', handleKnob1);
+    Pip.removeListener('knob1', Pip.Radio.Custom.handleKnob1);
+    Pip.on('knob1', Pip.Radio.Custom.handleKnob1);
 
-    if (Pip.knob1Click !== customKnob1Click) {
-      Pip.knob1Click = customKnob1Click;
+    Pip.removeListener('audioStopped', Pip.Radio.Custom.handleAudioStopped);
+    if (Pip.Radio.Custom.playingRandom) {
+      Pip.on('audioStopped', Pip.Radio.Custom.handleAudioStopped);
+    }
+
+    if (Pip.knob1Click !== Pip.Radio.Custom.customKnob1Click) {
+      Pip.knob1Click = Pip.Radio.Custom.customKnob1Click;
     }
 
     const previousSubmenu = Pip.removeSubmenu;
     Pip.removeSubmenu = function customRadioClose() {
-      Pip.CustomRadio.stopWaveform();
+      if (DEBUG) print('[customRadioClose] Closing custom radio menu');
+
+      Pip.Radio.Waveform.stop();
       bC.clear(1);
       bC.flip();
 
       Pip.audioStop();
-      Pip.CustomRadio.currentAudio = null;
+      Pip.Radio.currentAudio = null;
       Pip.radioClipPlaying = false;
-      playingRandom = false;
+      Pip.Radio.Custom.playingRandom = false;
 
-      Pip.removeListener('audioStopped', handleAudioStopped);
-      Pip.removeListener('knob1', handleKnob1);
+      Pip.removeListener('audioStopped', Pip.Radio.Custom.handleAudioStopped);
+      Pip.removeListener('knob1', Pip.Radio.Custom.handleKnob1);
 
       if (Pip.removeSubmenu === customRadioClose) delete Pip.removeSubmenu;
 
@@ -303,147 +413,29 @@ function submenuCustomRadio() {
         previousSubmenu();
       }
 
-      Pip.knob1Click = previousKnob1Click;
+      Pip.knob1Click = Pip.Radio.Custom.previousKnob1Click;
     };
-  }
+  },
+};
 
-  renderMenu();
+Pip.Radio.Default = {
+  menu: submenuRadio,
+};
 
-  Pip.CustomRadio.stopWaveform();
-  Pip.CustomRadio.startWaveform();
-  Pip.CustomRadio.drawWaveformBorder();
-}
-
-function submenuLocalRadio() {
-  if (!rd._options) rd.setupI2C();
-
-  if (Pip.CustomRadio.currentAudio) {
-    Pip.audioStop();
-    Pip.CustomRadio.currentAudio = null;
-    Pip.radioClipPlaying = false;
-  }
-
-  Pip.radioKPSS = false;
-
-  Pip.CustomRadio.stopWaveform();
-
-  bC.clear(1);
-
-  rd.rdsTimer = setInterval(readRDSData, 100);
-  if (rd.isOn()) {
-    rd.getChannelInfo();
-    rd.drawFreq();
-  }
-
-  Pip.CustomRadio.startWaveform();
-
-  let tuneDelayTimeout = null;
-  let knobInputTimeout = null;
-  let lastInput = 0;
-
-  function handleKnob2(dir) {
-    if (!knobInputTimeout || dir !== lastInput) {
-      rd.freq += dir * 0.1;
-      if (rd.freq < rd.start / 100) rd.freq = rd.end / 100;
-      if (rd.freq > rd.end / 100) rd.freq = rd.start / 100;
-      rd.drawFreq();
-
-      if (tuneDelayTimeout) clearTimeout(tuneDelayTimeout);
-      tuneDelayTimeout = setTimeout(() => {
-        try {
-          rd.freqSet(rd.freq);
-        } catch (err) {
-          print('Error tuning radio:', err);
-        }
-        tuneDelayTimeout = null;
-      }, 200);
-
-      if (knobInputTimeout) clearTimeout(knobInputTimeout);
-      knobInputTimeout = setTimeout(() => {
-        knobInputTimeout = null;
-      }, 20);
+Pip.Radio.Default.Extended = {
+  menu: function () {
+    if (Pip.Radio.currentAudio) {
+      Pip.audioStop();
+      Pip.Radio.currentAudio = null;
+      Pip.radioClipPlaying = false;
     }
-    lastInput = dir;
-  }
 
-  Pip.on('knob2', handleKnob2);
+    Pip.radioKPSS = false;
+    Pip.Radio.Waveform.stop();
+    bC.clear(1);
 
-  E.showMenu({
-    '': {
-      x2: 200,
-      predraw: () => {
-        bC.drawImage(Pip.CustomRadio.waveformGfx, 245, 20);
-        rd.drawFreq(bC);
-      },
-    },
-    'FM Radio': {
-      value: rd.isOn(),
-      format: (v) => (v ? 'On' : 'Off'),
-      onchange: (v) => {
-        if (v) {
-          rd.enable(true);
-          Pip.audioStart('UI/RADIO_ON.wav');
-        } else {
-          rd.enable(false);
-          rd.drawFreq();
-          Pip.audioStart('UI/RADIO_OFF.wav');
-        }
-      },
-    },
-    'FM Volume': {
-      value: rd.getVol(),
-      min: 0,
-      max: 15,
-      step: 1,
-      onchange: (v) => rd.setVol(v),
-    },
-  });
+    Pip.Radio.Default.menu();
+  },
+};
 
-  Pip.CustomRadio.drawWaveformBorder();
-
-  const originalClose = Pip.removeSubmenu;
-  Pip.removeSubmenu = function () {
-    Pip.CustomRadio.stopWaveform();
-    if (rd.tuningInterval) clearInterval(rd.tuningInterval);
-    if (rd.rdsTimer) clearInterval(rd.rdsTimer);
-    Pip.removeListener('knob2', handleKnob2);
-    if (tuneDelayTimeout) clearTimeout(tuneDelayTimeout);
-    if (typeof originalClose === 'function') originalClose();
-  };
-}
-
-/*******************
- * RADIO OVERRIDES *
- *******************/
-
-function customRadio() {
-  let options;
-  try {
-    const path = 'USER/CustomRadio/options.json';
-    const raw = fs.readFileSync(path);
-    options = JSON.parse(raw);
-  } catch (err) {
-    print('Could not read options.json', err);
-    options = null;
-  }
-
-  if (
-    options &&
-    options.enabled &&
-    typeof MODEINFO !== 'undefined' &&
-    typeof MODE !== 'undefined' &&
-    MODEINFO[MODE.RADIO]
-  ) {
-    const radioTab = MODEINFO[MODE.RADIO];
-    if (radioTab.fn) delete radioTab.fn;
-
-    radioTab.submenu = {
-      LOCAL: submenuLocalRadio,
-      CUSTOM: submenuCustomRadio,
-    };
-  }
-
-  delete options;
-}
-
-customRadio();
+Pip.Radio.Custom.init();
