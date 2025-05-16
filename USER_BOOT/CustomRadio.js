@@ -6,7 +6,7 @@
 //  Version: 2.3.0
 // =============================================================================
 
-const DEBUG = true;
+const DEBUG = false;
 
 function debug() {
   if (!DEBUG) return;
