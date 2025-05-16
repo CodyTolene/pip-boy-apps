@@ -33,7 +33,7 @@
     "version": "1.1.0"
   },
   {
-    "authors": ["gnargle <https://athene.gay/>"],
+    "authors": ["Athene <https://athene.gay/>"],
     "description": "The SPECIAL/Skills/Perks menu for the Pip-Boy 3000 Mk V.",
     "files": [
       "USER/StatsDisplay.js",
@@ -192,6 +192,17 @@
     "instructions": "The 'STAT' page will now have the 'SPECIAL' tab which you can interact with.",
     "name": "Pip UI+",
     "tip": "Click the left knob to edit the value of an attribute.",
+    "type": "APP",
+    "version": "1.0.0"
+  },
+  {
+    "authors": ["Athene <https://athene.gay/>"],
+    "description": "A better theme picker, with finer colour picker control and the ability to change the scan line to a different colour for highlighting.",
+    "files": ["USER_BOOT/ThemePickerBootloader.js", "USER/ThemePicker.js"],
+    "id": "ThemePicker",
+    "instructions": "Use the right wheel to select RGB value to change, and the left wheel to modify its value.",
+    "name": "Theme Picker",
+    "tip": "",
     "type": "APP",
     "version": "1.0.0"
   }
