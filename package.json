@@ -1,16 +1,21 @@
 {
   "$schema": "http://json.schemastore.org/package",
   "name": "pip-apps",
-  "description": "A common repository to house all the great app made by fellow vault-dwellers for the Pip-Boy 3000 Mk V device.",
-  "version": "1.0.0",
   "homepage": "https://pip-boy.com/",
   "type": "module",
   "main": "docs/main.js",
   "scripts": {
+    "min": "node .scripts/minify.js",
+    "min:all": "node .scripts/minify-folders.js",
     "prepare": "husky",
     "prettier": "prettier --write .",
     "prettier:check": "prettier --check .",
     "start": "node docs/main.js"
+  },
+  "dependencies": {
+    "espruino": "^0.1.60",
+    "jszip": "^3.10.1",
+    "multer": "^1.4.5-lts.2"
   },
   "devDependencies": {
     "@types/node": "^22.13.11",
@@ -18,30 +23,5 @@
     "husky": "^9.1.7",
     "open": "^10.1.0",
     "prettier": "^3.5.2"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/CodyTolene/pip-apps.git"
-  },
-  "keywords": [
-    "Pip-Boy",
-    "Pip",
-    "Boy",
-    "Games",
-    "Apps",
-    "Application",
-    "Applications",
-    "Vault",
-    "Fallout",
-    "Bethesda",
-    "Pip-Boy.com"
-  ],
-  "license": "CC-BY-NC-4.0",
-  "bugs": {
-    "url": "https://github.com/CodyTolene/pip-apps/issues"
-  },
-  "dependencies": {
-    "jszip": "^3.10.1",
-    "multer": "^1.4.5-lts.2"
   }
 }
