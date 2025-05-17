@@ -254,7 +254,7 @@ Thank you for any and all contributions!
 
 ### Minification <a name="minification"></a>
 
-To minify your app, you can use the `npm run minify` command. This will start a
+To minify your app, you can use the `npm run min` command. This will start a
 wizard that will guide you through the process of minifying your app.
 
 1. Select the file you want to minify from the `USER` or `USER_BOOT` directory
