@@ -13,28 +13,17 @@ let fieldHeight = 20;
 let blockSize = 10;
 let fieldX = 120;
 let fieldY = 0;
-let dropInterval = 600;
+let dropInterval = 800;
 
 let score = 0;
 let nextPiece = null;
 let gameOverFlag = false;
 
-function resetPlayfield() {
-  for (let i = 0; i < field.length; i++) {
-    field[i] = 0;
-  }
-}
-
 let field = new Uint8Array(fieldWidth * fieldHeight);
-function getField(x, y) {
-  return field[y * fieldWidth + x];
-}
-function setField(x, y, val) {
-  field[y * fieldWidth + x] = val;
-}
 let currentPiece = null;
 let dropTimer = null;
 let inputInterval = null;
+let softDropInterval = null;
 
 const SHAPES = [
   // Z
@@ -70,6 +59,81 @@ const SHAPES = [
     [1, 1],
   ],
 ];
+
+function resetPlayfield() {
+  for (let i = 0; i < field.length; i++) field[i] = 0;
+}
+
+function getField(x, y) {
+  return field[y * fieldWidth + x];
+}
+
+function setField(x, y, val) {
+  field[y * fieldWidth + x] = val;
+}
+
+function drawGearIcon(x, y, scale) {
+  bC.setColor(3);
+  const toothLength = 2 * scale;
+  const toothOffset = 4 * scale;
+  const radius = 3 * scale;
+  const hole = 1 * scale;
+  const diag = toothOffset * 0.707;
+
+  bC.fillRect(
+    x - toothOffset - toothLength / 2,
+    y - toothLength / 2,
+    x - toothOffset + toothLength / 2,
+    y + toothLength / 2,
+  );
+  bC.fillRect(
+    x + toothOffset - toothLength / 2,
+    y - toothLength / 2,
+    x + toothOffset + toothLength / 2,
+    y + toothLength / 2,
+  );
+  bC.fillRect(
+    x - toothLength / 2,
+    y - toothOffset - toothLength / 2,
+    x + toothLength / 2,
+    y - toothOffset + toothLength / 2,
+  );
+  bC.fillRect(
+    x - toothLength / 2,
+    y + toothOffset - toothLength / 2,
+    x + toothLength / 2,
+    y + toothOffset + toothLength / 2,
+  );
+
+  bC.fillRect(
+    x - diag - toothLength / 2,
+    y - diag - toothLength / 2,
+    x - diag + toothLength / 2,
+    y - diag + toothLength / 2,
+  );
+  bC.fillRect(
+    x + diag - toothLength / 2,
+    y - diag - toothLength / 2,
+    x + diag + toothLength / 2,
+    y - diag + toothLength / 2,
+  );
+  bC.fillRect(
+    x - diag - toothLength / 2,
+    y + diag - toothLength / 2,
+    x - diag + toothLength / 2,
+    y + diag + toothLength / 2,
+  );
+  bC.fillRect(
+    x + diag - toothLength / 2,
+    y + diag - toothLength / 2,
+    x + diag + toothLength / 2,
+    y + diag + toothLength / 2,
+  );
+
+  bC.fillCircle(x, y, radius);
+  bC.setColor(0);
+  bC.fillCircle(x, y, hole);
+}
 
 function getRandomPiece() {
   const shape = SHAPES[Math.floor(Math.random() * SHAPES.length)];
@@ -231,88 +295,50 @@ function drop() {
   drawField();
 }
 
+function dropToBottom() {
+  if (!currentPiece || gameOverFlag) return;
+  while (true) {
+    currentPiece.y++;
+    if (collides(currentPiece)) {
+      currentPiece.y--;
+      break;
+    }
+  }
+  merge(currentPiece);
+  clearLines();
+  spawnPiece();
+  drawField();
+}
+
 function move(dir) {
-  if (gameOverFlag) return;
-  currentPiece.x += dir;
+  if (gameOverFlag || !currentPiece) return;
+  const newX = currentPiece.x + dir;
+  if (newX < 0 || newX + currentPiece.shape[0].length > fieldWidth) return;
+  currentPiece.x = newX;
   if (collides(currentPiece)) currentPiece.x -= dir;
   drawField();
 }
 
-function rotate() {
+function rotate(dir) {
   if (gameOverFlag) return;
   const shape = currentPiece.shape;
-  const newShape = shape[0].map((_, i) => shape.map((row) => row[i]).reverse());
+  const newShape =
+    dir > 0
+      ? // Counter-clockwise
+        shape[0].map((_, i) => shape.map((row) => row[row.length - 1 - i]))
+      : // Clockwise
+        shape[0].map((_, i) => shape.map((row) => row[i]).reverse());
+
   const oldShape = currentPiece.shape;
   currentPiece.shape = newShape;
   if (collides(currentPiece)) currentPiece.shape = oldShape;
   drawField();
 }
 
-function drawGearIcon(x, y, scale) {
-  bC.setColor(3);
-  const toothLength = 2 * scale;
-  const toothOffset = 4 * scale;
-  const radius = 3 * scale;
-  const hole = 1 * scale;
-  const diag = toothOffset * 0.707;
-
-  bC.fillRect(
-    x - toothOffset - toothLength / 2,
-    y - toothLength / 2,
-    x - toothOffset + toothLength / 2,
-    y + toothLength / 2,
-  );
-  bC.fillRect(
-    x + toothOffset - toothLength / 2,
-    y - toothLength / 2,
-    x + toothOffset + toothLength / 2,
-    y + toothLength / 2,
-  );
-  bC.fillRect(
-    x - toothLength / 2,
-    y - toothOffset - toothLength / 2,
-    x + toothLength / 2,
-    y - toothOffset + toothLength / 2,
-  );
-  bC.fillRect(
-    x - toothLength / 2,
-    y + toothOffset - toothLength / 2,
-    x + toothLength / 2,
-    y + toothOffset + toothLength / 2,
-  );
-
-  bC.fillRect(
-    x - diag - toothLength / 2,
-    y - diag - toothLength / 2,
-    x - diag + toothLength / 2,
-    y - diag + toothLength / 2,
-  );
-  bC.fillRect(
-    x + diag - toothLength / 2,
-    y - diag - toothLength / 2,
-    x + diag + toothLength / 2,
-    y - diag + toothLength / 2,
-  );
-  bC.fillRect(
-    x - diag - toothLength / 2,
-    y + diag - toothLength / 2,
-    x - diag + toothLength / 2,
-    y + diag + toothLength / 2,
-  );
-  bC.fillRect(
-    x + diag - toothLength / 2,
-    y + diag - toothLength / 2,
-    x + diag + toothLength / 2,
-    y + diag + toothLength / 2,
-  );
-
-  bC.fillCircle(x, y, radius);
-  bC.setColor(0);
-  bC.fillCircle(x, y, hole);
-}
-
 function endGame() {
   clearInterval(dropTimer);
+  clearInterval(softDropInterval);
+
   gameOverFlag = true;
   bC.clear(1);
   bC.setColor(3);
@@ -336,36 +362,61 @@ function endGame() {
 
 function restartGame() {
   if (inputInterval) clearInterval(inputInterval);
+  if (dropTimer) clearInterval(dropTimer);
+  if (softDropInterval) clearInterval(softDropInterval);
+
   gameOverFlag = false;
   score = 0;
   resetPlayfield();
   nextPiece = getRandomPiece();
   spawnPiece();
   drawField();
+
   dropTimer = setInterval(drop, dropInterval);
+  softDropInterval = setInterval(() => {
+    if (!gameOverFlag && BTN_PLAY.read()) drop();
+  }, 100);
 }
 
-Pip.removeAllListeners('knob1');
-Pip.on('knob1', (dir) => {
-  if (gameOverFlag && dir === 0) restartGame();
-  else rotate();
-});
-Pip.removeAllListeners('knob2');
-Pip.on('knob2', (dir) => {
-  if (gameOverFlag && dir === 0) restartGame();
-  else if (dir !== 0) move(dir > 0 ? 1 : -1);
+const KNOB_DEBOUNCE = 100;
+const LEFT_KNOB = 'knob1';
+const RIGHT_KNOB = 'knob2';
+
+Pip.removeAllListeners(LEFT_KNOB);
+Pip.removeAllListeners(RIGHT_KNOB);
+
+let lastLeftKnobTime = 0;
+let lastRightKnobTime = 0;
+
+Pip.on(LEFT_KNOB, (dir) => {
+  const now = Date.now();
+  if (now - lastLeftKnobTime < KNOB_DEBOUNCE) return;
+  lastLeftKnobTime = now;
+
+  if (dir === 0) {
+    if (gameOverFlag) restartGame();
+    else dropToBottom();
+  } else rotate(dir);
 });
 
-const watch = setInterval(() => {
-  if (BTN_PLAY.read()) {
-    if (!gameOverFlag) drop();
-  } else if (BTN_TORCH.read()) {
-    clearInterval(watch);
+Pip.on(RIGHT_KNOB, (dir) => {
+  const now = Date.now();
+  if (now - lastRightKnobTime < KNOB_DEBOUNCE) return;
+  lastRightKnobTime = now;
+
+  if (gameOverFlag && dir === 0) restartGame();
+  else move(dir > 0 ? 1 : -1);
+});
+
+setWatch(
+  () => {
     clearInterval(dropTimer);
     if (inputInterval) clearInterval(inputInterval);
     bC.clear(1).flip();
     E.reboot();
-  }
-}, 100);
+  },
+  BTN_TORCH,
+  { repeat: true, edge: 'rising', debounce: 10 },
+);
 
 restartGame();
