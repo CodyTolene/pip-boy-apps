@@ -6,7 +6,7 @@
 // =============================================================================
 
 const GAME_NAME = 'Piptris';
-const GAME_VERSION = '1.0.1';
+const GAME_VERSION = '1.1.0';
 
 let fieldWidth = 16;
 let fieldHeight = 20;
@@ -348,12 +348,12 @@ function restartGame() {
 Pip.removeAllListeners('knob1');
 Pip.on('knob1', (dir) => {
   if (gameOverFlag && dir === 0) restartGame();
-  else if (dir !== 0) move(dir > 0 ? 1 : -1);
+  else rotate();
 });
 Pip.removeAllListeners('knob2');
 Pip.on('knob2', (dir) => {
   if (gameOverFlag && dir === 0) restartGame();
-  else rotate();
+  else if (dir !== 0) move(dir > 0 ? 1 : -1);
 });
 
 const watch = setInterval(() => {
