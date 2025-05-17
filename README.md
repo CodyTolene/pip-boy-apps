@@ -260,14 +260,14 @@ wizard that will guide you through the process of minifying your app.
 1. Select the file you want to minify from the `USER` or `USER_BOOT` directory
    using the up and down arrow keys.
 2. Hit enter to select the file.
-3. This will output a file to the `minified/USER` or `minified/USER_BOOT`
-   directory, depending.
+3. This will output a file to the `min/USER` or `min/USER_BOOT` directory,
+   depending.
 4. If you get an error, fix up your files to be compatible with the Espruino
    minification.
 
-> ![Info][img-info] Source code is kept in USER and USER_BOOT
+> ![Info][img-info] Source code is kept in `USER` and `USER_BOOT`
 
-> ![Info][img-info] Minified code output to minified/USER and minified/USER_BOOT
+> ![Info][img-info] Minified code output to `min/USER` and `min/USER_BOOT`
 
 > ![Info][img-info] Be sure to update the registry to point at the minified
 > code, so the website knows where to find it.

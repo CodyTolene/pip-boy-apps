@@ -8,8 +8,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const targets = [
-  { input: '../USER', output: '../minified/USER' },
-  { input: '../USER_BOOT', output: '../minified/USER_BOOT' },
+  { input: '../USER', output: '../min/USER' },
+  { input: '../USER_BOOT', output: '../min/USER_BOOT' },
 ];
 
 for (const { input, output } of targets) {

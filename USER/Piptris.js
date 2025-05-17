@@ -8,31 +8,33 @@
 function Piptris() {
   const self = {};
 
-  self.GAME_NAME = 'Piptris';
-  self.GAME_VERSION = '1.1.0';
+  const GAME_NAME = 'Piptris';
+  const GAME_VERSION = '1.1.1';
 
-  self.blockSize = 10;
-  self.currentPiece = null;
-  self.dropInterval = 800;
-  self.dropTimer = null;
-  self.fieldHeight = 20;
-  self.fieldWidth = 16;
-  self.fieldX = 120;
-  self.fieldY = 0;
-  self.field = new Uint8Array(self.fieldWidth * self.fieldHeight);
-  self.gameOverFlag = false;
-  self.inputInterval = null;
-  self.nextPiece = null;
-  self.score = 0;
-  self.softDropInterval = null;
+  const BLOCK_SIZE = 10;
+  const DROP_INTERVAL = 800;
+  const FIELD_HEIGHT = 20;
+  const FIELD_WIDTH = 16;
+  const FIELD = new Uint8Array(FIELD_WIDTH * FIELD_HEIGHT);
+  const FIELD_X = 120;
+  const FIELD_Y = 0;
 
-  self.KNOB_DEBOUNCE = 100;
-  self.LEFT_KNOB = 'knob1';
-  self.RIGHT_KNOB = 'knob2';
-  self.lastLeftKnobTime = 0;
-  self.lastRightKnobTime = 0;
+  let inputInterval = null;
+  let softDropInterval = null;
 
-  self.SHAPES = [
+  let currentPiece = null;
+  let dropTimer = null;
+  let gameOverFlag = false;
+  let nextPiece = null;
+  let score = 0;
+
+  const KNOB_DEBOUNCE = 100;
+  const LEFT_KNOB = 'knob1';
+  const RIGHT_KNOB = 'knob2';
+  let lastLeftKnobTime = 0;
+  let lastRightKnobTime = 0;
+
+  const SHAPES = [
     // Z
     [
       [1, 1, 0],
@@ -67,31 +69,31 @@ function Piptris() {
     ],
   ];
 
-  self.clearLines = function () {
-    for (let y = self.fieldHeight - 1; y >= 0; y--) {
+  function clearLines() {
+    for (let y = FIELD_HEIGHT - 1; y >= 0; y--) {
       let full = true;
-      for (let x = 0; x < self.fieldWidth; x++) {
-        if (!self.getField(x, y)) {
+      for (let x = 0; x < FIELD_WIDTH; x++) {
+        if (!getField(x, y)) {
           full = false;
           break;
         }
       }
       if (full) {
         for (let ty = y; ty > 0; ty--) {
-          for (let x = 0; x < self.fieldWidth; x++) {
-            self.setField(x, ty, self.getField(x, ty - 1));
+          for (let x = 0; x < FIELD_WIDTH; x++) {
+            setField(x, ty, getField(x, ty - 1));
           }
         }
-        for (let x = 0; x < self.fieldWidth; x++) {
-          self.setField(x, 0, 0);
+        for (let x = 0; x < FIELD_WIDTH; x++) {
+          setField(x, 0, 0);
         }
-        self.score += 100;
+        score += 100;
         y++;
       }
     }
-  };
+  }
 
-  self.collides = function (piece) {
+  function collides(piece) {
     for (let y = 0; y < piece.shape.length; y++) {
       for (let x = 0; x < piece.shape[y].length; x++) {
         if (piece.shape[y][x]) {
@@ -99,9 +101,9 @@ function Piptris() {
           const fy = piece.y + y;
           if (
             fx < 0 ||
-            fx >= self.fieldWidth ||
-            fy >= self.fieldHeight ||
-            (fy >= 0 && self.getField(fx, fy))
+            fx >= FIELD_WIDTH ||
+            fy >= FIELD_HEIGHT ||
+            (fy >= 0 && getField(fx, fy))
           ) {
             return true;
           }
@@ -109,62 +111,62 @@ function Piptris() {
       }
     }
     return false;
-  };
+  }
 
-  self.drawBlock = function (x, y) {
+  function drawBlock(x, y) {
     bC.setColor(3);
     bC.fillRect(
-      self.fieldX + x * self.blockSize,
-      self.fieldY + y * self.blockSize,
-      self.fieldX + (x + 1) * self.blockSize - 1,
-      self.fieldY + (y + 1) * self.blockSize - 1,
+      FIELD_X + x * BLOCK_SIZE,
+      FIELD_Y + y * BLOCK_SIZE,
+      FIELD_X + (x + 1) * BLOCK_SIZE - 1,
+      FIELD_Y + (y + 1) * BLOCK_SIZE - 1,
     );
-  };
+  }
 
-  self.drawBorder = function () {
+  function drawBorder() {
     bC.setColor(2);
     bC.drawRect(
-      self.fieldX,
-      self.fieldY,
-      self.fieldX + self.fieldWidth * self.blockSize - 1,
-      self.fieldY + self.fieldHeight * self.blockSize - 1,
+      FIELD_X,
+      FIELD_Y,
+      FIELD_X + FIELD_WIDTH * BLOCK_SIZE - 1,
+      FIELD_Y + FIELD_HEIGHT * BLOCK_SIZE - 1,
     );
-  };
+  }
 
-  self.drawField = function () {
-    if (self.gameOverFlag) {
+  function drawField() {
+    if (gameOverFlag) {
       return;
     }
 
     bC.clear(1);
-    self.drawBorder();
-    self.drawScore();
-    self.drawNextPiece();
-    self.drawVersion();
-    self.drawTitle();
+    drawBorder();
+    drawScore();
+    drawNextPiece();
+    drawVersion();
+    drawTitle();
 
-    for (let y = 0; y < self.fieldHeight; y++) {
-      for (let x = 0; x < self.fieldWidth; x++) {
-        if (self.getField(x, y)) {
-          self.drawBlock(x, y);
+    for (let y = 0; y < FIELD_HEIGHT; y++) {
+      for (let x = 0; x < FIELD_WIDTH; x++) {
+        if (getField(x, y)) {
+          drawBlock(x, y);
         }
       }
     }
 
-    if (self.currentPiece) {
-      for (let y = 0; y < self.currentPiece.shape.length; y++) {
-        const row = self.currentPiece.shape[y];
+    if (currentPiece) {
+      for (let y = 0; y < currentPiece.shape.length; y++) {
+        const row = currentPiece.shape[y];
         for (let x = 0; x < row.length; x++) {
           if (row[x]) {
-            self.drawBlock(self.currentPiece.x + x, self.currentPiece.y + y);
+            drawBlock(currentPiece.x + x, currentPiece.y + y);
           }
         }
       }
     }
     bC.flip();
-  };
+  }
 
-  self.drawGearIcon = function (x, y, scale) {
+  function drawGearIcon(x, y, scale) {
     bC.setColor(3);
     const toothLength = 2 * scale;
     const toothOffset = 4 * scale;
@@ -190,234 +192,231 @@ function Piptris() {
     bC.fillCircle(x, y, radius);
     bC.setColor(0);
     bC.fillCircle(x, y, hole);
-  };
+  }
 
-  self.drawNextPiece = function () {
-    if (!self.nextPiece) {
+  function drawNextPiece() {
+    if (!nextPiece) {
       return;
     }
 
     bC.setColor(3);
     bC.setFontMonofonto18();
-    const nx = self.fieldX + self.fieldWidth * self.blockSize + 10;
-    bC.drawString('Next:', nx, self.fieldY);
-    for (let y = 0; y < self.nextPiece.shape.length; y++) {
-      const row = self.nextPiece.shape[y];
+    const nx = FIELD_X + FIELD_WIDTH * BLOCK_SIZE + 10;
+    bC.drawString('Next:', nx, FIELD_Y);
+    for (let y = 0; y < nextPiece.shape.length; y++) {
+      const row = nextPiece.shape[y];
       for (let x = 0; x < row.length; x++) {
         if (row[x]) {
           bC.fillRect(
-            nx + x * self.blockSize,
-            self.fieldY + 20 + y * self.blockSize,
-            nx + (x + 1) * self.blockSize - 1,
-            self.fieldY + 20 + (y + 1) * self.blockSize - 1,
+            nx + x * BLOCK_SIZE,
+            FIELD_Y + 20 + y * BLOCK_SIZE,
+            nx + (x + 1) * BLOCK_SIZE - 1,
+            FIELD_Y + 20 + (y + 1) * BLOCK_SIZE - 1,
           );
         }
       }
     }
-  };
+  }
 
-  self.drawScore = function () {
+  function drawScore() {
     bC.setColor(3);
     bC.setFontMonofonto18();
-    bC.drawString('Score:', self.fieldX - 80, self.fieldY);
-    bC.drawString(self.score.toString(), self.fieldX - 80, self.fieldY + 20);
-  };
+    bC.drawString('Score:', FIELD_X - 80, FIELD_Y);
+    bC.drawString(score.toString(), FIELD_X - 80, FIELD_Y + 20);
+  }
 
-  self.drawTitle = function () {
+  function drawTitle() {
     bC.setColor(3);
     bC.setFontMonofonto16();
-    bC.drawString(self.GAME_NAME, self.fieldX - 80, bC.getHeight() - 30);
-  };
+    bC.drawString(GAME_NAME, FIELD_X - 80, bC.getHeight() - 30);
+  }
 
-  self.drawVersion = function () {
+  function drawVersion() {
     bC.setColor(3);
     bC.setFontMonofonto16();
-    const nx = self.fieldX + self.fieldWidth * self.blockSize + 10;
-    bC.drawString('v' + self.GAME_VERSION, nx, bC.getHeight() - 30);
-  };
+    const nx = FIELD_X + FIELD_WIDTH * BLOCK_SIZE + 10;
+    bC.drawString('v' + GAME_VERSION, nx, bC.getHeight() - 30);
+  }
 
-  self.drop = function () {
-    if (!self.currentPiece || self.gameOverFlag) return;
-    self.currentPiece.y++;
-    if (self.collides(self.currentPiece)) {
-      self.currentPiece.y--;
-      self.merge(self.currentPiece);
-      self.clearLines();
-      self.spawnPiece();
+  function drop() {
+    if (!currentPiece || gameOverFlag) return;
+    currentPiece.y++;
+    if (collides(currentPiece)) {
+      currentPiece.y--;
+      merge(currentPiece);
+      clearLines();
+      spawnPiece();
     }
-    self.drawField();
-  };
+    drawField();
+  }
 
-  self.dropToBottom = function () {
-    if (!self.currentPiece || self.gameOverFlag) return;
+  function dropToBottom() {
+    if (!currentPiece || gameOverFlag) return;
     while (true) {
-      self.currentPiece.y++;
-      if (self.collides(self.currentPiece)) {
-        self.currentPiece.y--;
+      currentPiece.y++;
+      if (collides(currentPiece)) {
+        currentPiece.y--;
         break;
       }
     }
-    self.merge(self.currentPiece);
-    self.clearLines();
-    self.spawnPiece();
-    self.drawField();
-  };
+    merge(currentPiece);
+    clearLines();
+    spawnPiece();
+    drawField();
+  }
 
-  self.endGame = function () {
-    clearInterval(self.dropTimer);
-    clearInterval(self.softDropInterval);
+  function endGame() {
+    clearInterval(dropTimer);
+    clearInterval(softDropInterval);
 
-    self.gameOverFlag = true;
+    gameOverFlag = true;
     bC.clear(1);
     bC.setColor(3);
     bC.setFontMonofonto23();
     bC.drawString('GAME OVER', 120, 40);
     bC.setFontMonofonto18();
-    bC.drawString('Score: ' + self.score, 120, 70);
+    bC.drawString('Score: ' + score, 120, 70);
     bC.setFontMonofonto16();
     bC.drawString('Press    to restart', 120, 100);
-    self.drawGearIcon(175, 110, 2);
+    drawGearIcon(175, 110, 2);
     bC.flip();
 
-    if (self.inputInterval) clearInterval(self.inputInterval);
-    self.inputInterval = setInterval(() => {
+    if (inputInterval) clearInterval(inputInterval);
+    inputInterval = setInterval(() => {
       if (BTN_PLAY.read()) {
-        clearInterval(self.inputInterval);
-        self.restartGame();
+        clearInterval(inputInterval);
+        restartGame();
       }
     }, 100);
-  };
+  }
 
-  self.getField = function (x, y) {
-    return self.field[y * self.fieldWidth + x];
-  };
+  function getField(x, y) {
+    return FIELD[y * FIELD_WIDTH + x];
+  }
 
-  self.getRandomPiece = function () {
-    const shape = self.SHAPES[Math.floor(Math.random() * self.SHAPES.length)];
-    const centerOffset = Math.floor((self.fieldWidth - shape[0].length) / 2);
+  function getRandomPiece() {
+    const shape = SHAPES[Math.floor(Math.random() * SHAPES.length)];
+    const centerOffset = Math.floor((FIELD_WIDTH - shape[0].length) / 2);
     return { shape: shape, x: centerOffset, y: 0 };
-  };
+  }
 
-  self.merge = function (piece) {
+  function merge(piece) {
     for (let y = 0; y < piece.shape.length; y++) {
       const row = piece.shape[y];
       for (let x = 0; x < row.length; x++) {
         if (row[x]) {
-          self.setField(piece.x + x, piece.y + y, 1);
+          setField(piece.x + x, piece.y + y, 1);
         }
       }
     }
-  };
+  }
 
-  self.move = function (dir) {
-    if (self.gameOverFlag || !self.currentPiece) {
+  function move(dir) {
+    if (gameOverFlag || !currentPiece) {
       return;
     }
-    const newX = self.currentPiece.x + dir;
-    if (
-      newX < 0 ||
-      newX + self.currentPiece.shape[0].length > self.fieldWidth
-    ) {
+    const newX = currentPiece.x + dir;
+    if (newX < 0 || newX + currentPiece.shape[0].length > FIELD_WIDTH) {
       return;
     }
 
-    self.currentPiece.x = newX;
-    if (self.collides(self.currentPiece)) {
-      self.currentPiece.x -= dir;
+    currentPiece.x = newX;
+    if (collides(currentPiece)) {
+      currentPiece.x -= dir;
     }
 
-    self.drawField();
-  };
+    drawField();
+  }
 
-  self.resetPlayfield = function () {
-    for (let i = 0; i < self.field.length; i++) {
-      self.field[i] = 0;
+  function resetPlayfield() {
+    for (let i = 0; i < FIELD.length; i++) {
+      FIELD[i] = 0;
     }
-  };
+  }
 
-  self.restartGame = function () {
-    if (self.inputInterval) {
-      clearInterval(self.inputInterval);
+  function restartGame() {
+    if (inputInterval) {
+      clearInterval(inputInterval);
     }
-    if (self.dropTimer) {
-      clearInterval(self.dropTimer);
+    if (dropTimer) {
+      clearInterval(dropTimer);
     }
-    if (self.softDropInterval) {
-      clearInterval(self.softDropInterval);
+    if (softDropInterval) {
+      clearInterval(softDropInterval);
     }
 
-    self.gameOverFlag = false;
-    self.score = 0;
-    self.resetPlayfield();
-    self.nextPiece = self.getRandomPiece();
-    self.spawnPiece();
-    self.drawField();
+    gameOverFlag = false;
+    score = 0;
+    resetPlayfield();
+    nextPiece = getRandomPiece();
+    spawnPiece();
+    drawField();
 
-    self.dropTimer = setInterval(() => self.drop(), self.dropInterval);
-    self.softDropInterval = setInterval(() => {
-      if (!self.gameOverFlag && BTN_PLAY.read()) {
-        self.drop();
+    dropTimer = setInterval(() => drop(), DROP_INTERVAL);
+    softDropInterval = setInterval(() => {
+      if (!gameOverFlag && BTN_PLAY.read()) {
+        drop();
       }
     }, 100);
-  };
+  }
 
-  self.rotate = function (dir) {
-    if (self.gameOverFlag) {
+  function rotate(dir) {
+    if (gameOverFlag) {
       return;
     }
 
-    const shape = self.currentPiece.shape;
+    const shape = currentPiece.shape;
     const newShape =
       dir > 0
         ? shape[0].map((_, i) => shape.map((row) => row[row.length - 1 - i]))
         : shape[0].map((_, i) => shape.map((row) => row[i]).reverse());
 
-    const oldShape = self.currentPiece.shape;
-    self.currentPiece.shape = newShape;
-    if (self.collides(self.currentPiece)) self.currentPiece.shape = oldShape;
-    self.drawField();
-  };
+    const oldShape = currentPiece.shape;
+    currentPiece.shape = newShape;
+    if (collides(currentPiece)) currentPiece.shape = oldShape;
+    drawField();
+  }
 
   self.run = function () {
-    Pip.removeAllListeners(self.LEFT_KNOB);
-    Pip.removeAllListeners(self.RIGHT_KNOB);
+    Pip.removeAllListeners(LEFT_KNOB);
+    Pip.removeAllListeners(RIGHT_KNOB);
 
-    Pip.on(self.LEFT_KNOB, (dir) => {
+    Pip.on(LEFT_KNOB, (dir) => {
       const now = Date.now();
-      if (now - self.lastLeftKnobTime < self.KNOB_DEBOUNCE) {
+      if (now - lastLeftKnobTime < KNOB_DEBOUNCE) {
         return;
       }
-      self.lastLeftKnobTime = now;
+      lastLeftKnobTime = now;
 
       if (dir === 0) {
-        if (self.gameOverFlag) {
-          self.restartGame();
+        if (gameOverFlag) {
+          restartGame();
         } else {
-          self.dropToBottom();
+          dropToBottom();
         }
       } else {
-        self.rotate(dir);
+        rotate(dir);
       }
     });
 
-    Pip.on(self.RIGHT_KNOB, (dir) => {
+    Pip.on(RIGHT_KNOB, (dir) => {
       const now = Date.now();
-      if (now - self.lastRightKnobTime < self.KNOB_DEBOUNCE) {
+      if (now - lastRightKnobTime < KNOB_DEBOUNCE) {
         return;
       }
-      self.lastRightKnobTime = now;
+      lastRightKnobTime = now;
 
-      if (self.gameOverFlag && dir === 0) {
-        self.restartGame();
+      if (gameOverFlag && dir === 0) {
+        restartGame();
       } else {
-        self.move(dir > 0 ? 1 : -1);
+        move(dir > 0 ? 1 : -1);
       }
     });
 
     setWatch(
       () => {
-        clearInterval(self.dropTimer);
-        if (self.inputInterval) clearInterval(self.inputInterval);
+        clearInterval(dropTimer);
+        if (inputInterval) clearInterval(inputInterval);
         bC.clear(1).flip();
         E.reboot();
       },
@@ -425,18 +424,18 @@ function Piptris() {
       { repeat: true, edge: 'rising', debounce: 10 },
     );
 
-    self.restartGame();
+    restartGame();
   };
 
-  self.setField = function (x, y, val) {
-    self.field[y * self.fieldWidth + x] = val;
-  };
+  function setField(x, y, val) {
+    FIELD[y * FIELD_WIDTH + x] = val;
+  }
 
-  self.spawnPiece = function () {
-    self.currentPiece = self.nextPiece || self.getRandomPiece();
-    self.nextPiece = self.getRandomPiece();
-    if (self.collides(self.currentPiece)) self.endGame();
-  };
+  function spawnPiece() {
+    currentPiece = nextPiece || getRandomPiece();
+    nextPiece = getRandomPiece();
+    if (collides(currentPiece)) endGame();
+  }
 
   return self;
 }
