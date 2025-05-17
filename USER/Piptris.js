@@ -20,14 +20,18 @@ let nextPiece = null;
 let gameOverFlag = false;
 
 function resetPlayfield() {
-  field = Array(fieldHeight)
-    .fill()
-    .map(() => Array(fieldWidth).fill(0));
+  for (let i = 0; i < field.length; i++) {
+    field[i] = 0;
+  }
 }
 
-let field = Array(fieldHeight)
-  .fill()
-  .map(() => Array(fieldWidth).fill(0));
+let field = new Uint8Array(fieldWidth * fieldHeight);
+function getField(x, y) {
+  return field[y * fieldWidth + x];
+}
+function setField(x, y, val) {
+  field[y * fieldWidth + x] = val;
+}
 let currentPiece = null;
 let dropTimer = null;
 let inputInterval = null;
@@ -89,7 +93,7 @@ function collides(piece) {
           fx < 0 ||
           fx >= fieldWidth ||
           fy >= fieldHeight ||
-          (fy >= 0 && field[fy][fx])
+          (fy >= 0 && getField(fx, fy))
         ) {
           return true;
         }
@@ -102,17 +106,31 @@ function collides(piece) {
 function merge(piece) {
   piece.shape.forEach((row, y) =>
     row.forEach((val, x) => {
-      if (val) field[piece.y + y][piece.x + x] = 1;
+      if (val) setField(piece.x + x, piece.y + y, 1);
     }),
   );
 }
 
 function clearLines() {
   for (let y = fieldHeight - 1; y >= 0; y--) {
-    if (field[y].every((val) => val)) {
-      field.splice(y, 1);
-      field.unshift(Array(fieldWidth).fill(0));
+    let full = true;
+    for (let x = 0; x < fieldWidth; x++) {
+      if (!getField(x, y)) {
+        full = false;
+        break;
+      }
+    }
+    if (full) {
+      for (let ty = y; ty > 0; ty--) {
+        for (let x = 0; x < fieldWidth; x++) {
+          setField(x, ty, getField(x, ty - 1));
+        }
+      }
+      for (let x = 0; x < fieldWidth; x++) {
+        setField(x, 0, 0);
+      }
       score += 100;
+      y++;
     }
   }
 }
@@ -126,11 +144,11 @@ function drawField() {
   drawVersion();
   drawTitle();
 
-  field.forEach((row, y) =>
-    row.forEach((val, x) => {
-      if (val) drawBlock(x, y);
-    }),
-  );
+  for (let y = 0; y < fieldHeight; y++) {
+    for (let x = 0; x < fieldWidth; x++) {
+      if (getField(x, y)) drawBlock(x, y);
+    }
+  }
 
   if (currentPiece) {
     currentPiece.shape.forEach((row, y) =>
@@ -170,6 +188,7 @@ function drawScore() {
 }
 
 function drawNextPiece() {
+  if (!nextPiece) return;
   bC.setColor(3);
   bC.setFontMonofonto18();
   const nx = fieldX + fieldWidth * blockSize + 10;
