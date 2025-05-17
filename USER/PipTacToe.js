@@ -11,12 +11,12 @@ let cursorX = 0,
   cursorY = 0;
 let gameOver = false;
 let inMenu = true;
-let menuOptions = ['2 Player Game', 'Vs CPU'];
+let menuOptions = ['2 PLAYER', 'VS CPU'];
 let menuSelection = 0;
 let vsCPU = false;
 
-var screenWidth = 400;
-var screenHeight = bC.getHeight();
+const screenWidth = bC.getWidth();
+const screenHeight = bC.getHeight();
 
 const spacing = 10,
   cellWidth = 50,
@@ -28,22 +28,28 @@ const offsetY = (screenHeight - boardHeight) / 2 - 16;
 
 function drawBoard() {
   bC.clear();
-  bC.setFont('6x8', 2);
-  bC.setColor(1);
+  bC.setFont('6x8', 2.5);
+  bC.setColor(10);
 
+  const thickness = 3;
   for (let i = 1; i < 3; i++) {
-    bC.drawLine(
-      offsetX + i * (cellWidth + spacing) - spacing / 2,
-      offsetY,
-      offsetX + i * (cellWidth + spacing) - spacing / 2,
-      offsetY + boardHeight,
-    );
-    bC.drawLine(
-      offsetX,
-      offsetY + i * (cellHeight + spacing) - spacing / 2,
-      offsetX + boardWidth,
-      offsetY + i * (cellHeight + spacing) - spacing / 2,
-    );
+    let x = offsetX + i * (cellWidth + spacing) - spacing / 2;
+    let y = offsetY + i * (cellHeight + spacing) - spacing / 2;
+    for (
+      let dx = -Math.floor(thickness / 2);
+      dx <= Math.floor(thickness / 2);
+      dx++
+    ) {
+      bC.drawLine(x + dx, offsetY, x + dx, offsetY + boardHeight);
+    }
+
+    for (
+      let dy = -Math.floor(thickness / 2);
+      dy <= Math.floor(thickness / 2);
+      dy++
+    ) {
+      bC.drawLine(offsetX, y + dy, offsetX + boardWidth, y + dy);
+    }
   }
 
   for (let y = 0; y < 3; y++) {
@@ -192,8 +198,8 @@ function getBestMove() {
 function showGameOverMessage(result) {
   let msg = result === 'Draw' ? "It's a draw!" : `Player ${result} wins!`;
   bC.clear();
-  bC.setFont('6x8', 2);
-  bC.setColor(1);
+  bC.setFont('6x8', 2.5);
+  bC.setColor(10);
   bC.drawString(msg, (screenWidth - bC.stringWidth(msg)) / 2, screenHeight / 2);
   bC.flip();
 
@@ -218,14 +224,21 @@ function placeMark() {
   currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
 
   if (!gameOver && vsCPU && currentPlayer === 'O') {
-    setTimeout(cpuMove, 10);
+    cpuMove();
   }
 }
 
 function cpuMove() {
   if (gameOver || !vsCPU) return;
 
-  let move = getBestMove();
+  let move;
+
+  if (board[1][1] === '') {
+    move = { x: 1, y: 1 };
+  } else {
+    move = getBestMove();
+  }
+
   if (!move) return;
 
   setTimeout(() => {
@@ -289,8 +302,8 @@ function showMainMenu() {
   inMenu = true;
   function drawMenu() {
     bC.clear();
-    bC.setFont('6x8', 2);
-    bC.setColor(1);
+    bC.setFont('6x8', 2.5);
+    bC.setColor(10);
     let title = 'PIP-TAC-TOE';
     bC.drawString(title, (screenWidth - bC.stringWidth(title)) / 2, 20);
     for (let i = 0; i < menuOptions.length; i++) {
