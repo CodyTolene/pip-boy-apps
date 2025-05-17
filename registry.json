@@ -8,7 +8,7 @@
     "name": "File Explorer",
     "tip": "Press play again to stop currently playing media.",
     "type": "APP",
-    "version": "2.0.0"
+    "version": "2.1.0"
   },
   {
     "authors": ["Cody Tolene <https://www.CodyTolene.com>"],
@@ -215,6 +215,6 @@
     "name": "Piptris",
     "tip": "Try to clear as many lines as possible!",
     "type": "GAME",
-    "version": "1.1.0"
+    "version": "1.1.1"
   }
 ]
