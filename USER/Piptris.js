@@ -13,9 +13,9 @@ function Piptris() {
 
   const BLOCK_SIZE = 10;
   const DROP_INTERVAL = 800;
-  const FIELD = new Uint8Array(FIELD_WIDTH * FIELD_HEIGHT);
   const FIELD_HEIGHT = 20;
   const FIELD_WIDTH = 16;
+  const FIELD = new Uint8Array(FIELD_WIDTH * FIELD_HEIGHT);
   const FIELD_X = 120;
   const FIELD_Y = 0;
 

@@ -17,7 +17,7 @@ for (const folder of folders) {
   const files = fs.readdirSync(fullPath).filter(f => f.endsWith('.js')).map(f => ({
     name: f,
     path: path.join(fullPath, f),
-    output: path.join(__dirname, '../minified', path.basename(folder), f)
+    output: path.join(__dirname, '../min', path.basename(folder), f)
   }));
   allFiles.push(...files);
 }
