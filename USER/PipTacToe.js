@@ -15,8 +15,8 @@ let menuOptions = ['2 PLAYER', 'VS CPU'];
 let menuSelection = 0;
 let vsCPU = false;
 
-var screenWidth = bC.getWidth();
-var screenHeight = bC.getHeight();
+const screenWidth = bC.getWidth();
+const screenHeight = bC.getHeight();
 
 const spacing = 10,
   cellWidth = 50,
