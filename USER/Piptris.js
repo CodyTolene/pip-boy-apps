@@ -6,7 +6,7 @@
 // =============================================================================
 
 const GAME_NAME = 'Piptris';
-const GAME_VERSION = '1.0.0';
+const GAME_VERSION = '1.0.1';
 
 let fieldWidth = 16;
 let fieldHeight = 20;
