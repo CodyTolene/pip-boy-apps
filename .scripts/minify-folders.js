@@ -31,7 +31,7 @@ for (const { input, output } of targets) {
       const outputPath = path.join(outputDir, file);
       console.log(`Minifying ${file}...`);
       try {
-        execSync(`espruino --minify ${inputPath} -o ${outputPath}`, {
+        execSync(`espruino --minify "${inputPath}" -o "${outputPath}"`, {
           stdio: 'inherit',
         });
       } catch (e) {
