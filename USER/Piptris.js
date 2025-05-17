@@ -3,11 +3,10 @@
 //  License: CC-BY-NC-4.0
 //  Repository: https://github.com/CodyTolene/pip-apps
 //  Description: A simple Tetris inspired game for the Pip-Boy 3000 Mk V.
-//  Version: 1.0.0
 // =============================================================================
 
 const GAME_NAME = 'Piptris';
-const GAME_VERSION = 'v1.0.0';
+const GAME_VERSION = '1.0.0';
 
 let fieldWidth = 16;
 let fieldHeight = 20;
@@ -192,7 +191,7 @@ function drawVersion() {
   bC.setColor(3);
   bC.setFontMonofonto16();
   const nx = fieldX + fieldWidth * blockSize + 10;
-  bC.drawString(GAME_VERSION, nx, bC.getHeight() - 30);
+  bC.drawString('v' + GAME_VERSION, nx, bC.getHeight() - 30);
 }
 
 function drawTitle() {
