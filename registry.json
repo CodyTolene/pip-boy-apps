@@ -2,7 +2,7 @@
   {
     "authors": ["Cody Tolene <https://www.CodyTolene.com>"],
     "description": "A lightweight file explorer for the Pip-Boy 3000 Mk V. Browse your device's file system and interact with files directly.",
-    "files": ["USER/FileExplorer.js"],
+    "files": ["min/USER/FileExplorer.js"],
     "id": "FileExplorer",
     "instructions": "Use the top-left or top-right rotary wheels or the front radio tuner to scroll. Press the left rotary wheel or front radio tuner to play or stop media. Press the top torch button to restart the device.",
     "name": "File Explorer",
