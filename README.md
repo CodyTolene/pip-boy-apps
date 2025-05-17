@@ -29,6 +29,7 @@
   - [Pip-App Loader](#pip-app-loader)
   - [Learning app development](#learning-app-development)
   - [Creating a New App/Game](#new-app-game)
+  - [Minification](#minification)
 - [Directory Structure](#directory-structure)
 - [License(s)](#licenses)
 - [Terms of Use](#terms)
@@ -244,6 +245,32 @@ To create a new app/game, follow these steps:
 7. Wait for the pull request to be reviewed and merged.
 
 Thank you for any and all contributions!
+
+<p align="right">[ <a href="#index">Index</a> ]</p>
+
+<!---------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------->
+
+### Minification <a name="minification"></a>
+
+To minify your app, you can use the `npm run minify` command. This will start a
+wizard that will guide you through the process of minifying your app.
+
+1. Select the file you want to minify from the `USER` or `USER_BOOT` directory
+   using the up and down arrow keys.
+2. Hit enter to select the file.
+3. This will output a file to the `minified/USER` or `minified/USER_BOOT`
+   directory, depending.
+4. If you get an error, fix up your files to be compatible with the Espruino
+   minification.
+
+> ![Info][img-info] Source code is kept in USER and USER_BOOT
+
+> ![Info][img-info] Minified code output to minified/USER and minified/USER_BOOT
+
+> ![Info][img-info] Be sure to update the registry to point at the minified
+> code, so the website knows where to find it.
 
 <p align="right">[ <a href="#index">Index</a> ]</p>
 
