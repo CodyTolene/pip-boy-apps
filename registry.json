@@ -211,7 +211,7 @@
     "description": "A simple Tetris inspired game for the Pip-Boy 3000 Mk V.",
     "files": ["minified/USER/Piptris.js"],
     "id": "Piptris",
-    "instructions": "Use the top-left knob to rotate pieces. Use the top-right knob to move pieces left and right. Press the front radio tuner button to move pieces faster. Press the top torch button to exit.",
+    "instructions": "Use the top-left knob to rotate pieces, press to drop piece instantly. Use the top-right knob to move pieces left and right. Press the front radio tuner button to move pieces faster. Press the top torch button to exit.",
     "name": "Piptris",
     "tip": "Try to clear as many lines as possible!",
     "type": "GAME",
