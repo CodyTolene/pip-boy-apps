@@ -34,9 +34,6 @@ function draw() {
         : scs == sps
           ? bS(spf)
           : scs == pss && bPSS(),
-    bH.flip(),
-    bF.flip(),
-    bC.flip(),
     (dr = !1));
 }
 function bS(s) {
@@ -280,7 +277,8 @@ function hK1C(e) {
         (rk1f = hK1))
       : (pos += e) < 0
         ? (pos = 100)
-        : 100 < pos && (es = 0);
+        : 100 < pos && (es = 0),
+    draw();
 }
 function hK1(e) {
   Pip.knob1Click(e),
@@ -299,7 +297,8 @@ function hK1(e) {
           ? ((es = llm - 1), llm > eldm && (lr = null))
           : es >= llm && (es = 0),
         ((0 < e && lr - 1 == es) || (es % eldm == 0 && es != lr)) &&
-          (lr = null));
+          (lr = null)),
+    draw();
 }
 function hK2(e) {
   Pip.knob2Click(e),
@@ -308,7 +307,8 @@ function hK2(e) {
     (es = 0),
     (cp = null),
     (lr = null),
-    scs > ms ? (scs = 0) : scs < 0 && (scs = ms);
+    scs > ms ? (scs = 0) : scs < 0 && (scs = ms),
+    draw();
 }
 function hT() {
   gC(), torchButtonHandler();
@@ -366,7 +366,8 @@ try {
 Pip.on('knob1', rk1f),
   Pip.on('knob2', hK2),
   Pip.on('torch', hT),
-  setWatch(pH, BTN_POWER, { repeat: !1 });
+  setWatch(pH, BTN_POWER, { repeat: !1 }),
+  draw();
 let intervalId = setInterval(() => {
-  checkMode(), (2 == Pip.mode ? draw : (gC(), delete gC, showMainMenu))();
+  checkMode(), 2 == Pip.mode ? (bH.flip(), bF.flip(), bC.flip()) : gC();
 }, 16);
