@@ -24,7 +24,7 @@
   {
     "authors": ["Cody Tolene <https://www.CodyTolene.com>"],
     "description": "Pip-Snake is a simple game where you control a growing snake that eats food and avoids crashing into itself.",
-    "files": ["USER/PipSnake.js"],
+    "files": ["min/USER/PipSnake.js"],
     "id": "PipSnake",
     "instructions": "Use any knobs to move clockwise and counter-clockwise, the front radio tuner button to restart, and the top torch button to exit the game.",
     "name": "Pip-Snake",
