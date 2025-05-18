@@ -13,13 +13,13 @@
   {
     "authors": ["Cody Tolene <https://www.CodyTolene.com>"],
     "description": "Pip-Pong is a simple game where you control a paddle that hits a ball back and forth.",
-    "files": ["USER/PipPong.js"],
+    "files": ["min/USER/PipPong.js"],
     "id": "PipPong",
     "instructions": "Use any knob to move up and down, and the top torch button to exit the game.",
     "name": "Pip-Pong",
     "tip": "",
     "type": "GAME",
-    "version": "1.1.0"
+    "version": "1.2.0"
   },
   {
     "authors": ["Cody Tolene <https://www.CodyTolene.com>"],
