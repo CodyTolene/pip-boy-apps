@@ -43,11 +43,7 @@ function checkVer() {
   }
 }
 
-try {
-  let imv = false;
-  checkVer();
-
-  let themeObj = readThemeFile();
+function setTheme(themeObj) {
   if (themeObj == null) {
     if (settings.palette) {
       //if user palette set through TWC settings, don't bother trying to reset the palette.
@@ -177,12 +173,25 @@ try {
       Pip.setPalette(pal);
     }
   }
-  delete theme;
+}
+
+function run() {
+  let imv = false;
+  checkVer();
+  let themeObj = readThemeFile();
+  setTheme(themeObj);
+  delete themeObj;
   delete pal;
   delete imv;
+  delete setTheme;
   delete readThemeFile;
   delete nD;
   delete checkVer;
+}
+
+try {
+  run();
+  delete run;
 } catch {
   //oops, error, don't crash out.
 }
