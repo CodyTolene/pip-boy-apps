@@ -11,18 +11,18 @@ const themeSettingsFile = 'USER/ThemePicker/theme.json';
 function readThemeFile() {
   //try to read directory first, if we error, make the directory and return, nothing to read.
   try {
-    require('fs').readdirSync(themeSettingsFolder);
-  } catch {
-    require('fs').mkdir(themeSettingsFolder);
+    fs.readdirSync(themeSettingsFolder);
+  } catch (e) {
+    fs.mkdir(themeSettingsFolder);
     return;
   }
   try {
-    let fileString = require('fs').readFileSync(themeSettingsFile);
+    let fileString = fs.readFileSync(themeSettingsFile);
     let fileObj = JSON.parse(fileString);
     theme0 = fileObj.theme0;
     theme1 = fileObj.theme1;
     gradient = fileObj.gradient;
-  } catch {
+  } catch (e) {
     //folder created but no theme file yet, ignore
     return;
   }
@@ -30,9 +30,9 @@ function readThemeFile() {
 
 function writeThemeFile() {
   try {
-    require('fs').readdirSync(themeSettingsFolder);
-  } catch {
-    require('fs').mkdir(themeSettingsFolder);
+    fs.readdirSync(themeSettingsFolder);
+  } catch (e) {
+    fs.mkdir(themeSettingsFolder);
   }
   let jobj = {
     gradient: gradient,
@@ -40,13 +40,13 @@ function writeThemeFile() {
     theme1: theme1,
   };
   let jsonString = JSON.stringify(jobj);
-  require('fs').writeFile(themeSettingsFile, jsonString);
+  fs.writeFile(themeSettingsFile, jsonString);
 }
 
 function resetTheme() {
   try {
-    require('fs').unlink(themeSettingsFile);
-  } catch {}
+    fs.unlink(themeSettingsFile);
+  } catch (e) {}
 }
 
 function drawBlocks() {

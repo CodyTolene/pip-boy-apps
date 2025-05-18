@@ -110,7 +110,7 @@
   {
     "authors": ["Illes Kokenyesi"],
     "description": "AsteroPIPs is a simple game where you control a spaceship to shoot and avoid space rocks.",
-    "files": ["USER/AsteroPIPs.js"],
+    "files": ["USER/AsteroPIPs.min.js"],
     "id": "AsteroPIPs",
     "instructions": "Use the LEFT WHEEL BUTTON to start / shoot, TUNE KNOB UP and DOWN for rotate, and PUSH to move forward. TOP TORCH button to exit the game.",
     "name": "AsteroPIPs",
@@ -121,7 +121,7 @@
   {
     "authors": ["tetriskid <https://tetriskid48.github.io>"],
     "description": "A classic brick-breaking game.",
-    "files": ["USER/VaultBreaker.js"],
+    "files": ["USER/VaultBreaker.min.js"],
     "id": "VaultBreaker",
     "instructions": "Press down the left wheel to launch the ball. Use the top-right wheel to move the paddle. Press the torch button to quit.",
     "name": "Vault Breaker",
@@ -132,7 +132,7 @@
   {
     "authors": ["Illes Kokenyesi"],
     "description": "A classic 2048 game.",
-    "files": ["USER/Pip2048.js"],
+    "files": ["USER/Pip2048.min.js"],
     "id": "Pip2048",
     "instructions": "Use the LEFT WHEEL to shift the table Up / Down, UPPER RIGHT WHEEL to shift Left / Right. Push LEFT WHEEL Click to Reset. Press TOP TORCH button to exit the game.",
     "name": "2048",
@@ -159,7 +159,7 @@
   {
     "authors": ["pip-4111 <https://github.com/pip-4111>"],
     "description": "A fun Tic-Tac-Toe game for the Pip-Boy 3000 Mk V.",
-    "files": ["USER/PipTacToe.js"],
+    "files": ["USER/PipTacToe.min.js"],
     "id": "PipTacToe",
     "instructions": "",
     "name": "Pip-Tac-Toe",
@@ -198,7 +198,7 @@
   {
     "authors": ["Athene <https://athene.gay/>"],
     "description": "A better theme picker, with finer colour picker control and the ability to change the scan line to a different colour for highlighting.",
-    "files": ["USER_BOOT/ThemePickerBootloader.js", "USER/ThemePicker.js"],
+    "files": ["USER_BOOT/ThemePickerBootloader.js", "USER/ThemePicker.min.js"],
     "id": "ThemePicker",
     "instructions": "Use the right wheel to select RGB value to change, and the left wheel to modify its value.",
     "name": "Theme Picker",
