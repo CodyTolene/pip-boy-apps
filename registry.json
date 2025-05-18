@@ -2,35 +2,35 @@
   {
     "authors": ["Cody Tolene <https://www.CodyTolene.com>"],
     "description": "A lightweight file explorer for the Pip-Boy 3000 Mk V. Browse your device's file system and interact with files directly.",
-    "files": ["min/USER/FileExplorer.js"],
+    "files": ["USER/FileExplorer.min.js"],
     "id": "FileExplorer",
     "instructions": "Use the top-left or top-right rotary wheels or the front radio tuner to scroll. Press the left rotary wheel or front radio tuner to play or stop media. Press the top torch button to restart the device.",
     "name": "File Explorer",
     "tip": "Press play again to stop currently playing media.",
     "type": "APP",
-    "version": "2.1.0"
+    "version": "2.1.1"
   },
   {
     "authors": ["Cody Tolene <https://www.CodyTolene.com>"],
     "description": "Pip-Pong is a simple game where you control a paddle that hits a ball back and forth.",
-    "files": ["USER/PipPong.js"],
+    "files": ["USER/PipPong.min.js"],
     "id": "PipPong",
     "instructions": "Use any knob to move up and down, and the top torch button to exit the game.",
     "name": "Pip-Pong",
     "tip": "",
     "type": "GAME",
-    "version": "1.1.0"
+    "version": "1.2.0"
   },
   {
     "authors": ["Cody Tolene <https://www.CodyTolene.com>"],
     "description": "Pip-Snake is a simple game where you control a growing snake that eats food and avoids crashing into itself.",
-    "files": ["USER/PipSnake.js"],
+    "files": ["USER/PipSnake.min.js"],
     "id": "PipSnake",
     "instructions": "Use any knobs to move clockwise and counter-clockwise, the front radio tuner button to restart, and the top torch button to exit the game.",
     "name": "Pip-Snake",
     "tip": "The snake wraps around when it hits the edge of the screen.",
     "type": "GAME",
-    "version": "1.1.0"
+    "version": "1.2.0"
   },
   {
     "authors": ["Athene <https://athene.gay/>"],
@@ -96,7 +96,7 @@
     "authors": ["Cody Tolene <https://www.CodyTolene.com>"],
     "description": "Custom Radio lets you browse and play your own `.wav` music files directly from the `/RADIO` folder, giving you full control over your playlist.",
     "files": [
-      "min/USER/CustomRadio.js",
+      "USER/CustomRadio.min.js",
       "USER/CustomRadio/options.json",
       "USER_BOOT/CustomRadio.js"
     ],
@@ -105,12 +105,12 @@
     "name": "Custom Radio",
     "tip": "Avoid adding more than 50 songs to the `/RADIO` folder to keep performance smooth. Press the knob again to stop playback.",
     "type": "APP",
-    "version": "2.4.0"
+    "version": "2.4.1"
   },
   {
     "authors": ["Illes Kokenyesi"],
     "description": "AsteroPIPs is a simple game where you control a spaceship to shoot and avoid space rocks.",
-    "files": ["USER/AsteroPIPs.js"],
+    "files": ["USER/AsteroPIPs.min.js"],
     "id": "AsteroPIPs",
     "instructions": "Use the LEFT WHEEL BUTTON to start / shoot, TUNE KNOB UP and DOWN for rotate, and PUSH to move forward. TOP TORCH button to exit the game.",
     "name": "AsteroPIPs",
@@ -132,19 +132,19 @@
   {
     "authors": ["Illes Kokenyesi"],
     "description": "A classic 2048 game.",
-    "files": ["USER/Pip2048.js"],
+    "files": ["USER/Pip2048.min.js"],
     "id": "Pip2048",
     "instructions": "Use the LEFT WHEEL to shift the table Up / Down, UPPER RIGHT WHEEL to shift Left / Right. Push LEFT WHEEL Click to Reset. Press TOP TORCH button to exit the game.",
     "name": "2048",
     "tip": "Use your brain! =]",
     "type": "GAME",
-    "version": "1.0.0"
+    "version": "1.0.1"
   },
   {
     "authors": ["Cody Tolene <https://www.CodyTolene.com>"],
     "description": "A DOOM inspired RPG engine for the Pip-Boy 3000 Mk V.",
     "files": [
-      "USER/Wasteland.js",
+      "USER/Wasteland.min.js",
       "USER/Wasteland/OOF.wav",
       "USER/Wasteland/F_STEP.wav",
       "USER/Wasteland/F_STEP_2.wav"
@@ -154,18 +154,18 @@
     "name": "Wasteland",
     "tip": "",
     "type": "GAME",
-    "version": "1.0.0"
+    "version": "1.1.0"
   },
   {
     "authors": ["pip-4111 <https://github.com/pip-4111>"],
     "description": "A fun Tic-Tac-Toe game for the Pip-Boy 3000 Mk V.",
-    "files": ["USER/PipTacToe.js"],
+    "files": ["USER/PipTacToe.min.js"],
     "id": "PipTacToe",
     "instructions": "",
     "name": "Pip-Tac-Toe",
     "tip": "",
     "type": "GAME",
-    "version": "1.1.0"
+    "version": "1.1.1"
   },
   {
     "authors": ["Mercy <https://github.com/MercurialPony>"],
@@ -198,23 +198,23 @@
   {
     "authors": ["Athene <https://athene.gay/>"],
     "description": "A better theme picker, with finer colour picker control and the ability to change the scan line to a different colour for highlighting.",
-    "files": ["USER_BOOT/ThemePickerBootloader.js", "USER/ThemePicker.js"],
+    "files": ["USER_BOOT/ThemePickerBootloader.js", "USER/ThemePicker.min.js"],
     "id": "ThemePicker",
     "instructions": "Use the right wheel to select RGB value to change, and the left wheel to modify its value.",
     "name": "Theme Picker",
     "tip": "",
     "type": "APP",
-    "version": "1.0.0"
+    "version": "1.0.1"
   },
   {
     "authors": ["Cody Tolene <https://www.CodyTolene.com>"],
     "description": "A simple Tetris inspired game for the Pip-Boy 3000 Mk V.",
-    "files": ["min/USER/Piptris.js"],
+    "files": ["USER/Piptris.min.js"],
     "id": "Piptris",
     "instructions": "Use the top-left knob to rotate pieces, press to drop piece instantly. Use the top-right knob to move pieces left and right. Press the front radio tuner button to move pieces faster. Press the top torch button to exit.",
     "name": "Piptris",
     "tip": "Try to clear as many lines as possible!",
     "type": "GAME",
-    "version": "1.1.1"
+    "version": "1.1.2"
   }
 ]

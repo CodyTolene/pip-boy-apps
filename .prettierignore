@@ -3,11 +3,14 @@
 
 # Except these files and directories:
 !.github/CODEOWNERS
+!.scripts/
 !README.md
 !USER/
 !USER_BOOT/
 !registry.json
 !docs/
+
+**/*.min.js
 
 # Re-ignore sub-directories from the above exempt directories:
 .github/CODEOWNERS
