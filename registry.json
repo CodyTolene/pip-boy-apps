@@ -8,7 +8,7 @@
     "name": "File Explorer",
     "tip": "Press play again to stop currently playing media.",
     "type": "APP",
-    "version": "2.1.0"
+    "version": "2.1.1"
   },
   {
     "authors": ["Cody Tolene <https://www.CodyTolene.com>"],
@@ -105,7 +105,7 @@
     "name": "Custom Radio",
     "tip": "Avoid adding more than 50 songs to the `/RADIO` folder to keep performance smooth. Press the knob again to stop playback.",
     "type": "APP",
-    "version": "2.4.0"
+    "version": "2.4.1"
   },
   {
     "authors": ["Illes Kokenyesi"],
@@ -121,7 +121,7 @@
   {
     "authors": ["tetriskid <https://tetriskid48.github.io>"],
     "description": "A classic brick-breaking game.",
-    "files": ["USER/VaultBreaker.min.js"],
+    "files": ["USER/VaultBreaker.js"],
     "id": "VaultBreaker",
     "instructions": "Press down the left wheel to launch the ball. Use the top-right wheel to move the paddle. Press the torch button to quit.",
     "name": "Vault Breaker",
@@ -138,7 +138,7 @@
     "name": "2048",
     "tip": "Use your brain! =]",
     "type": "GAME",
-    "version": "1.0.0"
+    "version": "1.0.1"
   },
   {
     "authors": ["Cody Tolene <https://www.CodyTolene.com>"],
@@ -165,7 +165,7 @@
     "name": "Pip-Tac-Toe",
     "tip": "",
     "type": "GAME",
-    "version": "1.1.0"
+    "version": "1.1.1"
   },
   {
     "authors": ["Mercy <https://github.com/MercurialPony>"],
@@ -204,7 +204,7 @@
     "name": "Theme Picker",
     "tip": "",
     "type": "APP",
-    "version": "1.0.0"
+    "version": "1.0.1"
   },
   {
     "authors": ["Cody Tolene <https://www.CodyTolene.com>"],
@@ -215,6 +215,6 @@
     "name": "Piptris",
     "tip": "Try to clear as many lines as possible!",
     "type": "GAME",
-    "version": "1.1.1"
+    "version": "1.1.2"
   }
 ]
