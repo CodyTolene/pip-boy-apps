@@ -102,6 +102,7 @@ function PipPong() {
     g.drawString('GAME OVER', SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 30);
     g.setFont('6x8', 2);
     g.drawString('Score: ' + playerScore, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
+    g.setColor(COLOR_WHITE);
     g.drawString('Press  to restart', SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 30);
     drawGearIcon(SCREEN_WIDTH / 2 - 31, SCREEN_HEIGHT / 2 + 30, 1.5);
 
@@ -232,10 +233,10 @@ function PipPong() {
     g.setColor(COLOR_GREEN);
     g.setFont('6x8', 4);
     g.drawString(GAME_NAME, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 20);
+    g.setColor(COLOR_WHITE);
     g.setFont('6x8', 2);
     g.drawString('Press   to START', SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 15);
     g.setFont('6x8', 1);
-    g.setColor(COLOR_WHITE);
     g.drawString(' v' + GAME_VERSION, SCREEN_WIDTH / 2 - 5, SCREEN_HEIGHT - 20);
     drawGearIcon(SCREEN_WIDTH / 2 - 20, SCREEN_HEIGHT / 2 + 15, 2.5);
 

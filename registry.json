@@ -30,7 +30,7 @@
     "name": "Pip-Snake",
     "tip": "The snake wraps around when it hits the edge of the screen.",
     "type": "GAME",
-    "version": "1.1.0"
+    "version": "1.2.0"
   },
   {
     "authors": ["Athene <https://athene.gay/>"],
