@@ -17,7 +17,11 @@ function findJsFiles(dir, baseDir) {
     const fullPath = path.join(dir, entry.name);
     if (entry.isDirectory()) {
       findJsFiles(fullPath, baseDir);
-    } else if (entry.isFile() && path.extname(entry.name) === '.js') {
+    } else if (
+      entry.isFile() &&
+      path.extname(entry.name) === '.js' &&
+      !entry.name.endsWith('.min.js')
+    ) {
       const relativePath = path.relative(baseDir, fullPath);
       allFiles.push({
         name: relativePath,
