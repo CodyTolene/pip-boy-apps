@@ -193,11 +193,6 @@ function PipSnake() {
     g.drawString(' v' + GAME_VERSION, SCREEN_WIDTH / 2 - 5, SCREEN_HEIGHT - 20);
     drawGearIcon(SCREEN_WIDTH / 2 - 20, SCREEN_HEIGHT / 2 + 15, 2.5);
     g.setFont('6x8', 1);
-    g.drawString(
-      'v' + GAME_VERSION,
-      SCREEN_WIDTH / 2 - 18,
-      SCREEN_HEIGHT / 2 + 30,
-    );
 
     const waitLoop = setInterval(() => {
       if (BTN_PLAY.read()) {

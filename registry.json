@@ -2,7 +2,7 @@
   {
     "authors": ["Cody Tolene <https://www.CodyTolene.com>"],
     "description": "A lightweight file explorer for the Pip-Boy 3000 Mk V. Browse your device's file system and interact with files directly.",
-    "files": ["min/USER/FileExplorer.js"],
+    "files": ["USER/FileExplorer.min.js"],
     "id": "FileExplorer",
     "instructions": "Use the top-left or top-right rotary wheels or the front radio tuner to scroll. Press the left rotary wheel or front radio tuner to play or stop media. Press the top torch button to restart the device.",
     "name": "File Explorer",
@@ -13,7 +13,7 @@
   {
     "authors": ["Cody Tolene <https://www.CodyTolene.com>"],
     "description": "Pip-Pong is a simple game where you control a paddle that hits a ball back and forth.",
-    "files": ["min/USER/PipPong.js"],
+    "files": ["USER/PipPong.min.js"],
     "id": "PipPong",
     "instructions": "Use any knob to move up and down, and the top torch button to exit the game.",
     "name": "Pip-Pong",
@@ -24,7 +24,7 @@
   {
     "authors": ["Cody Tolene <https://www.CodyTolene.com>"],
     "description": "Pip-Snake is a simple game where you control a growing snake that eats food and avoids crashing into itself.",
-    "files": ["min/USER/PipSnake.js"],
+    "files": ["USER/PipSnake.min.js"],
     "id": "PipSnake",
     "instructions": "Use any knobs to move clockwise and counter-clockwise, the front radio tuner button to restart, and the top torch button to exit the game.",
     "name": "Pip-Snake",
@@ -96,7 +96,7 @@
     "authors": ["Cody Tolene <https://www.CodyTolene.com>"],
     "description": "Custom Radio lets you browse and play your own `.wav` music files directly from the `/RADIO` folder, giving you full control over your playlist.",
     "files": [
-      "min/USER/CustomRadio.js",
+      "USER/CustomRadio.min.js",
       "USER/CustomRadio/options.json",
       "USER_BOOT/CustomRadio.js"
     ],
@@ -144,7 +144,7 @@
     "authors": ["Cody Tolene <https://www.CodyTolene.com>"],
     "description": "A DOOM inspired RPG engine for the Pip-Boy 3000 Mk V.",
     "files": [
-      "USER/Wasteland.js",
+      "USER/Wasteland.min.js",
       "USER/Wasteland/OOF.wav",
       "USER/Wasteland/F_STEP.wav",
       "USER/Wasteland/F_STEP_2.wav"
@@ -154,7 +154,7 @@
     "name": "Wasteland",
     "tip": "",
     "type": "GAME",
-    "version": "1.0.0"
+    "version": "1.1.0"
   },
   {
     "authors": ["pip-4111 <https://github.com/pip-4111>"],
@@ -209,7 +209,7 @@
   {
     "authors": ["Cody Tolene <https://www.CodyTolene.com>"],
     "description": "A simple Tetris inspired game for the Pip-Boy 3000 Mk V.",
-    "files": ["min/USER/Piptris.js"],
+    "files": ["USER/Piptris.min.js"],
     "id": "Piptris",
     "instructions": "Use the top-left knob to rotate pieces, press to drop piece instantly. Use the top-right knob to move pieces left and right. Press the front radio tuner button to move pieces faster. Press the top torch button to exit.",
     "name": "Piptris",

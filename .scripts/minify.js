@@ -11,15 +11,31 @@ const __dirname = dirname(__filename);
 const folders = ['../USER', '../USER_BOOT'];
 const allFiles = [];
 
+function findJsFiles(dir, baseDir) {
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
+  for (const entry of entries) {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      findJsFiles(fullPath, baseDir);
+    } else if (entry.isFile() && path.extname(entry.name) === '.js') {
+      const relativePath = path.relative(baseDir, fullPath);
+      allFiles.push({
+        name: relativePath,
+        path: fullPath,
+        output: path.join(
+          path.dirname(fullPath),
+          path.basename(fullPath, '.js') + '.min.js',
+        ),
+      });
+    }
+  }
+}
+
 for (const folder of folders) {
   const fullPath = path.resolve(__dirname, folder);
-  if (!fs.existsSync(fullPath)) continue;
-  const files = fs.readdirSync(fullPath).filter(f => f.endsWith('.js')).map(f => ({
-    name: f,
-    path: path.join(fullPath, f),
-    output: path.join(__dirname, '../min', path.basename(folder), f)
-  }));
-  allFiles.push(...files);
+  if (fs.existsSync(fullPath)) {
+    findJsFiles(fullPath, fullPath);
+  }
 }
 
 if (allFiles.length === 0) {
@@ -28,7 +44,10 @@ if (allFiles.length === 0) {
 }
 
 let selected = 0;
-const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
 readline.emitKeypressEvents(process.stdin, rl);
 if (process.stdin.isTTY) process.stdin.setRawMode(true);
 
@@ -54,7 +73,9 @@ process.stdin.on('keypress', (str, key) => {
     fs.mkdirSync(path.dirname(output), { recursive: true });
     console.log(`\nMinifying ${inputPath}...`);
     try {
-      execSync(`espruino --minify "${inputPath}" -o "${output}"`, { stdio: 'inherit' });
+      execSync(`espruino --minify "${inputPath}" -o "${output}"`, {
+        stdio: 'inherit',
+      });
       console.log('\nMinification complete.');
     } catch (e) {
       console.error(`Failed to minify: ${e.message}`);
