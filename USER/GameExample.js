@@ -12,6 +12,7 @@ function GameExample() {
   // Screen
   const SCREEN_WIDTH = g.getWidth();
   const SCREEN_HEIGHT = g.getHeight();
+  let screenWrapEnabled = false;
 
   // Block
   const BLOCK_SIZE = 10; // In pixels
@@ -30,36 +31,53 @@ function GameExample() {
   const BTN_TORCH = 'torch';
 
   function drawBlock() {
-    Theme.apply();
-    g.fillRect(blockX, blockY, blockX + BLOCK_SIZE, blockY + BLOCK_SIZE);
+    Theme.set(0, 1, 0).apply();
+    // g.fillRect(blockX, blockY, blockX + BLOCK_SIZE, blockY + BLOCK_SIZE);
+    g.drawRect(blockX, blockY, blockX + BLOCK_SIZE, blockY + BLOCK_SIZE);
   }
 
   function eraseBlock() {
-    g.setColor(0, 0, 0); // Black
+    Theme.set(0, 0, 0).apply(); // Black
     g.fillRect(blockX, blockY, blockX + BLOCK_SIZE, blockY + BLOCK_SIZE);
   }
 
   function handleLeftKnob(dir) {
-    if (dir < 0 && blockX > 0) {
-      eraseBlock();
-      blockX -= BLOCK_SIZE;
-      blockMoved = true;
-    } else if (dir > 0 && blockX < SCREEN_WIDTH - BLOCK_SIZE) {
-      eraseBlock();
-      blockX += BLOCK_SIZE;
-      blockMoved = true;
+    if (screenWrapEnabled) {
+      if (dir !== 0) {
+        eraseBlock();
+        blockX = modulo(blockX + dir * BLOCK_SIZE, SCREEN_WIDTH);
+        blockMoved = true;
+      }
+    } else {
+      if (dir < 0 && blockX > 0) {
+        eraseBlock();
+        blockX -= BLOCK_SIZE;
+        blockMoved = true;
+      } else if (dir > 0 && blockX < SCREEN_WIDTH - BLOCK_SIZE) {
+        eraseBlock();
+        blockX += BLOCK_SIZE;
+        blockMoved = true;
+      }
     }
   }
 
   function handleRightKnob(dir) {
-    if (dir < 0 && blockY > 0) {
-      eraseBlock();
-      blockY -= BLOCK_SIZE;
-      blockMoved = true;
-    } else if (dir > 0 && blockY < SCREEN_WIDTH - BLOCK_SIZE) {
-      eraseBlock();
-      blockY += BLOCK_SIZE;
-      blockMoved = true;
+    if (screenWrapEnabled) {
+      if (dir !== 0) {
+        eraseBlock();
+        blockY = modulo(blockY + dir * BLOCK_SIZE, SCREEN_HEIGHT);
+        blockMoved = true;
+      }
+    } else {
+      if (dir < 0 && blockY > 0) {
+        eraseBlock();
+        blockY -= BLOCK_SIZE;
+        blockMoved = true;
+      } else if (dir > 0 && blockY < SCREEN_WIDTH - BLOCK_SIZE) {
+        eraseBlock();
+        blockY += BLOCK_SIZE;
+        blockMoved = true;
+      }
     }
   }
 
@@ -81,9 +99,13 @@ function GameExample() {
     }
   }
 
+  function modulo(a, b) {
+    return ((a % b) + b) % b;
+  }
+
   self.run = function () {
     g.clear();
-    Theme.set().apply();
+    Theme.set(0, 1, 0).apply();
     drawBlock();
 
     Pip.removeAllListeners(LEFT_KNOB);
@@ -106,20 +128,17 @@ function GameExample() {
     get: function () {
       return this.self;
     },
-    set: function (red, grn, blu, system) {
-      if (system === undefined || system === true) {
-        const c = g.getColor();
-        red = (c >> 16) & 0xff;
-        grn = (c >> 8) & 0xff;
-        blu = c & 0xff;
-        red /= 255;
-        grn /= 255;
-        blu /= 255;
+    set: function (rV, gV, bV, system) {
+      if (rV === undefined || gV === undefined || bV === undefined || system) {
+        const hex = g.getColor().toString(16);
+        for (let i = 0; i < 3; i++) {
+          this.self[i] = parseInt(hex.charAt(i), 16) / 15;
+        }
+      } else {
+        this.self[0] = rV;
+        this.self[1] = gV;
+        this.self[2] = bV;
       }
-
-      this.self[0] = red;
-      this.self[1] = grn;
-      this.self[2] = blu;
       return this;
     },
   };
