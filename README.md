@@ -316,6 +316,12 @@ the Creative Commons 0 License. The list of sounds can be found below:
 - [`F_STEP_2.wav`](https://freesound.org/people/gobbe57/sounds/746681/) by
   gobbe57
 
+This project uses music from pixabay.com. This music uses a special license that
+allows for free use in personal and commercial projects. More information about
+this license can be found here: https://pixabay.com/service/license-summary/
+
+- [`t-theme.wav`](https://pixabay.com/music/classical-string-quartet-tetris-theme-korobeiniki-rearranged-arr-for-strings-185592/)
+
 `SPDX-License-Identifiers: CC-BY-NC-4.0, CC0-1.0`
 
 > ![Warn][img-warn] By using this software, you acknowledge and agree to the
