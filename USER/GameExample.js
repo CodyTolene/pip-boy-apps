@@ -12,9 +12,15 @@ function GameExample() {
   // Screen
   const SCREEN_WIDTH = g.getWidth();
   const SCREEN_HEIGHT = g.getHeight();
-  let screenWrapEnabled = false;
+  const PLAY_AREA = {
+    x1: 50,
+    x2: SCREEN_WIDTH - 50,
+    y1: 10,
+    y2: SCREEN_HEIGHT - 10,
+  };
+  let screenWrapEnabled = true;
 
-  // Block
+  // Block (player controlled)
   const BLOCK_SIZE = 10; // In pixels
   let blockMoved = false;
   let blockX = SCREEN_WIDTH / 2 - BLOCK_SIZE / 2;
@@ -30,10 +36,38 @@ function GameExample() {
   const RIGHT_KNOB = 'knob2';
   const BTN_TORCH = 'torch';
 
+  // Theme
+  const Theme = {
+    self: [0, 1, 0], // Default color (green)
+    apply: function () {
+      g.setColor(this.self[0], this.self[1], this.self[2]);
+    },
+    get: function () {
+      return this.self;
+    },
+    set: function (rV, gV, bV, system) {
+      if (rV === undefined || gV === undefined || bV === undefined || system) {
+        const hex = g.getColor().toString(16);
+        for (let i = 0; i < 3; i++) {
+          this.self[i] = parseInt(hex.charAt(i), 16) / 15;
+        }
+      } else {
+        this.self[0] = rV;
+        this.self[1] = gV;
+        this.self[2] = bV;
+      }
+      return this;
+    },
+  };
+
   function drawBlock() {
     Theme.set(0, 1, 0).apply();
     // g.fillRect(blockX, blockY, blockX + BLOCK_SIZE, blockY + BLOCK_SIZE);
     g.drawRect(blockX, blockY, blockX + BLOCK_SIZE, blockY + BLOCK_SIZE);
+  }
+
+  function drawBorder() {
+    g.drawRect(PLAY_AREA.x1, PLAY_AREA.y1, PLAY_AREA.x2, PLAY_AREA.y2);
   }
 
   function eraseBlock() {
@@ -42,42 +76,48 @@ function GameExample() {
   }
 
   function handleLeftKnob(dir) {
-    if (screenWrapEnabled) {
-      if (dir !== 0) {
-        eraseBlock();
-        blockX = modulo(blockX + dir * BLOCK_SIZE, SCREEN_WIDTH);
-        blockMoved = true;
+    if (dir !== 0) {
+      eraseBlock();
+
+      if (screenWrapEnabled) {
+        blockX =
+          PLAY_AREA.x1 +
+          modulo(
+            blockX - PLAY_AREA.x1 + dir * BLOCK_SIZE,
+            PLAY_AREA.x2 - PLAY_AREA.x1 - BLOCK_SIZE + 1,
+          );
+      } else {
+        blockX = E.clip(
+          blockX + dir * BLOCK_SIZE,
+          PLAY_AREA.x1,
+          PLAY_AREA.x2 - BLOCK_SIZE,
+        );
       }
-    } else {
-      if (dir < 0 && blockX > 0) {
-        eraseBlock();
-        blockX -= BLOCK_SIZE;
-        blockMoved = true;
-      } else if (dir > 0 && blockX < SCREEN_WIDTH - BLOCK_SIZE) {
-        eraseBlock();
-        blockX += BLOCK_SIZE;
-        blockMoved = true;
-      }
+
+      blockMoved = true;
     }
   }
 
   function handleRightKnob(dir) {
-    if (screenWrapEnabled) {
-      if (dir !== 0) {
-        eraseBlock();
-        blockY = modulo(blockY + dir * BLOCK_SIZE, SCREEN_HEIGHT);
-        blockMoved = true;
+    if (dir !== 0) {
+      eraseBlock();
+
+      if (screenWrapEnabled) {
+        blockY =
+          PLAY_AREA.y1 +
+          modulo(
+            blockY - PLAY_AREA.y1 + dir * BLOCK_SIZE,
+            PLAY_AREA.y2 - PLAY_AREA.y1 - BLOCK_SIZE + 1,
+          );
+      } else {
+        blockY = E.clip(
+          blockY + dir * BLOCK_SIZE,
+          PLAY_AREA.y1,
+          PLAY_AREA.y2 - BLOCK_SIZE,
+        );
       }
-    } else {
-      if (dir < 0 && blockY > 0) {
-        eraseBlock();
-        blockY -= BLOCK_SIZE;
-        blockMoved = true;
-      } else if (dir > 0 && blockY < SCREEN_WIDTH - BLOCK_SIZE) {
-        eraseBlock();
-        blockY += BLOCK_SIZE;
-        blockMoved = true;
-      }
+
+      blockMoved = true;
     }
   }
 
@@ -106,6 +146,7 @@ function GameExample() {
   self.run = function () {
     g.clear();
     Theme.set(0, 1, 0).apply();
+    drawBorder();
     drawBlock();
 
     Pip.removeAllListeners(LEFT_KNOB);
@@ -118,29 +159,6 @@ function GameExample() {
     Pip.on(BTN_TORCH, handleTorchButton);
 
     mainLoopInterval = setInterval(mainLoop, MAIN_LOOP_SPEED_MS);
-  };
-
-  const Theme = {
-    self: [0, 1, 0], // Start with green
-    apply: function () {
-      g.setColor(this.self[0], this.self[1], this.self[2]);
-    },
-    get: function () {
-      return this.self;
-    },
-    set: function (rV, gV, bV, system) {
-      if (rV === undefined || gV === undefined || bV === undefined || system) {
-        const hex = g.getColor().toString(16);
-        for (let i = 0; i < 3; i++) {
-          this.self[i] = parseInt(hex.charAt(i), 16) / 15;
-        }
-      } else {
-        this.self[0] = rV;
-        this.self[1] = gV;
-        this.self[2] = bV;
-      }
-      return this;
-    },
   };
 
   return self;
