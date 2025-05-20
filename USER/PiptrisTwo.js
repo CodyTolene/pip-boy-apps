@@ -90,7 +90,7 @@ function PipTris() {
   };
 
   function clearGameArea() {
-    g.setColor(0, 0, 0);
+    g.setColor('#000');
     g.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
   }
 
@@ -188,6 +188,7 @@ function PipTris() {
       }
     }
     drawScore();
+    drawNextPiece();
   }
 
   function drawGameOverScreen() {
@@ -239,6 +240,50 @@ function PipTris() {
     }
   }
 
+  function drawNextPiece() {
+    if (!blockNext) {
+      return;
+    }
+
+    const startX = PLAY_AREA.x2 + 65;
+    const startY = PLAY_AREA.y2 - 60;
+    const previewWidth = 40;
+    const previewHeight = 40;
+
+    // Clear preview area
+    g.setColor('#000');
+    g.fillRect(
+      startX - previewWidth / 2 - 2,
+      startY + 15,
+      startX + previewWidth / 2,
+      startY + 15 + previewHeight,
+    );
+
+    // Draw label centered
+    g.setFont('6x8', 2);
+    g.setColor('#FFF');
+    g.drawString('NEXT', startX, startY);
+
+    // Draw block centered under the text
+    Theme.apply();
+    const piece = blockNext.shape;
+    const piecePixelWidth = piece[0].length * blockSize;
+    const offsetX = startX - piecePixelWidth / 2 - 2;
+
+    for (let y = 0; y < piece.length; y++) {
+      for (let x = 0; x < piece[y].length; x++) {
+        if (piece[y][x]) {
+          g.fillRect(
+            offsetX + x * blockSize,
+            startY + 20 + y * blockSize,
+            offsetX + (x + 1) * blockSize - 1,
+            startY + 20 + (y + 1) * blockSize - 1,
+          );
+        }
+      }
+    }
+  }
+
   function dropPiece() {
     if (!blockCurrent || isGameOver) {
       return;
@@ -252,7 +297,6 @@ function PipTris() {
       drawCurrentPiece(false);
       merge(blockCurrent);
       clearLines();
-      drawField();
       spawnPiece();
 
       // Game over sanity check
@@ -281,8 +325,10 @@ function PipTris() {
     const fontHeight = 20;
 
     g.setFont('6x8', 2);
-    g.setColor(1, 1, 1);
+    g.setColor('#FFF');
     g.drawString('SCORE', scoreX, scoreY);
+
+    Theme.apply();
     g.drawString(score.toString(), scoreX, scoreY + fontHeight);
   }
 
@@ -330,7 +376,7 @@ function PipTris() {
   }
 
   function eraseBlock(x, y) {
-    g.setColor(0, 0, 0);
+    g.setColor('#000');
     g.fillRect(
       PLAY_AREA_X + x * blockSize,
       PLAY_AREA_Y + y * blockSize,
@@ -435,7 +481,7 @@ function PipTris() {
 
   function resetField() {
     PLAY_AREA_BLOCKS.fill(0);
-    g.setColor(0, 0, 0);
+    g.setColor('#000');
     g.fillRect(
       PLAY_AREA_X,
       PLAY_AREA_Y,
@@ -491,8 +537,14 @@ function PipTris() {
   }
 
   function spawnPiece() {
-    blockCurrent = blockNext || getRandomPiece();
+    if (!blockNext) {
+      blockNext = getRandomPiece();
+    }
+
+    blockCurrent = blockNext;
     blockNext = getRandomPiece();
+    drawField();
+
     if (collides(blockCurrent)) {
       isGameOver = true;
       clearInterval(mainLoopInterval);
