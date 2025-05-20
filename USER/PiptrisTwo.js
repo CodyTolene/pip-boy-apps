@@ -90,15 +90,11 @@ function PipTris() {
   };
 
   function clearGameArea() {
-    // print('[clearGameArea] Clearing game area');
-
     g.setColor(0, 0, 0);
     g.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
   }
 
   function clearLines() {
-    // print('[clearLines] Clearing lines');
-
     for (let y = PLAY_AREA_HEIGHT - 1; y >= 0; y--) {
       let full = true;
       for (let x = 0; x < PLAY_AREA_WIDTH; x++) {
@@ -131,8 +127,6 @@ function PipTris() {
   }
 
   function collides(piece) {
-    // print('[collides] Checking collision for piece', piece);
-
     for (let y = 0; y < piece.shape.length; y++) {
       for (let x = 0; x < piece.shape[y].length; x++) {
         if (!piece.shape[y][x]) {
@@ -154,8 +148,6 @@ function PipTris() {
   }
 
   function drawBlock(x, y) {
-    // print('[drawBlock] Drawing block at', x, y);
-
     Theme.apply();
     g.fillRect(
       PLAY_AREA_X + x * blockSize,
@@ -166,15 +158,11 @@ function PipTris() {
   }
 
   function drawBoundaries(area) {
-    // print('[drawBoundaries] Drawing boundaries');
-
     Theme.set(0, 1, 0).apply();
     g.drawRect(area.x1, area.y1, area.x2, area.y2);
   }
 
   function drawCurrentPiece(erase) {
-    // print('[drawCurrentPiece] Drawing current piece', blockCurrent);
-
     for (let y = 0; y < blockCurrent.shape.length; y++) {
       for (let x = 0; x < blockCurrent.shape[y].length; x++) {
         if (blockCurrent.shape[y][x]) {
@@ -189,8 +177,6 @@ function PipTris() {
   }
 
   function drawField() {
-    // print('[drawField] Drawing field');
-
     Theme.apply();
     for (let y = 0; y < PLAY_AREA_HEIGHT; y++) {
       for (let x = 0; x < PLAY_AREA_WIDTH; x++) {
@@ -201,11 +187,10 @@ function PipTris() {
         }
       }
     }
+    drawScore();
   }
 
   function drawGameOverScreen() {
-    // print('[drawGameOverScreen] Drawing game over screen');
-
     clearGameArea();
 
     const centerX = SCREEN_WIDTH / 2;
@@ -236,8 +221,6 @@ function PipTris() {
   }
 
   function drawImageFromJSON(path, x, y) {
-    // print('[drawImageFromJSON] Drawing image from JSON', path);
-
     try {
       let jsonStr = fs.readFileSync(path);
       let json = JSON.parse(jsonStr);
@@ -257,8 +240,6 @@ function PipTris() {
   }
 
   function dropPiece() {
-    // print('[dropPiece] Dropping piece');
-
     if (!blockCurrent || isGameOver) {
       return;
     }
@@ -294,9 +275,18 @@ function PipTris() {
     }
   }
 
-  function drawStartScreen() {
-    // print('[drawStartScreen] Drawing start screen');
+  function drawScore() {
+    const scoreX = PLAY_AREA.x2 + 65;
+    const scoreY = PLAY_AREA.y1 + 25;
+    const fontHeight = 20;
 
+    g.setFont('6x8', 2);
+    g.setColor(1, 1, 1);
+    g.drawString('SCORE', scoreX, scoreY);
+    g.drawString(score.toString(), scoreX, scoreY + fontHeight);
+  }
+
+  function drawStartScreen() {
     clearGameArea();
 
     const centerX = SCREEN_WIDTH / 2;
@@ -320,8 +310,6 @@ function PipTris() {
   }
 
   function dropToBottom() {
-    // print('[dropToBottom] Dropping piece to bottom');
-
     if (!blockCurrent || isGameOver) {
       return;
     }
@@ -342,8 +330,6 @@ function PipTris() {
   }
 
   function eraseBlock(x, y) {
-    // print('[eraseBlock] Erasing block at', x, y);
-
     g.setColor(0, 0, 0);
     g.fillRect(
       PLAY_AREA_X + x * blockSize,
@@ -354,8 +340,6 @@ function PipTris() {
   }
 
   function getRandomPiece() {
-    // print('[getRandomPiece] Getting random piece');
-
     let picked = Math.floor(Math.random() * SHAPES.length);
     let shapeData = SHAPES[picked];
     let offset = Math.floor((PLAY_AREA_WIDTH - shapeData[0].length) / 2);
@@ -363,14 +347,10 @@ function PipTris() {
   }
 
   function handleMusicStopped() {
-    // print('[handleMusicStopped] Handling music stopped');
-
     playMusic();
   }
 
   function handleLeftKnob(dir) {
-    // print('[handleLeftKnob] Handling left knob', dir);
-
     let now = Date.now();
     if (now - lastLeftKnobTime < KNOB_DEBOUNCE) {
       return;
@@ -385,14 +365,10 @@ function PipTris() {
   }
 
   function handleRightKnob(dir) {
-    // print('[handleRightKnob] Handling right knob', dir);
-
     move(dir > 0 ? 1 : -1);
   }
 
   function handleTopButton() {
-    // print('[handleTopButton] Handling top button');
-
     removeListeners();
 
     clearInterval(mainLoopInterval);
@@ -402,14 +378,11 @@ function PipTris() {
   }
 
   function loadMusicFiles() {
-    // print('[loadMusicFiles] Loading music files');
-
     try {
       musicFiles = fs
         .readdir(MUSIC_FOLDER)
         .filter((f) => f.endsWith('.wav'))
         .sort();
-      // print('[Piptris] Loaded music files:', musicFiles);
     } catch (e) {
       print('Failed to load Piptris music files:', e);
       musicFiles = [];
@@ -417,8 +390,6 @@ function PipTris() {
   }
 
   function merge(piece) {
-    // print('[merge] Merging piece into play area', piece);
-
     for (let y = 0; y < piece.shape.length; y++) {
       for (let x = 0; x < piece.shape[y].length; x++) {
         if (piece.shape[y][x]) {
@@ -429,8 +400,6 @@ function PipTris() {
   }
 
   function move(dir) {
-    // print('[move] Moving piece', dir);
-
     if (isGameOver || !blockCurrent) {
       return;
     }
@@ -451,13 +420,11 @@ function PipTris() {
     }
 
     drawCurrentPiece(false);
-    drawBoundaries(SCREEN_AREA);
+    // drawBoundaries(SCREEN_AREA);
     drawBoundaries(PLAY_AREA);
   }
 
   function playMusic() {
-    // print('[playMusic] Playing music');
-
     if (!musicFiles.length) return;
 
     const track = musicFiles[Math.floor(Math.random() * musicFiles.length)];
@@ -467,8 +434,6 @@ function PipTris() {
   }
 
   function resetField() {
-    // print('[resetField] Resetting field');
-
     PLAY_AREA_BLOCKS.fill(0);
     g.setColor(0, 0, 0);
     g.fillRect(
@@ -480,8 +445,6 @@ function PipTris() {
   }
 
   function rotate(dir) {
-    // print('[rotate] Rotating piece', dir);
-
     if (isGameOver || !blockCurrent) {
       return;
     }
@@ -509,13 +472,11 @@ function PipTris() {
     }
 
     drawCurrentPiece(false);
-    drawBoundaries(SCREEN_AREA);
+    // drawBoundaries(SCREEN_AREA);
     drawBoundaries(PLAY_AREA);
   }
 
   function removeListeners() {
-    // print('[removeListeners] Removing listeners');
-
     Pip.removeAllListeners(KNOB_LEFT);
     Pip.removeAllListeners(KNOB_RIGHT);
     Pip.removeAllListeners(BTN_TOP);
@@ -523,8 +484,6 @@ function PipTris() {
   }
 
   function setListeners() {
-    // print('[setListeners] Setting listeners');
-
     Pip.on(KNOB_LEFT, handleLeftKnob);
     Pip.on(KNOB_RIGHT, handleRightKnob);
     Pip.on(BTN_TOP, handleTopButton);
@@ -532,8 +491,6 @@ function PipTris() {
   }
 
   function spawnPiece() {
-    // print('[spawnPiece] Spawning new piece');
-
     blockCurrent = blockNext || getRandomPiece();
     blockNext = getRandomPiece();
     if (collides(blockCurrent)) {
@@ -546,8 +503,6 @@ function PipTris() {
   }
 
   function startGame() {
-    // print('[startGame] Starting game');
-
     clearInterval(mainLoopInterval);
     removeListeners();
     loadMusicFiles();
@@ -561,7 +516,7 @@ function PipTris() {
     clearGameArea();
     resetField();
     drawBoundaries(PLAY_AREA);
-    drawBoundaries(SCREEN_AREA);
+    // drawBoundaries(SCREEN_AREA);
     spawnPiece();
     drawField();
 
