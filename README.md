@@ -266,6 +266,10 @@ wizard that will guide you through the process of minifying your app.
 4. If you get an error, fix up your files to be compatible with the Espruino
    minification.
 
+You can also use the `npm run min:watch` command to watch for changes in your
+chosen file and automatically minify it when you save. This is useful for rapid
+development and testing.
+
 > ![Info][img-info] Be sure to update the registry with your minified file name.
 
 <p align="right">[ <a href="#index">Index</a> ]</p>
@@ -315,6 +319,12 @@ the Creative Commons 0 License. The list of sounds can be found below:
   MikeFozzy98
 - [`F_STEP_2.wav`](https://freesound.org/people/gobbe57/sounds/746681/) by
   gobbe57
+
+This project uses music from pixabay.com. This music uses a special license that
+allows for free use in personal and commercial projects. More information about
+this license can be found here: https://pixabay.com/service/license-summary/
+
+- [`piptris.wav`](https://pixabay.com/music/classical-string-quartet-tetris-theme-korobeiniki-rearranged-arr-for-strings-185592/)
 
 `SPDX-License-Identifiers: CC-BY-NC-4.0, CC0-1.0`
 

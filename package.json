@@ -6,6 +6,7 @@
   "main": "docs/main.js",
   "scripts": {
     "min": "node .scripts/minify.js",
+    "min:watch": "node .scripts/minify-watch.js",
     "prepare": "husky",
     "prettier": "prettier --write .",
     "prettier:check": "prettier --check .",
