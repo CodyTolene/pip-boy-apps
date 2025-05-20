@@ -5,7 +5,7 @@
 //  Description: A simple Tetris inspired game for the Pip-Boy 3000 Mk V.
 // =============================================================================
 
-function PipTris() {
+function Piptris() {
   const self = {};
 
   const GAME_NAME = 'Piptris';
@@ -667,4 +667,4 @@ function PipTris() {
   return self;
 }
 
-PipTris().run();
+Piptris().run();

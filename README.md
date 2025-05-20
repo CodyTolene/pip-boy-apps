@@ -266,6 +266,10 @@ wizard that will guide you through the process of minifying your app.
 4. If you get an error, fix up your files to be compatible with the Espruino
    minification.
 
+You can also use the `npm run min:watch` command to watch for changes in your
+chosen file and automatically minify it when you save. This is useful for rapid
+development and testing.
+
 > ![Info][img-info] Be sure to update the registry with your minified file name.
 
 <p align="right">[ <a href="#index">Index</a> ]</p>
