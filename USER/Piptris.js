@@ -103,6 +103,7 @@ function PipTris() {
   }
 
   function clearLines() {
+    let linesRemoved = 0;
     for (let y = PLAY_AREA_HEIGHT - 1; y >= 0; y--) {
       let full = true;
       for (let x = 0; x < PLAY_AREA_WIDTH; x++) {
@@ -128,10 +129,25 @@ function PipTris() {
           PLAY_AREA_BLOCKS[x] = 0;
         }
 
-        score += 100;
+        linesRemoved++;
         linesCleared++;
         y++;
       }
+    }
+
+    switch (linesRemoved) {
+      case 1:
+        score += 100;
+        break;
+      case 2:
+        score += 300;
+        break;
+      case 3:
+        score += 500;
+        break;
+      case 4:
+        score += 800;
+        break;
     }
   }
 
@@ -158,7 +174,7 @@ function PipTris() {
 
   function drawBlock(x, y) {
     Theme.apply();
-    g.fillRect(
+    g.drawRect(
       PLAY_AREA_X + x * blockSize,
       PLAY_AREA_Y + y * blockSize,
       PLAY_AREA_X + (x + 1) * blockSize - 1,
@@ -319,7 +335,7 @@ function PipTris() {
     for (let y = 0; y < piece.length; y++) {
       for (let x = 0; x < piece[y].length; x++) {
         if (piece[y][x]) {
-          g.fillRect(
+          g.drawRect(
             offsetX + x * blockSize,
             startY + 20 + y * blockSize,
             offsetX + (x + 1) * blockSize - 1,
