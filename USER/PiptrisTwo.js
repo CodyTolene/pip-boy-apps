@@ -11,6 +11,7 @@ function PipTris() {
   let blockSize = 10;
   let isGameOver = false;
   let mainLoopInterval = null;
+  let inputInterval = null;
   let musicFiles = [];
   let score = 0;
 
@@ -86,6 +87,13 @@ function PipTris() {
       return this;
     },
   };
+
+  function clearGameArea() {
+    // print('[clearGameArea] Clearing game area');
+
+    g.setColor(0, 0, 0);
+    g.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+  }
 
   function clearLines() {
     // print('[clearLines] Clearing lines');
@@ -194,6 +202,59 @@ function PipTris() {
     }
   }
 
+  function drawGameOverScreen() {
+    // print('[drawGameOverScreen] Drawing game over screen');
+
+    clearGameArea();
+
+    const centerX = SCREEN_WIDTH / 2;
+    const centerY = SCREEN_HEIGHT / 2;
+
+    g.clear();
+
+    g.setColor('#0F0');
+    g.setFont('6x8', 4);
+    g.drawString('GAME OVER', centerX, centerY - 20);
+
+    g.setColor('#FFF');
+    g.setFont('6x8', 2);
+    g.drawString('Press    to RESTART', centerX, centerY + 15);
+
+    drawImageFromJSON('USER/Piptris/gear.json', centerX - 45, centerY + 1);
+
+    g.setColor('#0F0');
+    g.setFont('6x8', 2);
+    g.drawString('Score: ' + score, centerX, centerY + 50);
+
+    inputInterval = setInterval(() => {
+      if (BTN_PLAY.read()) {
+        clearInterval(inputInterval);
+        startGame();
+      }
+    }, 100);
+  }
+
+  function drawImageFromJSON(path, x, y) {
+    // print('[drawImageFromJSON] Drawing image from JSON', path);
+
+    try {
+      let jsonStr = fs.readFileSync(path);
+      let json = JSON.parse(jsonStr);
+      let image = {
+        bpp: json.bpp,
+        buffer: atob(json.buffer),
+        height: json.height,
+        transparent: json.transparent,
+        width: json.width,
+      };
+
+      Theme.apply();
+      g.drawImage(image, x, y);
+    } catch (e) {
+      console.log('Failed to load image:', e);
+    }
+  }
+
   function dropPiece() {
     // print('[dropPiece] Dropping piece');
 
@@ -215,6 +276,31 @@ function PipTris() {
 
     drawCurrentPiece(false);
     drawBoundaries(PLAY_AREA);
+  }
+
+  function drawStartScreen() {
+    // print('[drawStartScreen] Drawing start screen');
+
+    clearGameArea();
+
+    const centerX = SCREEN_WIDTH / 2;
+    const centerY = SCREEN_HEIGHT / 2;
+
+    g.clear();
+
+    g.setColor('#0F0');
+    g.setFont('6x8', 4);
+    g.drawString(GAME_NAME, centerX, centerY - 20);
+
+    g.setColor('#FFF');
+    g.setFont('6x8', 2);
+    g.drawString('Press    to START', centerX, centerY + 15);
+
+    drawImageFromJSON('USER/Piptris/gear.json', centerX - 34, centerY + 1);
+
+    g.setColor('#FFF');
+    g.setFont('6x8', 1);
+    g.drawString(' v' + GAME_VERSION, centerX - 15, SCREEN_HEIGHT - 25);
   }
 
   function dropToBottom() {
@@ -261,6 +347,8 @@ function PipTris() {
   }
 
   function handleMusicStopped() {
+    // print('[handleMusicStopped] Handling music stopped');
+
     playMusic();
   }
 
@@ -298,6 +386,8 @@ function PipTris() {
   }
 
   function loadMusicFiles() {
+    // print('[loadMusicFiles] Loading music files');
+
     try {
       musicFiles = fs
         .readdir(MUSIC_FOLDER)
@@ -363,10 +453,7 @@ function PipTris() {
   function resetField() {
     // print('[resetField] Resetting field');
 
-    for (let i = 0; i < PLAY_AREA_BLOCKS.length; i++) {
-      PLAY_AREA_BLOCKS[i] = 0;
-    }
-
+    PLAY_AREA_BLOCKS.fill(0);
     g.setColor(0, 0, 0);
     g.fillRect(
       PLAY_AREA_X,
@@ -412,6 +499,8 @@ function PipTris() {
   }
 
   function removeListeners() {
+    // print('[removeListeners] Removing listeners');
+
     Pip.removeAllListeners(KNOB_LEFT);
     Pip.removeAllListeners(KNOB_RIGHT);
     Pip.removeAllListeners(BTN_TOP);
@@ -419,6 +508,8 @@ function PipTris() {
   }
 
   function setListeners() {
+    // print('[setListeners] Setting listeners');
+
     Pip.on(KNOB_LEFT, handleLeftKnob);
     Pip.on(KNOB_RIGHT, handleRightKnob);
     Pip.on(BTN_TOP, handleTopButton);
@@ -432,37 +523,48 @@ function PipTris() {
     blockNext = getRandomPiece();
     if (collides(blockCurrent)) {
       isGameOver = true;
-      Theme.set(0, 1, 0).apply();
-      g.setFontMonofonto18();
-      g.drawString('GAME OVER', PLAY_AREA_X, PLAY_AREA_Y + 40);
       clearInterval(mainLoopInterval);
+      setTimeout(() => {
+        drawGameOverScreen();
+      }, 50);
     }
   }
 
-  self.run = function () {
-    // print('[run] Starting game');
+  function startGame() {
+    // print('[startGame] Starting game');
 
+    clearInterval(mainLoopInterval);
+    removeListeners();
     loadMusicFiles();
     playMusic();
 
-    bC.clear();
-    drawBoundaries(PLAY_AREA);
-    resetField();
-
     score = 0;
     isGameOver = false;
+    blockCurrent = null;
     blockNext = getRandomPiece();
 
+    clearGameArea();
+    resetField();
+    drawBoundaries(PLAY_AREA);
+    drawBoundaries(SCREEN_AREA);
     spawnPiece();
     drawField();
-    drawBoundaries(SCREEN_AREA);
 
-    mainLoopInterval = setInterval(dropPiece, blockDropSpeed);
-
-    removeListeners();
     setListeners();
+    mainLoopInterval = setInterval(dropPiece, blockDropSpeed);
+  }
 
-    // print('[run] Game started');
+  self.run = function () {
+    bC.clear(); // Clear the screen
+
+    drawStartScreen();
+
+    inputInterval = setInterval(() => {
+      if (BTN_PLAY.read()) {
+        clearInterval(inputInterval);
+        startGame();
+      }
+    }, 100);
   };
 
   return self;
