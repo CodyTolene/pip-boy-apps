@@ -209,12 +209,16 @@
   {
     "authors": ["Cody Tolene <https://www.CodyTolene.com>"],
     "description": "A simple Tetris inspired game for the Pip-Boy 3000 Mk V.",
-    "files": ["USER/Piptris.min.js"],
+    "files": [
+      "USER/Piptris.min.js",
+      "USER/Piptris/gear.json",
+      "USER/Piptris/piptris.wav"
+    ],
     "id": "Piptris",
     "instructions": "Use the top-left knob to rotate pieces, press to drop piece instantly. Use the top-right knob to move pieces left and right. Press the front radio tuner button to move pieces faster. Press the top torch button to exit.",
     "name": "Piptris",
     "tip": "Try to clear as many lines as possible!",
     "type": "GAME",
-    "version": "1.2.0"
+    "version": "2.0.0"
   }
 ]
