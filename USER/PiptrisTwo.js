@@ -57,6 +57,7 @@ function PipTris() {
   // prettier-ignore
   const SHAPES = [
     [[1, 1, 1, 1]],         // I
+    [[1, 1, 1, 1]],         // I (extra)
     [[1, 1, 0],[0, 1, 1]],  // Z
     [[0, 1, 1],[1, 1, 0]],  // S
     [[1, 0, 0],[1, 1, 1]],  // J
@@ -272,10 +273,25 @@ function PipTris() {
       clearLines();
       drawField();
       spawnPiece();
+
+      // Game over sanity check
+      if (collides(blockCurrent)) {
+        isGameOver = true;
+        clearInterval(mainLoopInterval);
+        setTimeout(drawGameOverScreen, 50);
+        return;
+      }
     }
 
     drawCurrentPiece(false);
     drawBoundaries(PLAY_AREA);
+
+    const fastDrop = BTN_PLAY.read();
+    const desiredInterval = fastDrop ? 100 : blockDropSpeed;
+    if (mainLoopInterval._interval !== desiredInterval) {
+      clearInterval(mainLoopInterval);
+      mainLoopInterval = setInterval(dropPiece, desiredInterval);
+    }
   }
 
   function drawStartScreen() {
@@ -484,7 +500,6 @@ function PipTris() {
       return;
     }
 
-    // Erase old shape
     for (let y = 0; y < oldShape.length; y++) {
       for (let x = 0; x < oldShape[y].length; x++) {
         if (oldShape[y][x]) {
@@ -555,7 +570,7 @@ function PipTris() {
   }
 
   self.run = function () {
-    bC.clear(); // Clear the screen
+    bC.clear(); // Clear any previous screen
 
     drawStartScreen();
 
