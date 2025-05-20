@@ -9,7 +9,7 @@ function Piptris() {
   const self = {};
 
   const GAME_NAME = 'Piptris';
-  const GAME_VERSION = '2.0.0';
+  const GAME_VERSION = '2.1.0';
 
   // Game State
   let blockCurrent = null;
@@ -22,6 +22,7 @@ function Piptris() {
   let mainLoopInterval = null;
   let musicFiles = [];
   let score = 0;
+  let useHollowBlocks = false;
 
   // Screen
   const SCREEN_WIDTH = g.getWidth();
@@ -61,6 +62,9 @@ function Piptris() {
   const MUSIC_STOPPED = 'audioStopped';
   const MUSIC_FOLDER = 'USER/Piptris';
 
+  // prettier-ignore
+  const T_SHAPE = [[0, 1, 0],[1, 1, 1]];
+
   // Shapes (game pieces)
   // prettier-ignore
   const SHAPES = [
@@ -70,7 +74,7 @@ function Piptris() {
     [[0, 1, 1],[1, 1, 0]],  // S
     [[1, 0, 0],[1, 1, 1]],  // J
     [[0, 0, 1],[1, 1, 1]],  // L
-    [[0, 1, 0],[1, 1, 1]],  // T
+    T_SHAPE,
     [[1, 1],[1, 1]],        // O
   ];
 
@@ -174,12 +178,17 @@ function Piptris() {
 
   function drawBlock(x, y) {
     Theme.apply();
-    g.drawRect(
+    const block = [
       PLAY_AREA_X + x * blockSize,
       PLAY_AREA_Y + y * blockSize,
       PLAY_AREA_X + (x + 1) * blockSize - 1,
       PLAY_AREA_Y + (y + 1) * blockSize - 1,
-    );
+    ];
+    if (useHollowBlocks) {
+      g.drawRect(block[0], block[1], block[2], block[3]);
+    } else {
+      g.fillRect(block[0], block[1], block[2], block[3]);
+    }
   }
 
   function drawBoundaries(area) {
@@ -335,12 +344,17 @@ function Piptris() {
     for (let y = 0; y < piece.length; y++) {
       for (let x = 0; x < piece[y].length; x++) {
         if (piece[y][x]) {
-          g.drawRect(
+          const block = [
             offsetX + x * blockSize,
             startY + 20 + y * blockSize,
             offsetX + (x + 1) * blockSize - 1,
             startY + 20 + (y + 1) * blockSize - 1,
-          );
+          ];
+          if (useHollowBlocks) {
+            g.drawRect(block[0], block[1], block[2], block[3]);
+          } else {
+            g.fillRect(block[0], block[1], block[2], block[3]);
+          }
         }
       }
     }
@@ -416,17 +430,55 @@ function Piptris() {
 
     g.setColor('#0F0');
     g.setFont('6x8', 4);
-    g.drawString(GAME_NAME, centerX, centerY - 20);
+    g.drawString(GAME_NAME, centerX + 10, centerY - 50);
 
     g.setColor('#FFF');
     g.setFont('6x8', 2);
-    g.drawString('Press    to START', centerX, centerY + 15);
+    g.drawString('Press    to START', centerX + 10, centerY - 15);
 
-    drawImageFromJSON('USER/Piptris/gear.json', centerX - 34, centerY + 1);
+    drawImageFromJSON('USER/Piptris/gear.json', centerX - 24, centerY - 29);
 
-    g.setColor('#FFF');
+    drawStartScreenPreviewBlock();
+  }
+
+  function drawStartScreenPreviewBlock() {
+    const centerX = SCREEN_WIDTH / 2;
+    const blockSize = 10;
+
+    const labelY = SCREEN_AREA.y2 - 15;
+    const blockHeight = T_SHAPE.length * blockSize;
+    const blockWidth = T_SHAPE[0].length * blockSize;
+    const startY = labelY - blockHeight - 10;
+    const startX = centerX - blockWidth / 2;
+
     g.setFont('6x8', 1);
-    g.drawString('v' + GAME_VERSION, centerX - 15, SCREEN_HEIGHT - 25);
+    g.setColor('#FFF');
+    g.drawString('<- BLOCK TYPE ->', centerX, labelY);
+
+    g.setColor('#000');
+    g.fillRect(
+      startX - 2,
+      startY - 2,
+      startX + blockWidth + 2,
+      startY + blockHeight + 2,
+    );
+
+    Theme.apply();
+    for (let y = 0; y < T_SHAPE.length; y++) {
+      for (let x = 0; x < T_SHAPE[y].length; x++) {
+        if (T_SHAPE[y][x]) {
+          const x1 = startX + x * blockSize;
+          const y1 = startY + y * blockSize;
+          const x2 = x1 + blockSize - 1;
+          const y2 = y1 + blockSize - 1;
+          if (useHollowBlocks) {
+            g.drawRect(x1, y1, x2, y2);
+          } else {
+            g.fillRect(x1, y1, x2, y2);
+          }
+        }
+      }
+    }
   }
 
   function dropToBottom() {
@@ -635,6 +687,7 @@ function Piptris() {
     playMusic();
 
     score = 0;
+    linesCleared = 0;
     isGameOver = false;
     blockCurrent = null;
     blockNext = getRandomPiece();
@@ -656,9 +709,19 @@ function Piptris() {
 
     drawStartScreen();
 
+    function togglePreviewStyle() {
+      useHollowBlocks = !useHollowBlocks;
+      drawStartScreenPreviewBlock();
+    }
+
+    Pip.on(KNOB_LEFT, togglePreviewStyle);
+    Pip.on(KNOB_RIGHT, togglePreviewStyle);
+
     inputInterval = setInterval(() => {
       if (BTN_PLAY.read()) {
         clearInterval(inputInterval);
+        Pip.removeListener(KNOB_LEFT, togglePreviewStyle);
+        Pip.removeListener(KNOB_RIGHT, togglePreviewStyle);
         startGame();
       }
     }, 100);
