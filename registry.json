@@ -98,14 +98,14 @@
     "files": [
       "USER/CustomRadio.min.js",
       "USER/CustomRadio/options.json",
-      "USER_BOOT/CustomRadio.js"
+      "USER_BOOT/CustomRadio.min.js"
     ],
     "id": "CustomRadio",
     "instructions": "Turn the top-left knob to scroll through songs. Press it to play or stop a track.",
     "name": "Custom Radio",
     "tip": "Avoid adding more than 50 songs to the `/RADIO` folder to keep performance smooth. Press the knob again to stop playback.",
     "type": "APP",
-    "version": "2.4.1"
+    "version": "2.5.0"
   },
   {
     "authors": ["Illes Kokenyesi"],

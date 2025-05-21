@@ -10,7 +10,7 @@ function CustomRadio() {
   const self = {};
 
   const APP_NAME = 'Custom Radio';
-  const APP_VERSION = '2.4.0';
+  const APP_VERSION = '2.5.0';
   const OPTIONS_PATH = 'USER/CustomRadio/options.json';
 
   const COLOR_GREEN = '#0F0';
