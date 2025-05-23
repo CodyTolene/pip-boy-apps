@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json.schemastore.org/package",
+  "title": "Pip UI+",
+  "id": "PipUiPlus",
+  "version": "1.0.0",
+  "description": "Pip UI+ aims to add some of the missing in-game tabs (such as special, perks, and so on) to the Pip-Boy 3000 Mk V. Inspired by gnargle's Stats Display.",
+  "author": "@MercurialPony",
+  "website": "https://github.com/MercurialPony",
+  "license": "",
+  "meta": {
+    "controls": "",
+    "instructions": "The 'STAT' page will now have the 'SPECIAL' tab which you can interact with.",
+    "tip": "Click the left knob to edit the value of an attribute.",
+    "type": "APP"
+  },
+  "pipFiles": {
+    "assets": [
+      "Special/a_strength.json",
+      "Special/b_perception.json",
+      "Special/c_endurance.json",
+      "Special/d_charisma.json",
+      "Special/e_intelligence.json",
+      "Special/f_agility.json",
+      "Special/g_luck.json",
+      "Special/a_strength.avi",
+      "Special/b_perception.avi",
+      "Special/c_endurance.avi",
+      "Special/d_charisma.avi",
+      "Special/e_intelligence.avi",
+      "Special/f_agility.avi",
+      "Special/g_luck.avi"
+    ],
+    "boot": [
+      "PipUiPlusLoader.js"
+    ],
+    "modules": [],
+    "user": [
+      "Special.js"
+    ]
+  }
+}

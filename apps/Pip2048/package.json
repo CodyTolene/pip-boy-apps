@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json.schemastore.org/package",
+  "title": "2048",
+  "id": "Pip2048",
+  "version": "1.0.1",
+  "description": "A classic 2048 game.",
+  "author": "@killes007",
+  "website": "https://github.com/killes007",
+  "license": "",
+  "meta": {
+    "controls": "Use the LEFT WHEEL to shift the table Up / Down, UPPER RIGHT WHEEL to shift Left / Right. Push LEFT WHEEL Click to Reset. Press TOP TORCH button to exit the game.",
+    "instructions": "",
+    "tip": "Use your brain! =]",
+    "type": "GAME"
+  },
+  "pipFiles": {
+    "assets": [],
+    "boot": [],
+    "modules": [],
+    "user": [
+      "Pip2048.min.js"
+    ]
+  }
+}

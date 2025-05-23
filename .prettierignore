@@ -5,10 +5,9 @@
 !.github/CODEOWNERS
 !.scripts/
 !README.md
-!USER/
-!USER_BOOT/
 !registry.json
 !docs/
+!apps/
 
 **/*.min.js
 
