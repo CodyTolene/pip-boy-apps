@@ -6,6 +6,9 @@ on:
       - 'apps/**'
       - '.github/workflows/build-apps.yml'
   pull_request:
+    paths:
+      - 'apps/**'
+      - '.github/workflows/build-apps.yml'
 
 jobs:
   build:
