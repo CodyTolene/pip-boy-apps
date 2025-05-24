@@ -1,0 +1,86 @@
+name: Build PIP-Apps Packages
+
+on:
+  push:
+    paths:
+      - 'apps/**'
+      - '.github/workflows/build-apps.yml'
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install jq
+        run: sudo apt-get install -y jq
+
+      - name: Build and Zip Apps
+        run: |
+          set -e
+
+          mkdir -p output
+
+          for dir in apps/*; do
+            [ -d "$dir" ] || continue
+
+            pkg="$dir/package.json"
+            if [ ! -f "$pkg" ]; then
+              echo "No package.json in $dir"
+              exit 1
+            fi
+
+            echo "Processing $pkg..."
+
+            id=$(jq -r '.id' "$pkg")
+            name=$(jq -r '.title' "$pkg")
+            version=$(jq -r '.version' "$pkg")
+            if [ "$id" == "null" ] || [ "$name" == "null" ] || [ "$version" == "null" ]; then
+              echo "Missing required fields in $pkg"
+              exit 1
+            fi
+
+            temp_dir=$(mktemp -d)
+            mkdir -p "$temp_dir/APPINFO" "$temp_dir/USER_BOOT" "$temp_dir/node_modules" "$temp_dir/USER/$id"
+
+            # Copy pipFiles
+            for category in assets boot modules user; do
+              files=$(jq -r ".pipFiles.${category}[]" "$pkg" 2>/dev/null || true)
+              for f in $files; do
+                src="$dir/$f"
+                case $category in
+                  assets)   dest="$temp_dir/USER/$id/$f" ;;
+                  boot)     dest="$temp_dir/USER_BOOT/$(basename "$f")" ;;
+                  modules)  dest="$temp_dir/node_modules/$(basename "$f")" ;;
+                  user)     dest="$temp_dir/USER/$(basename "$f")" ;;
+                esac
+                if [ ! -f "$src" ]; then
+                  echo "Missing file: $src"
+                  exit 1
+                fi
+                mkdir -p "$(dirname "$dest")"
+                cp "$src" "$dest"
+              done
+            done
+
+            # Create metadata JSON
+            echo "{\"id\":\"$id\", \"name\":\"$name\", \"version\":\"$version\"}" > "$temp_dir/APPINFO/$id.json"
+
+            # Zip package
+            (cd "$temp_dir" && zip -r "../output/$id.zip" APPINFO USER_BOOT node_modules USER)
+
+            echo "$id packaged successfully"
+          done
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: pip-apps-packages
+          path: output/
