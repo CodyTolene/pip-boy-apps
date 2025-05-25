@@ -4,18 +4,7 @@ Add a description of the app here, or any other relevant information.
 
 ### Update Checklist
 
-<!-- If this is an app/game update, here's an example template to use. -->
-
-- [ ] Updated app "MyAppName".
-- [ ] Update app assets in the `USER/xyz/..` directory.
-- [ ] Any additional items...
-
-<!-- If this is a new app/game, here's an example template to use. -->
-
-- [ ] Add app to the `USER` directory.
-- [ ] App is a `.js` file is PascalCase.
-- [ ] Add app to the `registry.json` file.
-- [ ] Any additional items...
+- [ ] What I added/changed
 
 ### Pull Request Checklist (to be filled by the reviewer)
 

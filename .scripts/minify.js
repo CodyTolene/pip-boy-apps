@@ -8,7 +8,7 @@ import readline from 'readline';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const folders = ['../USER', '../USER_BOOT'];
+const appsDir = path.resolve(__dirname, '../apps');
 const allFiles = [];
 
 function findJsFiles(dir, baseDir) {
@@ -35,15 +35,12 @@ function findJsFiles(dir, baseDir) {
   }
 }
 
-for (const folder of folders) {
-  const fullPath = path.resolve(__dirname, folder);
-  if (fs.existsSync(fullPath)) {
-    findJsFiles(fullPath, fullPath);
-  }
+if (fs.existsSync(appsDir)) {
+  findJsFiles(appsDir, appsDir);
 }
 
 if (allFiles.length === 0) {
-  console.log('No JavaScript files found.');
+  console.log('No JavaScript files found in apps/.');
   process.exit(0);
 }
 

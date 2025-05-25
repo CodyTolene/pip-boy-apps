@@ -43,10 +43,9 @@
 
 [**Pip-Boy.com**][link-pip-boy]
 
-Just here to have some fun? Head over to the [Apps Inventory][link-pip-boy-apps]
-and start playing right from your Pip-Boy’s interface, no fuss, no power armor
-required. Otherwise you can install manually using this repository, follow that
-guide [here](#manual-installation) to get started.
+Install using the website [Apps Inventory Page][link-pip-boy-apps] to start
+playing now, or install manually by following the guide
+[here](#manual-installation).
 
 Feeling like a Vault-Tec engineer? If you’re interested in developing your own
 holotape-style apps, follow the [development guide](#development) below to get
@@ -74,19 +73,13 @@ to your PC using the website, upload, and start playing!
 
 To manually install the apps, you have a few options:
 
-1. Download the latest `apps.zip` archive from the [latest
-   build][link-github-latest-build] and extract the contents to the root of the
-   SD card. You can use the Zip upload tool here:
-   https://pip-boy.com/data/maintenance. This is the easiest option and doesn't
-   require you to remove the SD card.
+1. Download the releases from
+   https://github.com/CodyTolene/pip-apps/tree/releases and upload them to your
+   SD card directly.
 
-2. Copy the entire USER folder from this repository over to the root of the SD
-   card. This will overwrite any existing apps and settings. This requires you
-   to remove the SD card though, so probably not the best option.
-
-3. Use the [development process](#development) below, which is meant for rapidly
-   testing apps and features. This requires a bit of setup but is the most
-   flexible option.
+2. If you need to install the bootloaer, you can use the
+   https://codytolene.github.io/pip-apps website to upload the bootloader file
+   to your Pip-Boy.
 
 <p align="right">[ <a href="#index">Index</a> ]</p>
 
@@ -160,89 +153,39 @@ providing and maintaining this amazing resource!
 
 To create a new app/game, follow these steps:
 
-1. For apps and games create a new js file using pascal casing in the `USER`
-   folder. This will be the entry point for your app. For bootloader apps, add
-   your js file to the `USER_BOOT` folder.
+1. Create a new folder in the `apps` directory. This folder should be named
+   `apps/MyAppName` where `MyAppName` is the name of your app. This folder will
+   contain all the files and assets for your app. Be sure to use Pascal casing
+   for the folder name.
 
-2. Add any additional assets your own `USER/MyAppName/` folder. Be sure to name
-   the folder the same as your app name to keep things organized.
+2. Add a package.json file to your app folder. This file should contain the
+   following information:
 
-3. Test by using the upload tool in the [app loader](#pip-app-loader).
+   | Key            | Description                                                               |
+   | :------------- | :------------------------------------------------------------------------ |
+   | `title`        | The name of your app.                                                     |
+   | `id`           | A unique app id that also should match the `.js` file name.               |
+   | `version`      | The version of your app.                                                  |
+   | `description`  | A brief description of your app.                                          |
+   | `author`       | The author of the app.                                                    |
+   | `website`      | The website for your app, can be empty.                                   |
+   | `contributors` | The contributors to your app, can be empty.                               |
+   | `meta`         | Meta information for your app.                                            |
+   | `controls`     | The controls for your app, can be empty.                                  |
+   | `instructions` | Instructions for your app.                                                |
+   | `tip`          | A tip or trick for your app, can be empty.                                |
+   | `type`         | The type of app, either "APP" or "GAME".                                  |
+   | `pipFiles`     | The production ready files to be uploaded to the Pip.                     |
+   | `assets`       | The assets for your app, can be empty. Uploads to `~USER/MyApp/`.         |
+   | `boot`         | The bootloader files to be uploaded to the Pip. Uploads to `~USER_BOOT/`. |
+   | `modules`      | The modules for your app, can be empty. Uploads to `~node_modules`.       |
+   | `user`         | The user files to be uploaded to the Pip. Uploads to `~USER/`.            |
 
-4. Update the `registry.json` file with your new app information. Be sure to add
-   all files and assets that your app uses to the `files` array in this
-   registry.
+3. Add your code using Git and push to a new branch.
 
-   **Examples**
+4. Open a pull request to the `main` branch.
 
-   <details>
-   <summary>Apps</summary>
-
-   ```diff
-   [
-   ...
-   + {
-   +      "authors": ["..."],
-   +      "description": "...",
-   +      "files": [
-   +        "USER/MyAppName.js",
-   +        "USER/MyAppName/my-asset.json",
-   +        "USER_BOOT/MyAppName.js"
-   +      ],
-   +      "id": "MyAppName",
-   +      "instructions": "...",
-   +      "name": "My App Name",
-   +      "tip": "...",
-   +      "type": "APP",
-   +      "version": "1.0.0"
-   + }
-   ]
-   ```
-
-   </details>
-
-   <details>
-   <summary>Games</summary>
-
-   ```diff
-   [
-   ...
-   + {
-   +      "authors": ["..."],
-   +      "description": "...",
-   +      "files": [
-   +        "USER/MyGameName.js",
-   +        "USER/MyGameName/my-asset.json"
-   +      ],
-   +      "id": "MyGameName",
-   +      "instructions": "...",
-   +      "name": "My Game Name",
-   +      "tip": "",
-   +      "type": "GAME",
-   +      "version": "1.0.0"
-   + }
-   ]
-   ```
-
-   </details>
-
-   | Key            | Description                                                 |
-   | :------------- | :---------------------------------------------------------- |
-   | `authors`      | The authors of the app.                                     |
-   | `files`        | The array of files that the app uses.                       |
-   | `description`  | A brief description of your app.                            |
-   | `id`           | A unique app id that also should match the `.js` file name. |
-   | `instructions` | Instructions and controls for your app.                     |
-   | `name`         | The name of your app.                                       |
-   | `tip`          | A tip or trick for your app, can be empty.                  |
-   | `type`         | The type of app, either "APP" or "GAME".                    |
-   | `version`      | The version of your app.                                    |
-
-5. Add your code using Git and push to a new branch.
-
-6. Open a pull request to the `main` branch.
-
-7. Wait for the pull request to be reviewed and merged.
+5. Wait for the pull request to be reviewed and merged.
 
 Thank you for any and all contributions!
 
@@ -284,18 +227,17 @@ development and testing.
     ├─ .github                     # GitHub configuration files.
     ├─ .husky                      # Husky configuration files.
     ├─ .vscode                     # VS Code configuration files.
+    ├─ apps                        # The Pip-App Loader web app (GitHub Pages hosted)
+    │  ├─ <...>                    # User created app and game folders.
+    │  └─ CODEOWNERS               # User created apps and games (entry file).
     ├─ docs                        # The Pip-App Loader web app (GitHub Pages hosted)
     ├─ node_modules                # Node.js dependencies (ignored).
-    ├─ USER                        # The directory for user created apps and games.
-    │  ├─ <...>                    # Asset folders for user created apps.
-    │  └─ *.js                     # User created apps and games (entry file).
     ├─ .gitignore                  # Git ignore configuration file.
     ├─ .prettierignore             # Prettier ignore configuration file.
     ├─ LICENSE.md                  # The project license file.
     ├─ package-lock.json           # Node.js package lock file.
     ├─ package.json                # Node.js package file.
     ├─ prettier.config.cjs         # Prettier configuration file.
-    ├─ registry.json               # The app registry for user created apps.
     ├─ README.md                   # The project README file.
     └─ TERMS.md                    # The project terms of use file.
 
