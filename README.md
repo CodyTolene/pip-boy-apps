@@ -2,7 +2,6 @@
 
 A tool to modify your pip-boy by adding apps and changing settings.
 
-
 ## Writing apps
 
 If you put a JS file in the USER folder, Pip-Boy will
@@ -37,9 +36,21 @@ Pip.on("torch", ()=> {
 });
 ```
 
-* `g` is a graphics instance that writes direct to the screen
-* `bC` is a graphics instance that writes to a 2 bit offscreen buffer, and calling
-`bC.flip()` will flip that buffer to the screen with a scanline effect.
+- `g` is a graphics instance that writes direct to the screen
+- `bC` is a graphics instance that writes to a 2 bit offscreen buffer, and calling
+  `bC.flip()` will flip that buffer to the screen with a scanline effect.
 
 You should create a function `Pip.removeSubmenu()` that removes your app from memory (eg clears all intervals, removes all event listeners added).
 
+## Build and run locally
+
+To run this application locally using Docker:
+
+```sh
+git clone https://github.com/thewandcompany/pip-boy.git
+git submodule update
+docker build -t pip-boy-mod-tool .
+docker run -dit --name pip-boy-mod-tool -p 8080:80 pip-boy-mod-tool
+```
+
+The application will be available on `http://localhost:8080`.
