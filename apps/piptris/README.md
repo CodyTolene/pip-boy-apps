@@ -6,8 +6,6 @@
 
 **Version:** 2.2.0
 
-**License:** [CC-BY-NC-4.0](https://creativecommons.org/licenses/by-nc/4.0/)
-
 **Website(s):**
 
 - [Personal Site](https://www.CodyTolene.com)
@@ -33,3 +31,13 @@ As blocks fall, rotate and move them to create complete lines. When a line is co
 ### Tips
 
 Try to clear as many lines as possible!
+
+### License(s)
+
+This game is licensed under the Creative Commons Attribution-NonCommercial 4.0 International License. See [CC-BY-NC-4.0](https://creativecommons.org/licenses/by-nc/4.0/) for more information.
+
+This game uses music from pixabay.com. This music uses a special license that allows for free use in personal and commercial projects. More information about this license can be found here: https://pixabay.com/service/license-summary/
+
+- [`piptris.wav`](https://pixabay.com/music/classical-string-quartet-tetris-theme-korobeiniki-rearranged-arr-for-strings-185592/)
+
+`SPDX-License-Identifiers: CC-BY-NC-4.0, CC0-1.0`
