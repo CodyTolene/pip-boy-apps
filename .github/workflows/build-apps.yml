@@ -10,6 +10,10 @@ on:
       - 'apps/**'
       - '.github/workflows/build-apps.yml'
 
+permissions:
+  contents: read
+  actions: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -62,7 +66,12 @@ jobs:
                 case $category in
                   assets)   dest="$temp_dir/USER/$id/$f"; used_dirs+=("USER") ;;
                   boot)     dest="$temp_dir/USER_BOOT/$(basename "$f")"; used_dirs+=("USER_BOOT"); boot_has_files=true ;;
-                  modules)  dest="$temp_dir/node_modules/$(basename "$f")"; used_dirs+=("node_modules") ;;
+                  modules)  
+                    dest="$temp_dir/$id/node_modules/$(basename "$f")"
+                    mkdir -p "$(dirname "$dest")"
+                    cp "$src" "$dest"
+                    continue
+                    ;;
                   user)     dest="$temp_dir/USER/$(basename "$f")"; used_dirs+=("USER"); user_has_files=true ;;
                 esac
                 [ -f "$src" ] || { echo "Missing file: $src"; exit 1; }
@@ -166,8 +175,10 @@ jobs:
 
   publish:
     needs: [build, upload]
-    if: github.ref == 'refs/heads/main'
+    # if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
@@ -211,7 +222,7 @@ jobs:
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
-          git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/${{ github.repository }}
+          git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/pip-apps
 
           git fetch origin releases || git checkout --orphan releases
           git checkout releases
