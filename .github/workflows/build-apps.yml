@@ -67,10 +67,10 @@ jobs:
                   assets)   dest="$temp_dir/USER/$id/$f"; used_dirs+=("USER") ;;
                   boot)     dest="$temp_dir/USER_BOOT/$(basename "$f")"; used_dirs+=("USER_BOOT"); boot_has_files=true ;;
                   modules)
-                    dest="$temp_dir/$id/node_modules/$(basename "$f")"
+                    dest="$temp_dir/node_modules/$(basename "$f")"
                     mkdir -p "$(dirname "$dest")"
                     cp "$src" "$dest"
-                    cp -r "$temp_dir/$id/node_modules" "$output_dir/$id/"
+                    used_dirs+=("node_modules")
                     continue
                     ;;
                   user)     dest="$temp_dir/USER/$(basename "$f")"; used_dirs+=("USER"); user_has_files=true ;;
