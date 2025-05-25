@@ -5,7 +5,7 @@
 
 // This function loads and evaluates a special submenu script dynamically
 function specialSubmenu() {
-  const script = fs.readFile('USER_BOOT/PipUiPlus/Special.js');
+  const script = fs.readFile('USER/PipUiPlus/Special.js');
   eval(script); // This executes the contents of the Special.js file
 }
 

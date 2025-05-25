@@ -268,7 +268,7 @@ class JsonRangeRow extends JsonValueRow {
 }
 
 // Load menu
-const basePath = 'USER_BOOT/PipUiPlus/Special';
+const basePath = 'USER/PipUiPlus/Special';
 
 const menu = new PipMenu(
   { x2: 180, compact: true },

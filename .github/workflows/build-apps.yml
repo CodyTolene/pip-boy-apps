@@ -1,4 +1,4 @@
-name: Build PIP-Apps Packages
+name: Build Pip-Boy Apps Package
 
 on:
   push:
@@ -13,6 +13,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      zip-files: ${{ steps.package.outputs.zips }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -22,68 +24,205 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install jq
-        run: sudo apt-get install -y jq
+      - name: Install jq and zip
+        run: sudo apt-get install -y jq zip
 
-      - name: Build and Zip Apps
+      - id: package
+        name: Build and Package Apps
         run: |
-          set -e
-
-          mkdir -p output
+          set -eu
+          output_dir="output"
+          mkdir -p "$output_dir"
+          registry="[]"
+          app_ids=()
 
           for dir in apps/*; do
             [ -d "$dir" ] || continue
-
             pkg="$dir/package.json"
-            if [ ! -f "$pkg" ]; then
-              echo "No package.json in $dir"
-              exit 1
-            fi
-
-            echo "Processing $pkg..."
+            [ -f "$pkg" ] || { echo "Missing $pkg"; exit 1; }
 
             id=$(jq -r '.id' "$pkg")
             name=$(jq -r '.title' "$pkg")
             version=$(jq -r '.version' "$pkg")
-            if [ "$id" == "null" ] || [ "$name" == "null" ] || [ "$version" == "null" ]; then
+            [ "$id" != "null" ] && [ "$name" != "null" ] && [ "$version" != "null" ] || {
               echo "Missing required fields in $pkg"
               exit 1
-            fi
+            }
 
             temp_dir=$(mktemp -d)
-            mkdir -p "$temp_dir/APPINFO" "$temp_dir/USER_BOOT" "$temp_dir/node_modules" "$temp_dir/USER/$id"
+            used_dirs=()
+            user_has_files=false
+            boot_has_files=false
 
-            # Copy pipFiles
             for category in assets boot modules user; do
               files=$(jq -r ".pipFiles.${category}[]" "$pkg" 2>/dev/null || true)
+              [ -z "$files" ] && continue
               for f in $files; do
                 src="$dir/$f"
                 case $category in
-                  assets)   dest="$temp_dir/USER/$id/$f" ;;
-                  boot)     dest="$temp_dir/USER_BOOT/$(basename "$f")" ;;
-                  modules)  dest="$temp_dir/node_modules/$(basename "$f")" ;;
-                  user)     dest="$temp_dir/USER/$(basename "$f")" ;;
+                  assets)   dest="$temp_dir/USER/$id/$f"; used_dirs+=("USER") ;;
+                  boot)     dest="$temp_dir/USER_BOOT/$(basename "$f")"; used_dirs+=("USER_BOOT"); boot_has_files=true ;;
+                  modules)  dest="$temp_dir/node_modules/$(basename "$f")"; used_dirs+=("node_modules") ;;
+                  user)     dest="$temp_dir/USER/$(basename "$f")"; used_dirs+=("USER"); user_has_files=true ;;
                 esac
-                if [ ! -f "$src" ]; then
-                  echo "Missing file: $src"
-                  exit 1
-                fi
+                [ -f "$src" ] || { echo "Missing file: $src"; exit 1; }
                 mkdir -p "$(dirname "$dest")"
                 cp "$src" "$dest"
               done
             done
 
-            # Create metadata JSON
+            mkdir -p "$temp_dir/APPINFO"
             echo "{\"id\":\"$id\", \"name\":\"$name\", \"version\":\"$version\"}" > "$temp_dir/APPINFO/$id.json"
+            used_dirs+=("APPINFO")
 
-            # Zip package
-            (cd "$temp_dir" && zip -r "../output/$id.zip" APPINFO USER_BOOT node_modules USER)
+            mkdir -p "$output_dir/$id"
+            for d in "${used_dirs[@]}"; do
+              cp -r "$temp_dir/$d" "$output_dir/$id/"
+            done
 
-            echo "$id packaged successfully"
+            author=$(jq -r '.author // empty' "$pkg")
+            authors_array=$(jq -n --arg a "$author" '[ $a ]')
+
+            meta=$(jq -n \
+              --arg id "$id" \
+              --arg name "$name" \
+              --arg version "$version" \
+              --arg description "$(jq -r .description "$pkg")" \
+              --arg type "$(jq -r .meta.type "$pkg")" \
+              --arg instructions "$(jq -r .meta.instructions "$pkg")" \
+              --arg tip "$(jq -r .meta.tip "$pkg")" \
+              --arg controls "$(jq -r .meta.controls "$pkg")" \
+              --arg zip "$id.zip" \
+              --argjson authors "$authors_array" \
+              --argjson isBootloaderRequired "$boot_has_files" \
+              '{id: $id, name: $name, version: $version, description: $description, type: $type, instructions: $instructions, tip: $tip, controls: $controls, zip: $zip, authors: $authors, isBootloaderRequired: $isBootloaderRequired}')
+            registry=$(jq ". + [$meta]" <<< "$registry")
+            app_ids+=("$id.zip")
           done
 
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
+          echo "$registry" | jq 'sort_by(.name)' > "$output_dir/registry.json"
+          printf '%s\n' "${app_ids[@]}" | jq -R -s -c 'split("\n") | map(select(. != ""))' > output_zips.json
+          echo "zips=$(cat output_zips.json)" >> $GITHUB_OUTPUT
+
+      - name: Upload Registry JSON
+        uses: actions/upload-artifact@v4
         with:
-          name: pip-apps-packages
-          path: output/
+          name: registry.json
+          path: output/registry.json
+
+      - name: Create and Upload _all.zip
+        run: |
+          cd output
+          zip -r ../_all.zip ./*
+
+      - name: Upload _all.zip
+        uses: actions/upload-artifact@v4
+        with:
+          name: _all.zip
+          path: _all.zip
+
+      - name: Upload App Zips as Named Artifacts
+        run: |
+          for d in output/*; do
+            [ -d "$d" ] || continue
+            name=$(basename "$d")
+            zip -r "$d.zip" "$d"
+          done
+        shell: bash
+
+      - name: Upload Individual App Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          path: output/*.zip
+
+  upload:
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        zip: ${{ fromJson(needs.build.outputs.zip-files) }}
+    steps:
+      - name: Download _all.zip
+        uses: actions/download-artifact@v4
+        with:
+          name: _all.zip
+          path: allzips
+
+      - name: Extract _all.zip
+        run: unzip allzips/_all.zip -d extracted
+
+      - name: Set artifact folder name
+        id: zipname
+        run: |
+          zipname="${{ matrix.zip }}"
+          folder="${zipname%.zip}"
+          echo "folder=$folder" >> $GITHUB_OUTPUT
+
+      - name: Upload as Individual Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.zipname.outputs.folder }}
+          path: extracted/${{ steps.zipname.outputs.folder }}
+
+  publish:
+    needs: [build, upload]
+    # if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GH_PAT }}
+
+      - name: Download All Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: releases-temp
+
+      - name: Rebuild release structure and regenerate ZIPs
+        run: |
+          mkdir -p dist
+          cp releases-temp/registry.json/registry.json dist/ || echo "Missing registry.json"
+          cp releases-temp/_all.zip/_all.zip dist/ || echo "Missing _all.zip"
+
+          for d in releases-temp/*; do
+            name=$(basename "$d")
+            case "$name" in
+              _all.zip|registry.json|artifact)
+                echo "Skipping non-app artifact: $d"
+                continue
+                ;;
+              *)
+                mkdir -p "dist/$name"
+                cp -r "$d"/* "dist/$name/"
+                (
+                  cd "$d"
+                  zip -qr "../../dist/${name}.zip" .
+                )
+                ;;
+            esac
+          done
+
+          echo "Final release contents:"
+          find dist -type f
+
+      - name: Switch to releases branch
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/${{ github.repository }}
+
+          git fetch origin releases || git checkout --orphan releases
+          git checkout releases
+
+          find . -mindepth 1 -maxdepth 1 ! -name '.git' ! -name 'dist' -exec rm -rf {} +
+
+      - name: Copy and Commit to releases
+        run: |
+          rsync -av dist/ ./
+          rm -rf dist
+          git add .
+          git status
+          git commit -m "Update release artifacts" || echo "No changes to commit"
+          git push origin releases --force

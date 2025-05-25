@@ -15,6 +15,7 @@
   },
   "pipFiles": {
     "assets": [
+      "Special.js",
       "Special/a_strength.json",
       "Special/b_perception.json",
       "Special/c_endurance.json",
@@ -34,8 +35,6 @@
       "PipUiPlusLoader.js"
     ],
     "modules": [],
-    "user": [
-      "Special.js"
-    ]
+    "user": []
   }
 }
