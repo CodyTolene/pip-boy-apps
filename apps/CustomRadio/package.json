@@ -21,9 +21,7 @@
     "boot": [
       "CustomRadioLoader.min.js"
     ],
-    "modules": [
-      "module.js"
-    ],
+    "modules": [],
     "user": [
       "CustomRadio.min.js"
     ]
