@@ -44,7 +44,7 @@ You should create a function `Pip.removeSubmenu()` that removes your app from me
 
 ## Build and run locally
 
-To run this application locally using Docker:
+To build and run this application locally using Docker:
 
 ```sh
 git clone https://github.com/thewandcompany/pip-boy.git
@@ -54,3 +54,9 @@ docker run -dit --name pip-boy-mod-tool -p 8080:80 pip-boy-mod-tool
 ```
 
 The application will be available on `http://localhost:8080`.
+
+Alternatively if you do not want to build the image (particularly useful for local dev), you can run it one time with:
+
+```sh
+docker run -dit --name pip-boy-mod-tool -p 8080:80 -v "$PWD":/usr/local/apache2/htdocs/ httpd:2.4
+```
