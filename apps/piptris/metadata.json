@@ -9,7 +9,7 @@
   "readme": "README.md",
   "custom": "",
   "storage": [
-    { "name": "USER/Piptris.js", "url": "piptris.min.js" },
+    { "name": "USER/Piptris.js", "url": "Piptris.js" },
     { "name": "USER/gear.json", "url": "gear.json" },
     { "name": "USER/piptris.wav", "url": "piptris.wav" }
   ]
