@@ -175,11 +175,7 @@ function FileExplorer() {
       return;
     }
 
-    if (
-      name.endsWith(".wav") ||
-      name.endsWith(".mp3") ||
-      name.endsWith(".ogg")
-    ) {
+    if (name.endsWith(".wav")) {
       if (currentAudio === selected.path) {
         Pip.audioStop();
         currentAudio = null;
@@ -193,7 +189,7 @@ function FileExplorer() {
       return;
     }
 
-    if (name.endsWith(".avi") || name.endsWith(".mp4")) {
+    if (name.endsWith(".avi")) {
       Pip.audioStop();
       Pip.videoStart(selected.path, { x: 40, y: 0 });
       isVideoPlaying = true;
