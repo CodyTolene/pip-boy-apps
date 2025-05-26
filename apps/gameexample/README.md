@@ -1,4 +1,4 @@
-# File Explorer
+# Game Example
 
 ### Info
 
@@ -23,14 +23,6 @@ A game example that you can use as a template for your own game.
 - Use the top-right rotary wheel to move left and right.
 - Use the radio tuner button to turn on and off the barriers.
 - Press the top torch button to restart the device.
-
-### Instructions
-
-...
-
-### Tips
-
-...
 
 ### License(s)
 

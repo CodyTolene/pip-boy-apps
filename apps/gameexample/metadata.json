@@ -8,5 +8,5 @@
   "type": "app",
   "readme": "README.md",
   "custom": "",
-  "storage": [{ "name": "USER/GameExample.js", "url": "GameExample.min.js" }]
+  "storage": [{ "name": "USER/GameExample.js", "url": "GameExample.js" }]
 }
