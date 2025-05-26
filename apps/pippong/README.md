@@ -1,4 +1,4 @@
-# Piptris
+# Pip-Pong
 
 ### Info
 
