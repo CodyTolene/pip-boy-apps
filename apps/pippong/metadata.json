@@ -1,0 +1,12 @@
+{
+  "id": "pippong",
+  "name": "Pip-Pong",
+  "version": "1.2.0",
+  "description": "Pip-Pong is a simple game where you control a paddle that hits a ball back and forth.",
+  "icon": "pippong.png",
+  "tags": "game",
+  "type": "app",
+  "readme": "README.md",
+  "custom": "",
+  "storage": [{ "name": "USER/PipPong.js", "url": "PipPong.js" }]
+}
