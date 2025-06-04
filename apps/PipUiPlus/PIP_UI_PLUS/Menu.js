@@ -4,7 +4,7 @@ const wrap = (value, min, max) => mod(value - min, max - min + 1) + min; // wrap
 
 const copy = original => Object.assign(Object.create(Object.getPrototypeOf(original)), original); // shallow copy preserving prototype
 
-// Represents a file on the SD as an array. The file must be separated into chunks of a fixed length to ensure fast lookups and fit it any exctra data that might need to be written.
+// Represents a file on the SD as an array. The file must be separated into chunks of a fixed length to ensure fast lookups and the space for any extra data that might need to be written.
 class FileBackedArray
 {
 	constructor(readableFile, writableFile, lineCount, lineLength)

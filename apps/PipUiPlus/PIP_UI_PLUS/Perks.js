@@ -32,7 +32,7 @@ function remove(array, element)
 
 class PerkEntry extends Entry
 {
-	static STAR_IMAGE = { width: 11, height: 11, bpp: 1 }; // transparent: 0
+	static STAR_IMAGE = { width: 11, height: 11, bpp: 1 };
 	static FILLED_STAR_BUFFER = atob("BAHAOH///v+P4fx7zjmDAA==");
 	static HOLLOW_STAR_BUFFER = atob("BAFAKHj4AoCIISRKSimDAA==");
 	static STAR_GAP = 2;
@@ -66,7 +66,7 @@ class PerkEntry extends Entry
 
 class PerkEditorEntry extends PerkEntry
 {
-	constructor(data, index, array, indices) // TODO: weird
+	constructor(data, index, array, indices) // TODO: weird that we pass so much stuff in. Would be nice to shorten this
 	{
 		super(data);
 		this.index = index;
@@ -90,7 +90,7 @@ class PerkEditorEntry extends PerkEntry
 			? remove(this.indices, this.index)
 			: insertSorted(this.indices, this.index);
 		
-		if (changed) fs.writeFile(ENABLED_PERKS_PATH, this.indices.join(",")); // TODO: use stream IO for this as well
+		if (changed) fs.writeFile(ENABLED_PERKS_PATH, this.indices.join(","));
 	}
 }
 
@@ -102,7 +102,7 @@ class IndexedFileBackedArray extends FileBackedArray
 		this.indices = indices;
 	}
 
-	get length() { return this.indices ? this.indices.length : -1; }
+	get length() { return this.indices ? this.indices.length : -1; } // TODO: weird that we need the null check here, getter shouldn't be called anywhere when constructing the object
 
 	set length(_) {}
 
