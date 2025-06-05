@@ -1,7 +1,7 @@
-eval(fs.readFile('USER_BOOT/PIP_UI_PLUS/Menu.min.js'));
+eval(fs.readFile('USER/PipUiPlus/Menu.min.js'));
 
-const ENABLED_PERKS_PATH = 'USER_BOOT/PIP_UI_PLUS/PERKS/_enabled_perks.dat';
-const PERKS_PATH = 'USER_BOOT/PIP_UI_PLUS/PERKS/_perks.dat';
+const ENABLED_PERKS_PATH = 'USER/PipUiPlus/PERKS/_enabled_perks.dat';
+const PERKS_PATH = 'USER/PipUiPlus/PERKS/_perks.dat';
 
 function insertSorted(array, num) {
   let low = 0,
