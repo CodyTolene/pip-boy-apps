@@ -1,6 +1,6 @@
-eval(fs.readFile('USER_BOOT/PIP_UI_PLUS/Menu.min.js'));
+eval(fs.readFile('USER/PipUiPlus/Menu.min.js'));
 
-const SPECIAL_PATH = 'USER_BOOT/PIP_UI_PLUS/SPECIAL/_special.dat';
+const SPECIAL_PATH = 'USER/PipUiPlus/SPECIAL/_special.dat';
 
 class SpecialEntry extends Entry {
   constructor(data, index, array) {
