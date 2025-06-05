@@ -2,7 +2,7 @@
   "$schema": "http://json.schemastore.org/package",
   "title": "Pip UI+",
   "id": "PipUiPlus",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Pip UI+ aims to add some of the missing in-game tabs (such as special, perks, and so on) to the Pip-Boy 3000 Mk V. Inspired by gnargle's Stats Display.",
   "author": "Mercy",
   "website": "https://github.com/MercurialPony",

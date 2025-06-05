@@ -1,11 +1,11 @@
 function specialSubmenu() {
   // Avoid loading the bulk of the app into memory permanently,
   // and instead emulate flash memory by loading from SD only when needed
-  eval(fs.readFile('USER/PipUiPlus/Special.min.js'));
+  eval(fs.readFile('USER/PipUiPlus/Special.js'));
 }
 
 function perksSubmenu() {
-  eval(fs.readFile('USER/PipUiPlus/Perks.min.js'));
+  eval(fs.readFile('USER/PipUiPlus/Perks.js'));
 }
 
 function readdirSafely(path) {

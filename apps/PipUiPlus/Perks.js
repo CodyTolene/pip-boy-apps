@@ -1,4 +1,4 @@
-eval(fs.readFile('USER/PipUiPlus/Menu.min.js'));
+eval(fs.readFile('USER/PipUiPlus/Menu.js'));
 
 const ENABLED_PERKS_PATH = 'USER/PipUiPlus/PERKS/_enabled_perks.dat';
 const PERKS_PATH = 'USER/PipUiPlus/PERKS/_perks.dat';
