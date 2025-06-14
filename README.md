@@ -17,6 +17,19 @@
 <!---------------------------------------------------------------------------->
 <!---------------------------------------------------------------------------->
 
+## Notice
+
+![Warning][img-warn] This repository has been archived in favor of the new and
+official Pip-Boy 3000 Mk V app loader from The Wand Company. If you would like
+to create a new app to be hosted on [Pip-Boy.com](https://pip-boy.com/) please
+use the new repository below.
+
+https://github.com/CodyTolene/pip-boy-apps
+
+<!---------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------->
+
 ## Index <a name="index"></a>
 
 - [Website](#website)
