@@ -11,7 +11,7 @@
 - [Personal Site](https://www.CodyTolene.com)
 - [GitHub](https://github.com/CodyTolene)
 - [Pip-Boy](https://www.Pip-Boy.com)
-- [Pip-Boy Apps](https://github.com/CodyTolene/pip-apps)
+- [Pip-Boy Apps](https://github.com/CodyTolene/pip-boy-apps)
 
 ### Description
 

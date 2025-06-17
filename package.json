@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json.schemastore.org/package",
+  "name": "pip-boy-apps",
+  "homepage": "https://pip-boy.com/",
+  "type": "module",
+  "scripts": {
+    "min": "node .scripts/minify.js",
+    "min:watch": "node .scripts/minify-watch.js"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.3",
+    "espruino": "^0.1.60"
+  }
+}
