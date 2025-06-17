@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json.schemastore.org/package",
+  "title": "Piptris",
+  "id": "Piptris",
+  "version": "2.1.0",
+  "description": "A simple Tetris inspired game for the Pip-Boy 3000 Mk V.",
+  "author": "@CodyTolene",
+  "website": "https://www.CodyTolene.com",
+  "contributors": [],
+  "license": "CC-BY-NC-4.0",
+  "meta": {
+    "controls": "Use the top-left knob to rotate pieces, press to drop piece instantly. Use the top-right knob to move pieces left and right. Press the front radio tuner button to move pieces faster. Press the top torch button to exit.",
+    "instructions": "As blocks fall, rotate and move them to create complete lines. When a line is completed, it will disappear for points. The game ends when the blocks reach the top of the screen.",
+    "tip": "Try to clear as many lines as possible!",
+    "type": "GAME"
+  },
+  "pipFiles": {
+    "assets": [
+      "gear.json",
+      "piptris.wav"
+    ],
+    "boot": [],
+    "modules": [],
+    "user": [
+      "Piptris.min.js"
+    ]
+  }
+}

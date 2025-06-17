@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json.schemastore.org/package",
+  "title": "Custom Radio",
+  "id": "CustomRadio",
+  "version": "2.5.0",
+  "description": "Custom Radio lets you browse and play your own `.wav` music files directly from the `/RADIO` folder, giving you full control over your playlist.",
+  "author": "@CodyTolene",
+  "website": "https://www.CodyTolene.com",
+  "contributors": [],
+  "license": "CC-BY-NC-4.0",
+  "meta": {
+    "controls": "Turn the top-left knob to scroll through songs. Press it to play or stop a track.",
+    "instructions": "Upload your '.wav' files to the '/RADIO' folder. To open on the Pip-Boy navigate to the tab RADIO > CUSTOM.",
+    "tip": "Avoid adding more than 100 songs to the `/RADIO` folder to keep performance smooth. Press the knob again to stop playback.",
+    "type": "APP"
+  },
+  "pipFiles": {
+    "assets": [
+      "options.json"
+    ],
+    "boot": [
+      "CustomRadioLoader.min.js"
+    ],
+    "modules": [],
+    "user": [
+      "CustomRadio.min.js"
+    ]
+  }
+}

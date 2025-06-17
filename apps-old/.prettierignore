@@ -1,0 +1,15 @@
+# Ignore everything...
+/*
+
+# Except these files and directories:
+!.github/CODEOWNERS
+!.scripts/
+!README.md
+!registry.json
+!docs/
+!apps/
+
+**/*.min.js
+
+# Re-ignore sub-directories from the above exempt directories:
+.github/CODEOWNERS
