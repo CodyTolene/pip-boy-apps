@@ -1,0 +1,14 @@
+{
+  "id": "asteropips",
+  "name": "AsteroPIPs",
+  "version": "1.0.0",
+  "description": "AsteroPIPs is a simple game where you control a spaceship to shoot and avoid space rocks.",
+  "icon": "asteropips.png",
+  "tags": "game",
+  "type": "app",
+  "readme": "README.md",
+  "custom": "",
+  "storage": [
+    { "name": "USER/AsteroPIPs.js", "url": "AsteroPIPs.min.js" }
+  ]
+}

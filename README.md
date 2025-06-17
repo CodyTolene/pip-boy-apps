@@ -53,10 +53,28 @@ docker build -t pip-boy-mod-tool .
 docker run -dit --name pip-boy-mod-tool -p 8080:80 pip-boy-mod-tool
 ```
 
-The application will be available on `http://localhost:8080`.
-
-Alternatively if you do not want to build the image (particularly useful for local dev), you can run it one time with:
+Alternatively, for quick local development with automatic file reloading, you can skip building the image and run it directly with:
 
 ```sh
+# Unix/Linux/macOS
 docker run -dit --name pip-boy-mod-tool -p 8080:80 -v "$PWD":/usr/local/apache2/htdocs/ httpd:2.4
+# Windows Powershell
+docker run -dit --name pip-boy-mod-tool -p 8080:80 -v ${PWD}:/usr/local/apache2/htdocs/ httpd:2.4
+# Windows with CMD
+docker run -dit --name pip-boy-mod-tool -p 8080:80 -v %cd%:/usr/local/apache2/htdocs/ httpd:2.4
+```
+
+Once you run the application, it will be available at `http://localhost:8080`. You can stop the server any time with:
+
+```sh
+docker stop pip-boy-mod-tool
+```
+
+When you're finished with Docker, you can clean up with:
+
+```sh
+docker rm pip-boy-mod-tool
+docker rmi pip-boy-mod-tool
+docker image prune -a
+docker volume prune
 ```
