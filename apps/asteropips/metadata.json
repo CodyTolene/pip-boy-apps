@@ -8,7 +8,5 @@
   "type": "app",
   "readme": "README.md",
   "custom": "",
-  "storage": [
-    { "name": "USER/AsteroPIPs.js", "url": "AsteroPIPs.min.js" }
-  ]
+  "storage": [{ "name": "USER/AsteroPIPs.js", "url": "AsteroPIPs.min.js" }]
 }

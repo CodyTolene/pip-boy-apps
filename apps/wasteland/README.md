@@ -26,7 +26,10 @@ A DOOM inspired RPG engine for the Pip-Boy 3000 Mk V.
 
 ### License(s)
 
-This game is licensed under the Creative Commons Attribution-NonCommercial 4.0 International License. See [CC-BY-NC-4.0](https://creativecommons.org/licenses/by-nc/4.0/) for more information.
+This game is licensed under the Creative Commons Attribution-NonCommercial 4.0
+International License. See
+[CC-BY-NC-4.0](https://creativecommons.org/licenses/by-nc/4.0/) for more
+information.
 
 This project uses sounds found on FreeSound.org. The sounds are licensed under
 the Creative Commons 0 License. The list of sounds can be found below:

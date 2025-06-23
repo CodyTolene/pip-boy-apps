@@ -7,21 +7,21 @@
 
 function FileExplorer() {
   const self = {};
-  const fs = require("fs");
+  const fs = require('fs');
 
-  const APP_NAME = "File Explorer";
-  const APP_VERSION = "2.1.1";
+  const APP_NAME = 'File Explorer';
+  const APP_VERSION = '2.1.1';
 
   const SCREEN_WIDTH = g.getWidth();
   const SCREEN_HEIGHT = g.getHeight();
 
-  const COLOR_GREEN = "#0F0";
-  const COLOR_WHITE = "#FFF";
+  const COLOR_GREEN = '#0F0';
+  const COLOR_WHITE = '#FFF';
 
   const LINE_HEIGHT = 12;
   const TOP_PADDING = 40;
   const MAX_LINES = Math.floor((SCREEN_HEIGHT - TOP_PADDING) / LINE_HEIGHT);
-  const ROOT_PATH = "/";
+  const ROOT_PATH = '/';
 
   let entries = [];
   let currentIndex = 0;
@@ -32,31 +32,31 @@ function FileExplorer() {
   let currentPath = ROOT_PATH;
 
   try {
-    let s = require("Storage");
+    let s = require('Storage');
     let l = s.list();
-    if (l.includes("VERSION") && l.includes(".bootcde")) {
-      let versionStr = s.read("VERSION") || "";
+    if (l.includes('VERSION') && l.includes('.bootcde')) {
+      let versionStr = s.read('VERSION') || '';
       let versionNum = parseFloat(versionStr);
       isModernVersion = versionNum >= 1.29;
     }
   } catch (e) {
-    console.log("Failed to detect JS version:", e);
+    console.log('Failed to detect JS version:', e);
   }
 
   function resolvePath(dir, file) {
-    if (dir === "/" || dir === "") return "/" + file;
-    return dir + "/" + file;
+    if (dir === '/' || dir === '') return '/' + file;
+    return dir + '/' + file;
   }
 
   function drawUI() {
     g.clear();
 
     g.setColor(COLOR_GREEN);
-    g.setFont("6x8", 2);
-    g.drawString(APP_NAME + " v" + APP_VERSION, SCREEN_WIDTH / 2, 20);
+    g.setFont('6x8', 2);
+    g.drawString(APP_NAME + ' v' + APP_VERSION, SCREEN_WIDTH / 2, 20);
 
     g.setColor(COLOR_WHITE);
-    g.setFont("6x8", 1);
+    g.setFont('6x8', 1);
 
     let visible = entries.slice(scrollOffset, scrollOffset + MAX_LINES);
 
@@ -64,14 +64,14 @@ function FileExplorer() {
       let isSelected = scrollOffset + i === currentIndex;
       g.setColor(isSelected ? COLOR_GREEN : COLOR_WHITE);
 
-      let indent = "";
+      let indent = '';
       let effectiveDepth =
-        entry.name === ".."
+        entry.name === '..'
           ? entry.depth
-          : entry.depth - currentPath.split("/").length + 1;
-      for (let d = 0; d < Math.max(0, effectiveDepth); d++) indent += "...";
+          : entry.depth - currentPath.split('/').length + 1;
+      for (let d = 0; d < Math.max(0, effectiveDepth); d++) indent += '...';
 
-      let tag = entry.type === "dir" ? "[DIR] " : "[FILE] ";
+      let tag = entry.type === 'dir' ? '[DIR] ' : '[FILE] ';
       let label = indent + tag + entry.name;
       let labelWidth = g.stringWidth(label);
       let x = 60 + labelWidth / 2;
@@ -80,7 +80,7 @@ function FileExplorer() {
       g.drawString(label, x, y);
 
       if (entry.path === currentAudio) {
-        g.drawString(" (PLAYING)", x + labelWidth + 4, y);
+        g.drawString(' (PLAYING)', x + labelWidth + 4, y);
       }
     });
   }
@@ -88,16 +88,16 @@ function FileExplorer() {
   function loadDirectory(dir) {
     try {
       let list = fs.readdir(dir) || [];
-      let depth = dir.split("/").length - 1;
+      let depth = dir.split('/').length - 1;
       currentPath = dir;
 
       entries = [];
 
       if (dir !== ROOT_PATH) {
         entries.push({
-          name: "..",
-          path: dir.split("/").slice(0, -1).join("/") || "/",
-          type: "dir",
+          name: '..',
+          path: dir.split('/').slice(0, -1).join('/') || '/',
+          type: 'dir',
           depth: depth - 1,
         });
       }
@@ -107,18 +107,18 @@ function FileExplorer() {
 
         if (
           isModernVersion &&
-          (name === "." ||
-            name === ".." ||
-            path.includes("/./") ||
-            path.includes("/../"))
+          (name === '.' ||
+            name === '..' ||
+            path.includes('/./') ||
+            path.includes('/../'))
         ) {
           return;
         }
 
-        let type = "file";
+        let type = 'file';
         try {
           fs.readdir(path);
-          type = "dir";
+          type = 'dir';
         } catch (_) {}
 
         entries.push({
@@ -133,7 +133,7 @@ function FileExplorer() {
       scrollOffset = 0;
       drawUI();
     } catch (e) {
-      console.log("Failed to load dir:", dir);
+      console.log('Failed to load dir:', dir);
     }
   }
 
@@ -163,7 +163,7 @@ function FileExplorer() {
     const selected = entries[currentIndex];
     if (!selected) return;
 
-    if (selected.type === "dir") {
+    if (selected.type === 'dir') {
       loadDirectory(selected.path);
       return;
     }
@@ -175,7 +175,7 @@ function FileExplorer() {
       return;
     }
 
-    if (name.endsWith(".wav")) {
+    if (name.endsWith('.wav')) {
       if (currentAudio === selected.path) {
         Pip.audioStop();
         currentAudio = null;
@@ -189,7 +189,7 @@ function FileExplorer() {
       return;
     }
 
-    if (name.endsWith(".avi")) {
+    if (name.endsWith('.avi')) {
       Pip.audioStop();
       Pip.videoStart(selected.path, { x: 40, y: 0 });
       isVideoPlaying = true;
@@ -197,7 +197,7 @@ function FileExplorer() {
       return;
     }
 
-    if (name.endsWith(".holotape")) {
+    if (name.endsWith('.holotape')) {
       Pip.loadApp(selected.path);
       return;
     }
@@ -218,17 +218,17 @@ function FileExplorer() {
 
   function showLoadingScreen() {
     g.clear();
-    g.setFont("6x8", 2);
+    g.setFont('6x8', 2);
     g.setColor(COLOR_WHITE);
-    g.drawString("Loading...", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
+    g.drawString('Loading...', SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
   }
 
   self.run = function () {
     if (!Pip.isSDCardInserted()) {
       g.clear();
-      g.setFont("6x8", 2);
-      g.setColor("#F00");
-      g.drawString("NO SD CARD DETECTED", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
+      g.setFont('6x8', 2);
+      g.setColor('#F00');
+      g.drawString('NO SD CARD DETECTED', SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
       return;
     }
 
@@ -239,15 +239,15 @@ function FileExplorer() {
       setInterval(handleInput, 150);
     }, 50);
 
-    Pip.removeAllListeners("knob1");
-    Pip.on("knob1", function (dir) {
+    Pip.removeAllListeners('knob1');
+    Pip.on('knob1', function (dir) {
       if (dir < 0) scrollDown();
       else if (dir > 0) scrollUp();
       else selectEntry();
     });
 
-    Pip.removeAllListeners("knob2");
-    Pip.on("knob2", function (dir) {
+    Pip.removeAllListeners('knob2');
+    Pip.on('knob2', function (dir) {
       if (dir < 0) scrollUp();
       else if (dir > 0) scrollDown();
     });

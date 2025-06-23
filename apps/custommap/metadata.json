@@ -1,13 +1,12 @@
-{ "id": "custommap",
+{
+  "id": "custommap",
   "name": "Custom Map",
-  "version":"0.01",
+  "version": "0.01",
   "description": "Upload a custom image to use as a map to your Pip-Boy",
   "icon": "app.png",
   "tags": "",
   "type": "map",
   "readme": "README.md",
   "custom": "custom.html",
-  "storage": [
-    {"name":"MAP/MAP.img"}
-  ]
+  "storage": [{ "name": "MAP/MAP.img" }]
 }

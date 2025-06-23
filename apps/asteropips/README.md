@@ -12,7 +12,8 @@
 
 ### Description
 
-AsteroPIPs is a simple game where you control a spaceship to shoot and avoid space rocks.
+AsteroPIPs is a simple game where you control a spaceship to shoot and avoid
+space rocks.
 
 ### Controls
 
@@ -22,7 +23,8 @@ AsteroPIPs is a simple game where you control a spaceship to shoot and avoid spa
 
 ### Instructions
 
-Control the spaceship and shoot the asteroids. Avoid colliding with them. The game ends when you hit an asteroid.
+Control the spaceship and shoot the asteroids. Avoid colliding with them. The
+game ends when you hit an asteroid.
 
 ### Tips
 
@@ -30,6 +32,9 @@ Move and shoot is a good tactic!
 
 ### License(s)
 
-This game is licensed under the Creative Commons Attribution-NonCommercial 4.0 International License. See [CC-BY-NC-4.0](https://creativecommons.org/licenses/by-nc/4.0/) for more information.
+This game is licensed under the Creative Commons Attribution-NonCommercial 4.0
+International License. See
+[CC-BY-NC-4.0](https://creativecommons.org/licenses/by-nc/4.0/) for more
+information.
 
 `SPDX-License-Identifiers: CC-BY-NC-4.0`

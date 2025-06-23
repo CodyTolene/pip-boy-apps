@@ -8,7 +8,5 @@
   "type": "app",
   "readme": "README.md",
   "custom": "",
-  "storage": [
-    { "name": "USER/VaultBreaker.js", "url": "VaultBreaker.js" }
-  ]
+  "storage": [{ "name": "USER/VaultBreaker.js", "url": "VaultBreaker.js" }]
 }

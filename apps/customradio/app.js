@@ -2,7 +2,7 @@
 //  Name: Custom Radio
 //  License: CC-BY-NC-4.0
 //  Repository: https://github.com/CodyTolene/pip-boy-apps
-//  Description: 
+//  Description:
 // =============================================================================
 
 function CustomRadio() {
@@ -10,6 +10,7 @@ function CustomRadio() {
 
   const APP_NAME = 'Custom Radio';
   const APP_VERSION = '3.0.0';
+  const DEBUG = true;
 
   // Screen
   const SCREEN_WIDTH = g.getWidth(); // Width (480px)
@@ -24,7 +25,7 @@ function CustomRadio() {
   const MENU_LIST_AREA = {
     x1: SCREEN_AREA.x1 + 10, // Left (60px)
     y1: SCREEN_AREA.y1 + 20, // Top (70px)
-    x2: ((SCREEN_AREA.x2 + SCREEN_AREA.x1) / 2), // Right (240px)
+    x2: (SCREEN_AREA.x2 + SCREEN_AREA.x1) / 2, // Right (240px)
     y2: SCREEN_AREA.y2 - 20, // Bottom (290px)
   };
 
@@ -53,9 +54,16 @@ function CustomRadio() {
   let songFiles = [];
   let selectedIndex = 0;
 
+  function drawAllBoundaries() {
+    if (DEBUG === false) return;
+
+    drawBoundaries(SCREEN_AREA);
+    drawBoundaries(MENU_LIST_AREA);
+    drawBoundaries(NOW_PLAYING_AREA);
+  }
+
   function drawBoundaries(area) {
-    g.setColor('#00ff00')
-     .drawRect(area.x1, area.y1, area.x2, area.y2);
+    g.setColor('#00ff00').drawRect(area.x1, area.y1, area.x2, area.y2);
   }
 
   function handleLeftKnob(dir) {
@@ -97,8 +105,8 @@ function CustomRadio() {
         .readdir('/RADIO')
         .filter((f) => f.endsWith('.wav'))
         .sort();
-    
-      print('Loaded ' + songFiles.length +' songs:');
+
+      print('Loaded ' + songFiles.length + ' songs:');
     } catch (e) {
       print('Failed to load songs:', e);
       songFiles = [];
@@ -114,45 +122,35 @@ function CustomRadio() {
     const visibleFiles = songFiles.slice(start, start + pageSize);
 
     // Clear the previous menu area
-    g.setColor('#000')
-     .fillRect(
-       MENU_LIST_AREA.x1, 
-       MENU_LIST_AREA.y1, 
-       MENU_LIST_AREA.x2, 
-       MENU_LIST_AREA.y2
+    g.setColor('#000').fillRect(
+      MENU_LIST_AREA.x1,
+      MENU_LIST_AREA.y1,
+      MENU_LIST_AREA.x2,
+      MENU_LIST_AREA.y2,
     );
 
     // Set up the font and alignment
-    g.setFontMonofonto16()
-     .setFontAlign(-1, -1, 0);
+    g.setFontMonofonto16().setFontAlign(-1, -1, 0);
 
     const paddingTop = 10;
     const paddingLeft = 10;
     const rowHeight = 20;
-    
+
     // Draw each song in the list
     visibleFiles.forEach((file, i) => {
-      const y = (
-        MENU_LIST_AREA.y1 + 
-        (i * rowHeight) + 
-        paddingTop
-      );
+      const y = MENU_LIST_AREA.y1 + i * rowHeight + paddingTop;
 
       const name = file.replace(/\.wav$/i, '');
       const displayName = name.length > 19 ? name.slice(0, 16) + '...' : name;
-;
-      g.setColor(i === selectedIndex ? '#00ff00' : '#007f00')
-       .drawString(
-         displayName, 
-         MENU_LIST_AREA.x1 + paddingLeft, 
-         y, 
-         true
+      g.setColor(i === selectedIndex ? '#00ff00' : '#007f00').drawString(
+        displayName,
+        MENU_LIST_AREA.x1 + paddingLeft,
+        y,
+        true,
       );
     });
 
-    // Draw the boundaries
-    drawBoundaries(SCREEN_AREA);
-    drawBoundaries(MENU_LIST_AREA);
+    drawAllBoundaries();
   }
 
   function menuScroll(dir) {
@@ -188,31 +186,24 @@ function CustomRadio() {
     Pip.radioClipPlaying = true;
 
     // Clear the previous now playing area
-    g.setColor('#000')
-     .fillRect(
-       NOW_PLAYING_AREA.x1, 
-       NOW_PLAYING_AREA.y1, 
-       NOW_PLAYING_AREA.x2, 
-       NOW_PLAYING_AREA.y2
+    g.setColor('#000').fillRect(
+      NOW_PLAYING_AREA.x1,
+      NOW_PLAYING_AREA.y1,
+      NOW_PLAYING_AREA.x2,
+      NOW_PLAYING_AREA.y2,
     );
 
     // Set up font and alignment
-    g.setColor('#00ff00')
-     .setFontMonofonto16()
-     .setFontAlign(-1, -1, 0);
+    g.setColor('#00ff00').setFontMonofonto16().setFontAlign(-1, -1, 0);
 
     const display = song.replace(/\.wav$/i, '');
-    const displayName = display.length > 19 ? display.slice(0, 16) + '...' : display;
+    const displayName =
+      display.length > 19 ? display.slice(0, 16) + '...' : display;
 
     // Draw the now playing text
-    g.drawString(
-      displayName, 
-      NOW_PLAYING_AREA.x1, 
-      NOW_PLAYING_AREA.y1, 
-      true
-    );
+    g.drawString(displayName, NOW_PLAYING_AREA.x1, NOW_PLAYING_AREA.y1, true);
 
-    drawBoundaries(NOW_PLAYING_AREA);
+    drawAllBoundaries();
   }
 
   function removeListeners() {
@@ -234,15 +225,14 @@ function CustomRadio() {
     currentAudio = null;
     Pip.radioClipPlaying = false;
 
-    g.setColor('#000')
-     .fillRect(
-       NOW_PLAYING_AREA.x1, 
-       NOW_PLAYING_AREA.y1, 
-       NOW_PLAYING_AREA.x2, 
-       NOW_PLAYING_AREA.y2
+    g.setColor('#000').fillRect(
+      NOW_PLAYING_AREA.x1,
+      NOW_PLAYING_AREA.y1,
+      NOW_PLAYING_AREA.x2,
+      NOW_PLAYING_AREA.y2,
     );
-    
-    drawBoundaries(NOW_PLAYING_AREA);
+
+    drawAllBoundaries();
   }
 
   self.run = function () {
@@ -254,18 +244,8 @@ function CustomRadio() {
     removeListeners();
     setListeners();
 
-    // print('x: ' + SCREEN_WIDTH + ', y: ' + SCREEN_HEIGHT);
-
-    // print('Screen Area:');
-    // print('x1: ' + SCREEN_AREA.x1 + ', y1: ' + SCREEN_AREA.y1);
-    // print('x2: ' + SCREEN_AREA.x2 + ', y2: ' + SCREEN_AREA.y2);
-
-    // print('Menu List Area:');
-    // print('x1: ' + MENU_LIST_AREA.x1 + ', y1: ' + MENU_LIST_AREA.y1);
-    // print('x2: ' + MENU_LIST_AREA.x2 + ', y2: ' + MENU_LIST_AREA.y2);
-
     menuLoad();
-    drawBoundaries(NOW_PLAYING_AREA);
+    drawAllBoundaries();
   };
 
   return self;

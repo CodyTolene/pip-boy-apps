@@ -1,13 +1,15 @@
 <html>
   <head>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../../css/spectre.min.css">
-    <link rel="stylesheet" href="../../css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../css/spectre.min.css" />
+    <link rel="stylesheet" href="../../css/main.css" />
   </head>
   <body>
-
     <div class="form-group">
       <label class="form-label">Color</label>
       <select class="form-select" id="settings-color">
@@ -40,53 +42,72 @@
     <script src="../../core/lib/customize.js"></script>
 
     <script>
-      var domCol = document.querySelector("#settings-color");
-      var domScanline = document.querySelector("#settings-scanline");
-      var domRolling = document.querySelector("#settings-rolling");
+      var domCol = document.querySelector('#settings-color');
+      var domScanline = document.querySelector('#settings-scanline');
+      var domRolling = document.querySelector('#settings-rolling');
 
-function getPalette() {
-  if (!domCol.value) return ""; // default
-  var color = domCol.value.split(",").map(v=>parseFloat(v));
-  const R = color[0];
-  const G = color[1];
-  const B = color[2];
-  const SM = parseFloat(domScanline.value);
-  const RB = parseFloat(domRolling.value);
-  var g = { toColor : (r,g,b) => {
-    r = Math.min(31, Math.max(0, Math.round(r*32)));
-    g = Math.min(63, Math.max(0, Math.round(g*64)));
-    b = Math.min(31, Math.max(0, Math.round(b*32)));
-    var v = (r<<11)|(g<<5)|b;
-    console.log(r,g,b,"=>",v);
-    return v;
-  }};
-  var pal = [
-    new Uint16Array(16),
-    new Uint16Array(16),
-    new Uint16Array(16),
-    new Uint16Array(16)
-  ];
-  for (var i=0;i<16;i++) {
-    var w = Math.max(0,(i-12)/30);
-    console.log("Color",i);
-    pal[0][i] = g.toColor(w+(R*i/15),      w+(G*i/15),      w+(B*i/15)); // 0: even (bright line)
-    pal[1][i] = g.toColor(w+(SM*R*i/15),   w+(SM*G*i/15),   w+(SM*B*i/15)); // 1: odd (dark line)
-    pal[2][i] = g.toColor(w+((RB+R)*i/15),   w+((RB+G)*i/15),   w+((RB+B)*i/15)); // 0: even scan effect
-    pal[3][i] = g.toColor(w+((RB+(SM*R))*i/15),w+((RB+(SM*G))*i/15),w+((RB+(SM*B))*i/15)); // 1: odd scan effect
-  }
-  return pal.map(a => btoa(String.fromCharCode.apply(null,new Uint8Array(a.buffer)))).join(",");
-}
-
+      function getPalette() {
+        if (!domCol.value) return ''; // default
+        var color = domCol.value.split(',').map((v) => parseFloat(v));
+        const R = color[0];
+        const G = color[1];
+        const B = color[2];
+        const SM = parseFloat(domScanline.value);
+        const RB = parseFloat(domRolling.value);
+        var g = {
+          toColor: (r, g, b) => {
+            r = Math.min(31, Math.max(0, Math.round(r * 32)));
+            g = Math.min(63, Math.max(0, Math.round(g * 64)));
+            b = Math.min(31, Math.max(0, Math.round(b * 32)));
+            var v = (r << 11) | (g << 5) | b;
+            console.log(r, g, b, '=>', v);
+            return v;
+          },
+        };
+        var pal = [
+          new Uint16Array(16),
+          new Uint16Array(16),
+          new Uint16Array(16),
+          new Uint16Array(16),
+        ];
+        for (var i = 0; i < 16; i++) {
+          var w = Math.max(0, (i - 12) / 30);
+          console.log('Color', i);
+          pal[0][i] = g.toColor(
+            w + (R * i) / 15,
+            w + (G * i) / 15,
+            w + (B * i) / 15,
+          ); // 0: even (bright line)
+          pal[1][i] = g.toColor(
+            w + (SM * R * i) / 15,
+            w + (SM * G * i) / 15,
+            w + (SM * B * i) / 15,
+          ); // 1: odd (dark line)
+          pal[2][i] = g.toColor(
+            w + ((RB + R) * i) / 15,
+            w + ((RB + G) * i) / 15,
+            w + ((RB + B) * i) / 15,
+          ); // 0: even scan effect
+          pal[3][i] = g.toColor(
+            w + ((RB + SM * R) * i) / 15,
+            w + ((RB + SM * G) * i) / 15,
+            w + ((RB + SM * B) * i) / 15,
+          ); // 1: odd scan effect
+        }
+        return pal
+          .map((a) =>
+            btoa(String.fromCharCode.apply(null, new Uint8Array(a.buffer))),
+          )
+          .join(',');
+      }
 
       // When the 'upload' button is clicked...
-      document.getElementById("upload").addEventListener("click", function() {
-        var js = "";
+      document.getElementById('upload').addEventListener('click', function () {
+        var js = '';
         js += `settings.palette=${JSON.stringify(getPalette())};`;
-        js += "saveSettings();\n";
+        js += 'saveSettings();\n';
         sendCustomizedApp({
-          storage:[
-            {name:"RAM", content:js},
-          ]
+          storage: [{ name: 'RAM', content: js }],
         });
       });
 
@@ -99,7 +120,6 @@ function getPalette() {
           if (s.scanline) domScanline.value = s.scanline;
         })*/
       }
-
     </script>
   </body>
 </html>

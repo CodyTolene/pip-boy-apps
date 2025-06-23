@@ -15,7 +15,8 @@
 
 ### Description
 
-Pip-Pong is a simple game where you control a paddle that hits a ball back and forth.
+Pip-Pong is a simple game where you control a paddle that hits a ball back and
+forth.
 
 ### Controls
 
@@ -25,7 +26,8 @@ Pip-Pong is a simple game where you control a paddle that hits a ball back and f
 
 ### Instructions
 
-Move the paddle up and down to hit the ball back and forth. Try to keep the ball in play as long as possible.
+Move the paddle up and down to hit the ball back and forth. Try to keep the ball
+in play as long as possible.
 
 ### Tips
 
@@ -33,6 +35,9 @@ The ball will bounce off the walls.
 
 ### License(s)
 
-This game is licensed under the Creative Commons Attribution-NonCommercial 4.0 International License. See [CC-BY-NC-4.0](https://creativecommons.org/licenses/by-nc/4.0/) for more information.
+This game is licensed under the Creative Commons Attribution-NonCommercial 4.0
+International License. See
+[CC-BY-NC-4.0](https://creativecommons.org/licenses/by-nc/4.0/) for more
+information.
 
 `SPDX-License-Identifier: CC-BY-NC-4.0`

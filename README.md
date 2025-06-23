@@ -4,8 +4,8 @@ A tool to modify your pip-boy by adding apps and changing settings.
 
 ## Writing apps
 
-If you put a JS file in the USER folder, Pip-Boy will
-show it in a list of apps in the `INV` screen.
+If you put a JS file in the USER folder, Pip-Boy will show it in a list of apps
+in the `INV` screen.
 
 The following variables are available to you:
 
@@ -37,10 +37,12 @@ Pip.on("torch", ()=> {
 ```
 
 - `g` is a graphics instance that writes direct to the screen
-- `bC` is a graphics instance that writes to a 2 bit offscreen buffer, and calling
-  `bC.flip()` will flip that buffer to the screen with a scanline effect.
+- `bC` is a graphics instance that writes to a 2 bit offscreen buffer, and
+  calling `bC.flip()` will flip that buffer to the screen with a scanline
+  effect.
 
-You should create a function `Pip.removeSubmenu()` that removes your app from memory (eg clears all intervals, removes all event listeners added).
+You should create a function `Pip.removeSubmenu()` that removes your app from
+memory (eg clears all intervals, removes all event listeners added).
 
 ## Build and run locally
 
@@ -53,7 +55,8 @@ docker build -t pip-boy-mod-tool .
 docker run -dit --name pip-boy-mod-tool -p 8080:80 pip-boy-mod-tool
 ```
 
-Alternatively, for quick local development with automatic file reloading, you can skip building the image and run it directly with:
+Alternatively, for quick local development with automatic file reloading, you
+can skip building the image and run it directly with:
 
 ```sh
 # Unix/Linux/macOS
@@ -64,7 +67,8 @@ docker run -dit --name pip-boy-mod-tool -p 8080:80 -v ${PWD}:/usr/local/apache2/
 docker run -dit --name pip-boy-mod-tool -p 8080:80 -v %cd%:/usr/local/apache2/htdocs/ httpd:2.4
 ```
 
-Once you run the application, it will be available at `http://localhost:8080`. You can stop the server any time with:
+Once you run the application, it will be available at `http://localhost:8080`.
+You can stop the server any time with:
 
 ```sh
 docker stop pip-boy-mod-tool
