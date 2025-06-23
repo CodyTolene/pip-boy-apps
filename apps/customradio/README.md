@@ -23,6 +23,7 @@ adventures.
 
 - Turn the top-left and top-right knobs to scroll through songs.
 - Press the top-left knob in to play the selected song.
+- Press the top torch button to exit the app.
 
 ### Instructions
 
