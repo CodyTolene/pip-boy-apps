@@ -26,6 +26,7 @@ A game example that you can use as a template for your own game.
 
 ### License(s)
 
-This app is licensed under the MIT License. See [MIT](https://opensource.org/license/mit/) for more information.
+This app is licensed under the MIT License. See
+[MIT](https://opensource.org/license/mit/) for more information.
 
 `SPDX-License-Identifier: MIT`

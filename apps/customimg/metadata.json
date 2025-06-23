@@ -1,6 +1,7 @@
-{ "id": "customimg",
+{
+  "id": "customimg",
   "name": "Custom Image",
-  "version":"0.01",
+  "version": "0.01",
   "description": "Upload a custom image",
   "icon": "app.png",
   "tags": "",
@@ -8,7 +9,7 @@
   "readme": "README.md",
   "custom": "custom.html",
   "storage": [
-    {"name":"USER/customimg.js","url":"app.js"},
-    {"name":"USER/customimg.img"}
+    { "name": "USER/customimg.js", "url": "app.js" },
+    { "name": "USER/customimg.img" }
   ]
 }

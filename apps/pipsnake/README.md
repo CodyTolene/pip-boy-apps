@@ -15,7 +15,9 @@
 
 ### Description
 
-Guide your rad-snake to radioactive snacks while avoiding self-inflicted disaster. Good for low-risk simulation recommended by Vault-Tec for maintaining hand-eye coordination during extended shelter stays.
+Guide your rad-snake to radioactive snacks while avoiding self-inflicted
+disaster. Good for low-risk simulation recommended by Vault-Tec for maintaining
+hand-eye coordination during extended shelter stays.
 
 ### Controls
 
@@ -25,7 +27,8 @@ Guide your rad-snake to radioactive snacks while avoiding self-inflicted disaste
 
 ### Instructions
 
-Move the rad-snake to eat food and grow. The game ends when you crash into yourself.
+Move the rad-snake to eat food and grow. The game ends when you crash into
+yourself.
 
 ### Tips
 
@@ -33,6 +36,9 @@ The snake wraps around when it hits the edge of the screen.
 
 ### License(s)
 
-This game is licensed under the Creative Commons Attribution-NonCommercial 4.0 International License. See [CC-BY-NC-4.0](https://creativecommons.org/licenses/by-nc/4.0/) for more information.
+This game is licensed under the Creative Commons Attribution-NonCommercial 4.0
+International License. See
+[CC-BY-NC-4.0](https://creativecommons.org/licenses/by-nc/4.0/) for more
+information.
 
 `SPDX-License-Identifier: CC-BY-NC-4.0`

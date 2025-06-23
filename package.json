@@ -5,10 +5,13 @@
   "type": "module",
   "scripts": {
     "min": "node .scripts/minify.js",
-    "min:watch": "node .scripts/minify-watch.js"
+    "min:watch": "node .scripts/minify-watch.js",
+    "prettier": "prettier --write .",
+    "prettier:check": "prettier --check ."
   },
   "devDependencies": {
     "@types/node": "^24.0.3",
-    "espruino": "^0.1.60"
+    "espruino": "^0.1.60",
+    "prettier": "^3.5.2"
   }
 }

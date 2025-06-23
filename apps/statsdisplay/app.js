@@ -86,9 +86,7 @@ function bS(d) {
     if (imv) {
       fi = fi.filter((file) => {
         try {
-          let stat = fs.statSync(
-            nD(d) + '/' + file,
-          );
+          let stat = fs.statSync(nD(d) + '/' + file);
           return !stat.isDirectory;
         } catch (e) {
           console.log('Skipping bad file or folder:', file);
@@ -198,13 +196,7 @@ function bPSS() {
     if (i == es) {
       dSEOC(i % cldm, col);
     }
-    dETC(
-      p.t,
-      i % cldm,
-      i == es,
-      col,
-      ep.includes(p.fn),
-    );
+    dETC(p.t, i % cldm, i == es, col, ep.includes(p.fn));
   }
 }
 
@@ -314,11 +306,7 @@ function dETC(t, i, s, c, e) {
   if (c == 0) {
     bC.drawString(ft, 10, toy * i + 5);
   } else {
-    bC.drawString(
-      ft,
-      210,
-      toy * (i - ccdm) + 5,
-    );
+    bC.drawString(ft, 210, toy * (i - ccdm) + 5);
   }
 }
 
@@ -331,22 +319,8 @@ function dEP(p, i, s) {
     bC.setColor(cw);
   }
   if (cm && s) {
-    bC.fillPoly([
-      129,
-      toy * i + 12,
-      140,
-      toy * i + 12,
-      135,
-      toy * i + 5,
-    ]);
-    bC.fillPoly([
-      141,
-      toy * i + 12,
-      151,
-      toy * i + 12,
-      146,
-      toy * i + 17,
-    ]);
+    bC.fillPoly([129, toy * i + 12, 140, toy * i + 12, 135, toy * i + 5]);
+    bC.fillPoly([141, toy * i + 12, 151, toy * i + 12, 146, toy * i + 17]);
     bC.drawString(pos, 160, toy * i + 5);
   } else {
     bC.drawString(p, 160, toy * i + 5);
@@ -369,12 +343,7 @@ function dSEOC(i, c) {
   if (c == 0) {
     bC.fillRect(5, toy * i + 1, 190, toy * i + 23);
   } else {
-    bC.fillRect(
-      205,
-      toy * (i - ccdm) + 1,
-      390,
-      toy * (i - ccdm) + 23,
-    );
+    bC.fillRect(205, toy * (i - ccdm) + 1, 390, toy * (i - ccdm) + 23);
   }
 }
 
@@ -428,13 +397,8 @@ function sNV() {
 
 function sEP(fn) {
   //"USER/PERKS/ALL"
-  let fis = fs.readFileSync(
-    nD(apf) + '/' + fn,
-  );
-  fs.writeFile(
-    nD(epf) + '/' + fn,
-    fis,
-  );
+  let fis = fs.readFileSync(nD(apf) + '/' + fn);
+  fs.writeFile(nD(epf) + '/' + fn, fis);
 }
 
 function sNPS() {
@@ -451,25 +415,14 @@ function sNPS() {
 
   for (let i = 0; i < ap.length; i++) {
     let p = ap[i];
-    if (
-      ep.includes(p.fn) &&
-      ef.includes(p.fn)
-    ) {
+    if (ep.includes(p.fn) && ef.includes(p.fn)) {
       continue; //was enabled, still enabled, nothing to do.
-    } else if (
-      ep.includes(p.fn) &&
-      !ef.includes(p.fn)
-    ) {
+    } else if (ep.includes(p.fn) && !ef.includes(p.fn)) {
       //wasn't enabled, is enabled now, copy the file to enabled folder.
       sEP(p.fn);
-    } else if (
-      !ep.includes(p.fn) &&
-      ef.includes(p.fn)
-    ) {
+    } else if (!ep.includes(p.fn) && ef.includes(p.fn)) {
       //was enabled, no longer is, delete the file from ENABLED
-      fs.unlink(
-        nD(epf) + '/' + p.fn,
-      );
+      fs.unlink(nD(epf) + '/' + p.fn);
     }
   }
   //everything done, wipe out the in-memory enabled/disabled lists.
@@ -547,10 +500,7 @@ function hK1(d) {
     if (d > 0 && lr - 1 == es) {
       //scrolling up, so e.g. 6 -> 5
       lr = null;
-    } else if (
-      es % eldm == 0 &&
-      es != lr
-    ) {
+    } else if (es % eldm == 0 && es != lr) {
       lr = null; //reset lastReload value, that's our cue that we need to pull from SD card.
     }
   }
