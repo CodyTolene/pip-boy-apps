@@ -2,7 +2,8 @@
 //  Name: Custom Radio
 //  License: CC-BY-NC-4.0
 //  Repository: https://github.com/CodyTolene/pip-boy-apps
-//  Description:
+//  Description: A custom music player that allows you to choose the music you
+//               want to play from the `/RADIO` directory without restriction.
 // =============================================================================
 
 function CustomRadio() {
@@ -53,7 +54,7 @@ function CustomRadio() {
   const KNOB_LEFT = 'knob1';
   const KNOB_RIGHT = 'knob2';
   const BTN_TOP = 'torch';
-  const KNOB_DEBOUNCE = 100;
+  const KNOB_DEBOUNCE = 10;
   let lastLeftKnobTime = 0;
 
   // Audio
@@ -66,6 +67,11 @@ function CustomRadio() {
   let page = 0;
   let selectedIndex = 0;
   let songFiles = [];
+
+  // Random song selection
+  let playingRandom = false;
+  let randomQueue = [];
+  let randomIndex = 0;
 
   // Waveform
   let animationAngle = 0;
@@ -287,18 +293,50 @@ function CustomRadio() {
     }
     lastLeftKnobTime = now;
 
-    if (dir === 0) {
-      const currentStart = page * PAGE_SIZE;
-      const selectedFile = songFiles[currentStart + selectedIndex];
-      if (!selectedFile) return;
+    if (dir !== 0) {
+      return menuScroll(dir * -1);
+    }
 
-      if (currentAudio === '/' + MUSIC_DIR + selectedFile) {
+    const currentStart = page * PAGE_SIZE;
+    const selectedFile = songFiles[currentStart + selectedIndex];
+    if (!selectedFile) return;
+
+    const fullPath = '/' + MUSIC_DIR + selectedFile;
+
+    if (selectedFile === 'RANDOM') {
+      // Handle random song selection
+      if (playingRandom) {
+        playingRandom = false;
         stopSong();
       } else {
-        playSong(selectedFile);
+        if (currentAudio !== null) {
+          playingRandom = true;
+          nextSongToPlay = 'RANDOM';
+          stopSong();
+        } else {
+          playingRandom = true;
+          randomQueue = songFiles.slice(1).sort(() => Math.random() - 0.5);
+          randomIndex = 0;
+          playRandomSong();
+        }
       }
     } else {
-      menuScroll(dir * -1);
+      if (currentAudio === fullPath) {
+        // Same song selected, toggle play/pause
+        nextSongToPlay = null;
+        stopSong();
+      } else {
+        // Different song selected, stop current and play new
+        playingRandom = false;
+        nextSongToPlay = selectedFile;
+
+        if (currentAudio !== null) {
+          stopSong();
+        } else {
+          play(nextSongToPlay);
+          nextSongToPlay = null;
+        }
+      }
     }
   }
 
@@ -314,6 +352,28 @@ function CustomRadio() {
     E.reboot();
   }
 
+  function onMusicStopped() {
+    if (playingRandom) {
+      playRandomSong();
+    } else if (nextSongToPlay) {
+      const song = nextSongToPlay;
+      nextSongToPlay = null;
+      if (song === 'RANDOM') {
+        randomQueue = songFiles.slice(1).sort(() => Math.random() - 0.5);
+        randomIndex = 0;
+        playRandomSong();
+      } else {
+        play(song);
+      }
+    } else {
+      // Already stopped, avoid redundant stop
+      currentAudio = null;
+      Pip.radioClipPlaying = false;
+      clearNowPlaying();
+      drawAllBoundaries();
+    }
+  }
+
   function menuLoad() {
     try {
       songFiles = fs
@@ -322,6 +382,8 @@ function CustomRadio() {
         .sort();
 
       print('Loaded ' + songFiles.length + ' songs:');
+
+      songFiles.unshift('RANDOM');
     } catch (e) {
       print('Failed to load songs:', e);
       songFiles = [];
@@ -361,8 +423,15 @@ function CustomRadio() {
     drawSongList();
   }
 
-  function playSong(song) {
-    Pip.audioStop();
+  function playRandomSong() {
+    if (randomIndex >= randomQueue.length) {
+      randomQueue = songFiles.slice(1).sort(() => Math.random() - 0.5);
+      randomIndex = 0;
+    }
+    play(randomQueue[randomIndex++]);
+  }
+
+  function play(song) {
     currentAudio = '/' + MUSIC_DIR + song;
     Pip.audioStart(currentAudio);
     Pip.radioClipPlaying = true;
@@ -385,7 +454,7 @@ function CustomRadio() {
     Pip.on(KNOB_LEFT, handleLeftKnob);
     Pip.on(KNOB_RIGHT, handleRightKnob);
     Pip.on(BTN_TOP, handleTopButton);
-    Pip.on(MUSIC_STOPPED, stopSong);
+    Pip.on(MUSIC_STOPPED, onMusicStopped);
   }
 
   function stopSong() {
@@ -394,7 +463,6 @@ function CustomRadio() {
     Pip.radioClipPlaying = false;
 
     clearNowPlaying();
-
     drawAllBoundaries();
   }
 
