@@ -8,65 +8,70 @@
 function CustomRadio() {
   const self = {};
 
+  // General
   const APP_NAME = 'Custom Radio';
   const APP_VERSION = '3.0.0';
-  const DEBUG = true;
+  const DEBUG = false;
 
   // Screen
   const SCREEN_WIDTH = g.getWidth(); // Width (480px)
   const SCREEN_HEIGHT = g.getHeight(); // Height (320px)
-  const SCREEN_AREA = {
-    x1: 60, // Left (60px)
-    y1: 50, // Top (50px)
-    x2: SCREEN_WIDTH - 60, // Right (420px)
-    y2: SCREEN_HEIGHT - 10, // Bottom (310px)
+
+  // UX Positions
+  const SCREEN_XY = {
+    x1: 60, // Left X (60px)
+    y1: 50, // Top Y (50px)
+    x2: SCREEN_WIDTH - 60, // Right X (420px)
+    y2: SCREEN_HEIGHT - 10, // Bottom Y (310px)
+  };
+  const LEFT_HALF_XY = {
+    x1: SCREEN_XY.x1 + 10, // Left X (60px)
+    y1: SCREEN_XY.y1 + 30, // Top Y (70px)
+    x2: (SCREEN_XY.x2 + SCREEN_XY.x1) / 2, // Right X (240px)
+    y2: SCREEN_XY.y2 - 20, // Bottom Y (290px)
+  };
+  const RIGHT_HALF_XY = {
+    x1: LEFT_HALF_XY.x2 + 10, // Left X (250px)
+    y1: SCREEN_XY.y1 + 30, // Top Y (70px)
+    x2: SCREEN_XY.x2 - 10, // Right X (410px)
+    y2: SCREEN_XY.y2 - 20, // Bottom Y (290px)
+  };
+  const NOW_PLAYING_XY = {
+    x1: LEFT_HALF_XY.x2 + 10, // Left X (250px)
+    y1: SCREEN_XY.y2 - 100, // Top Y (320px)
+    x2: SCREEN_XY.x2 - 10, // Right X (410px)
+    y2: SCREEN_XY.y2 - 60, // Bottom Y (250px)
+  };
+  const WAVEFORM_XY = {
+    x1: LEFT_HALF_XY.x2 + 45, // Left X (285px)
+    y1: SCREEN_XY.y1 + 37, // Top Y (87px)
+    x2: SCREEN_XY.x2 - 12, // Right X (408px)
+    y2: SCREEN_XY.y2 - 101, // Bottom Y (209px)
   };
 
-  const MENU_LIST_AREA = {
-    x1: SCREEN_AREA.x1 + 10, // Left (60px)
-    y1: SCREEN_AREA.y1 + 20, // Top (70px)
-    x2: (SCREEN_AREA.x2 + SCREEN_AREA.x1) / 2, // Right (240px)
-    y2: SCREEN_AREA.y2 - 20, // Bottom (290px)
-  };
-
-  const NOW_PLAYING_AREA = {
-    x1: MENU_LIST_AREA.x2 + 10, // Left (250px)
-    y1: SCREEN_AREA.y2 - 40, // Top (250px)
-    x2: SCREEN_AREA.x2 - 10, // Right (410px)
-    y2: SCREEN_AREA.y2 - 20, // Bottom (290px)
-  };
-
-  const WAVEFORM_FULL_AREA = {
-    x1: MENU_LIST_AREA.x2 + 10, // Left (250px)
-    y1: SCREEN_AREA.y1 + 20, // Top (70px)
-    x2: SCREEN_AREA.x2 - 10, // Right (410px)
-    y2: SCREEN_AREA.y2 - 20, // Bottom (290px)
-  };
-
-  const WAVEFORM_AREA = {
-    x1: MENU_LIST_AREA.x2 + 45, // Left (285px)
-    y1: SCREEN_AREA.y1 + 37, // Top (87px)
-    x2: SCREEN_AREA.x2 - 12, // Right (408px)
-    y2: SCREEN_AREA.y2 - 101, // Bottom (209px)
-  };
-
-  // Knobs and Buttons
+  // Physical interfaces
   const KNOB_LEFT = 'knob1';
   const KNOB_RIGHT = 'knob2';
   const BTN_TOP = 'torch';
   const KNOB_DEBOUNCE = 100;
   let lastLeftKnobTime = 0;
 
-  // Audio/music
+  // Audio
   const MUSIC_STOPPED = 'audioStopped';
   const MUSIC_DIR = 'RADIO/';
   let currentAudio = null;
 
-  // Music Menu/List
+  // Music List
+  const PAGE_SIZE = 10;
   let page = 0;
-  const pageSize = 10;
-  let songFiles = [];
   let selectedIndex = 0;
+  let songFiles = [];
+
+  // Waveform
+  let animationAngle = 0;
+  let waveformGfx = null;
+  let waveformInterval = null;
+  let waveformPoints = null;
 
   // Colors
   const BLACK = '#000000';
@@ -74,32 +79,124 @@ function CustomRadio() {
   const GREEN_DARK = '#007f00';
   const GREEN_DARKER = '#003300';
 
+  function clearNowPlaying() {
+    g.setColor(BLACK).fillRect(NOW_PLAYING_XY);
+  }
+
+  function clearWaveform() {
+    if (waveformInterval) {
+      clearInterval(waveformInterval);
+    }
+
+    waveformInterval = null;
+    waveformPoints = null;
+
+    if (waveformGfx) {
+      waveformGfx = null;
+      E.defrag();
+    }
+  }
+
   function drawAllBoundaries() {
     if (DEBUG === false) return;
 
-    drawBoundaries(SCREEN_AREA);
-    drawBoundaries(MENU_LIST_AREA);
-    drawBoundaries(NOW_PLAYING_AREA);
-    drawBoundaries(WAVEFORM_FULL_AREA);
-    drawBoundaries(WAVEFORM_AREA);
+    drawBoundaries(SCREEN_XY);
+    drawBoundaries(LEFT_HALF_XY);
+    drawBoundaries(NOW_PLAYING_XY);
+    drawBoundaries(RIGHT_HALF_XY);
+    drawBoundaries(WAVEFORM_XY);
     drawWaveformBorder();
+  }
+
+  function drawAppTitleAndVersion() {
+    const appName = APP_NAME.toUpperCase();
+    const appVersion = 'v' + APP_VERSION;
+    const titleWidth = g.stringWidth(appName);
+
+    g.setColor(GREEN)
+      .setFontAlign(-1, -1, 0) // Align left-top
+      .setFontMonofonto16()
+      .drawString(appName, LEFT_HALF_XY.x1, SCREEN_XY.y1 + 8);
+
+    g.setColor(GREEN_DARK)
+      .setFontAlign(-1, -1, 0) // Align left-top
+      .setFont('6x8')
+      .drawString(
+        appVersion,
+        LEFT_HALF_XY.x1 + titleWidth + 5,
+        SCREEN_XY.y1 + 16,
+      );
   }
 
   function drawBoundaries(area) {
     g.setColor(GREEN_DARKER).drawRect(area.x1, area.y1, area.x2, area.y2);
   }
 
+  function drawNowPlaying(song) {
+    if (!song) {
+      throw new Error('No song provided to drawNowPlaying');
+    }
+
+    const display = song.replace(/\.wav$/i, '');
+    const displayName =
+      display.length > 19 ? display.slice(0, 16) + '...' : display;
+
+    // Draw the currently playing song text
+    g.setColor(GREEN)
+      .setFontAlign(1, -1, 0) // Align right-top
+      .setFontMonofonto16()
+      .drawString(displayName, NOW_PLAYING_XY.x2, NOW_PLAYING_XY.y1 + 20);
+  }
+
+  function drawNowPlayingTitle() {
+    g.setColor(GREEN_DARK)
+      .setFontAlign(1, 1, 0) // Align right-bottom
+      .setFont('6x8')
+      .drawString('Now Playing', NOW_PLAYING_XY.x2, NOW_PLAYING_XY.y1 + 15);
+  }
+
+  function drawSongList() {
+    const start = page * PAGE_SIZE;
+    const visibleFiles = songFiles.slice(start, start + PAGE_SIZE);
+
+    // Clear the previous menu area
+    g.setColor(BLACK).fillRect(LEFT_HALF_XY);
+
+    // Set up the font and alignment
+    g.setFontMonofonto16().setFontAlign(-1, -1, 0);
+
+    const paddingTop = 10;
+    const paddingLeft = 10;
+    const rowHeight = 20;
+
+    // Draw each song in the list
+    visibleFiles.forEach((file, i) => {
+      const y = LEFT_HALF_XY.y1 + i * rowHeight + paddingTop;
+
+      const name = file.replace(/\.wav$/i, '');
+      const displayName = name.length > 19 ? name.slice(0, 16) + '...' : name;
+      g.setColor(i === selectedIndex ? GREEN : GREEN_DARK).drawString(
+        displayName,
+        LEFT_HALF_XY.x1 + paddingLeft,
+        y,
+        true,
+      );
+    });
+
+    drawAllBoundaries();
+  }
+
   function drawWaveformBorder() {
     // Clear the waveform area
-    // g.setColor(BLACK).fillRect(WAVEFORM_AREA);
+    // g.setColor(BLACK).fillRect(WAVEFORM_XY);
 
     const ticks = 5;
     const ticksSpacing = 3;
 
-    const x1 = WAVEFORM_AREA.x1;
-    const y1 = WAVEFORM_AREA.y1;
-    const x2 = WAVEFORM_AREA.x2;
-    const y2 = WAVEFORM_AREA.y2;
+    const x1 = WAVEFORM_XY.x1;
+    const y1 = WAVEFORM_XY.y1;
+    const x2 = WAVEFORM_XY.x2;
+    const y2 = WAVEFORM_XY.y2;
 
     const bottom = y2 - 1;
     const right = x2;
@@ -125,6 +222,57 @@ function CustomRadio() {
     g.drawLine(x2, bottom, x2, y1);
   }
 
+  function drawWaveform() {
+    animationAngle = 0;
+    waveformGfx = Graphics.createArrayBuffer(120, 120, 2, {
+      msb: true,
+    });
+    if (E.getAddressOf(waveformGfx, 0) === 0) {
+      waveformGfx = undefined;
+      E.defrag();
+      waveformGfx = Graphics.createArrayBuffer(120, 120, 2, {
+        msb: true,
+      });
+    }
+
+    waveformPoints = new Uint16Array(60);
+    for (let i = 0; i < 60; i += 2) waveformPoints[i] = i * 2;
+
+    if (waveformInterval) {
+      clearInterval(waveformInterval);
+    }
+
+    waveformInterval = setInterval(() => {
+      if (!waveformGfx) return;
+
+      waveformGfx.clearRect(0, 0, 119, 119);
+
+      if (Pip.radioClipPlaying) {
+        Pip.getAudioWaveform(waveformPoints, 20, 100);
+      } else if (Pip.radioOn && typeof RADIO_AUDIO !== 'undefined') {
+        for (let i = 1; i < 60; i += 2) {
+          waveformPoints[i] = E.clip(
+            60 + (analogRead(RADIO_AUDIO) - 0.263) * 600,
+            0,
+            119,
+          );
+        }
+      } else {
+        let a = animationAngle;
+        for (let i = 1; i < 60; i += 2) {
+          waveformPoints[i] =
+            60 + Math.sin(a) * 45 * Math.sin((a += 0.6) * 0.13);
+        }
+      }
+
+      waveformGfx.drawPolyAA(waveformPoints);
+      animationAngle += 0.3;
+      Pip.blitImage(waveformGfx, 285, 85, {
+        noScanEffect: true,
+      });
+    }, 50);
+  }
+
   function handleLeftKnob(dir) {
     let now = Date.now();
     if (now - lastLeftKnobTime < KNOB_DEBOUNCE) {
@@ -133,7 +281,7 @@ function CustomRadio() {
     lastLeftKnobTime = now;
 
     if (dir === 0) {
-      const currentStart = page * pageSize;
+      const currentStart = page * PAGE_SIZE;
       const selectedFile = songFiles[currentStart + selectedIndex];
       if (!selectedFile) return;
 
@@ -152,6 +300,7 @@ function CustomRadio() {
   }
 
   function handleTopButton() {
+    clearWaveform();
     removeListeners();
 
     bC.clear(1).flip();
@@ -173,56 +322,23 @@ function CustomRadio() {
 
     page = 0;
     selectedIndex = 0;
-    menuRender();
-  }
-
-  function menuRender() {
-    const start = page * pageSize;
-    const visibleFiles = songFiles.slice(start, start + pageSize);
-
-    // Clear the previous menu area
-    g.setColor(BLACK).fillRect(
-      MENU_LIST_AREA.x1,
-      MENU_LIST_AREA.y1,
-      MENU_LIST_AREA.x2,
-      MENU_LIST_AREA.y2,
-    );
-
-    // Set up the font and alignment
-    g.setFontMonofonto16().setFontAlign(-1, -1, 0);
-
-    const paddingTop = 10;
-    const paddingLeft = 10;
-    const rowHeight = 20;
-
-    // Draw each song in the list
-    visibleFiles.forEach((file, i) => {
-      const y = MENU_LIST_AREA.y1 + i * rowHeight + paddingTop;
-
-      const name = file.replace(/\.wav$/i, '');
-      const displayName = name.length > 19 ? name.slice(0, 16) + '...' : name;
-      g.setColor(i === selectedIndex ? GREEN : GREEN_DARK).drawString(
-        displayName,
-        MENU_LIST_AREA.x1 + paddingLeft,
-        y,
-        true,
-      );
-    });
-
-    drawAllBoundaries();
+    drawSongList();
   }
 
   function menuScroll(dir) {
-    const currentStart = page * pageSize;
-    const visibleFiles = songFiles.slice(currentStart, currentStart + pageSize);
-    const maxPage = Math.floor((songFiles.length - 1) / pageSize);
+    const currentStart = page * PAGE_SIZE;
+    const visibleFiles = songFiles.slice(
+      currentStart,
+      currentStart + PAGE_SIZE,
+    );
+    const maxPage = Math.floor((songFiles.length - 1) / PAGE_SIZE);
 
     selectedIndex += dir;
 
     if (selectedIndex < 0) {
       if (page > 0) {
         page--;
-        selectedIndex = pageSize - 1;
+        selectedIndex = PAGE_SIZE - 1;
       } else {
         selectedIndex = 0;
       }
@@ -235,7 +351,7 @@ function CustomRadio() {
       }
     }
 
-    menuRender();
+    drawSongList();
   }
 
   function playSong(song) {
@@ -244,23 +360,9 @@ function CustomRadio() {
     Pip.audioStart(currentAudio);
     Pip.radioClipPlaying = true;
 
-    // Clear the previous now playing area
-    g.setColor(BLACK).fillRect(
-      NOW_PLAYING_AREA.x1,
-      NOW_PLAYING_AREA.y1,
-      NOW_PLAYING_AREA.x2,
-      NOW_PLAYING_AREA.y2,
-    );
-
-    // Set up font and alignment
-    g.setColor(GREEN).setFontMonofonto16().setFontAlign(-1, -1, 0);
-
-    const display = song.replace(/\.wav$/i, '');
-    const displayName =
-      display.length > 19 ? display.slice(0, 16) + '...' : display;
-
-    // Draw the now playing text
-    g.drawString(displayName, NOW_PLAYING_AREA.x1, NOW_PLAYING_AREA.y1, true);
+    clearNowPlaying();
+    drawNowPlayingTitle();
+    drawNowPlaying(song);
 
     drawAllBoundaries();
   }
@@ -284,12 +386,7 @@ function CustomRadio() {
     currentAudio = null;
     Pip.radioClipPlaying = false;
 
-    g.setColor(BLACK).fillRect(
-      NOW_PLAYING_AREA.x1,
-      NOW_PLAYING_AREA.y1,
-      NOW_PLAYING_AREA.x2,
-      NOW_PLAYING_AREA.y2,
-    );
+    clearNowPlaying();
 
     drawAllBoundaries();
   }
@@ -304,8 +401,13 @@ function CustomRadio() {
     setListeners();
 
     menuLoad();
-    drawAllBoundaries();
+
+    drawWaveform();
     drawWaveformBorder();
+
+    drawAppTitleAndVersion();
+
+    drawAllBoundaries();
   };
 
   return self;
