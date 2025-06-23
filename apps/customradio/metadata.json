@@ -1,0 +1,14 @@
+{
+  "id": "customradio",
+  "name": "Custom Radio",
+  "version": "3.0.0",
+  "description": "...",
+  "icon": "customradio.png",
+  "tags": "",
+  "type": "app",
+  "readme": "README.md",
+  "custom": "",
+  "storage": [
+    { "name": "USER/customradio.js", "url": "app.min.js" }
+  ]
+}

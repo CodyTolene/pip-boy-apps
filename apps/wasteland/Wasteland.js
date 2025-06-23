@@ -1,7 +1,7 @@
 // =============================================================================
 // Name: Wasteland
 // License: CC-BY-NC-4.0
-// Repository: https://github.com/CodyTolene/pip-apps
+// Repository: https://github.com/CodyTolene/pip-boy-apps
 // Description: A DOOM inspired RPG engine for the Pip-Boy 3000 Mk V.
 // =============================================================================
 
