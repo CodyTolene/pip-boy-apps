@@ -36,6 +36,20 @@ function CustomRadio() {
     y2: SCREEN_AREA.y2 - 20, // Bottom (290px)
   };
 
+  const WAVEFORM_FULL_AREA = {
+    x1: MENU_LIST_AREA.x2 + 10, // Left (250px)
+    y1: SCREEN_AREA.y1 + 20, // Top (70px)
+    x2: SCREEN_AREA.x2 - 10, // Right (410px)
+    y2: SCREEN_AREA.y2 - 20, // Bottom (290px)
+  };
+
+  const WAVEFORM_AREA = {
+    x1: MENU_LIST_AREA.x2 + 45, // Left (285px)
+    y1: SCREEN_AREA.y1 + 37, // Top (87px)
+    x2: SCREEN_AREA.x2 - 12, // Right (408px)
+    y2: SCREEN_AREA.y2 - 101, // Bottom (209px)
+  };
+
   // Knobs and Buttons
   const KNOB_LEFT = 'knob1';
   const KNOB_RIGHT = 'knob2';
@@ -48,11 +62,16 @@ function CustomRadio() {
   const MUSIC_DIR = 'RADIO/';
   let currentAudio = null;
 
-  // Menu
+  // Music Menu/List
   let page = 0;
   const pageSize = 10;
   let songFiles = [];
   let selectedIndex = 0;
+
+  // Colors
+  const GREEN = '#00ff00';
+  const GREEN_DARK = '#007f00';
+  const GREEN_DARKER = '#003300';
 
   function drawAllBoundaries() {
     if (DEBUG === false) return;
@@ -60,10 +79,26 @@ function CustomRadio() {
     drawBoundaries(SCREEN_AREA);
     drawBoundaries(MENU_LIST_AREA);
     drawBoundaries(NOW_PLAYING_AREA);
+    drawBoundaries(WAVEFORM_FULL_AREA);
+    drawBoundaries(WAVEFORM_AREA);
   }
 
   function drawBoundaries(area) {
-    g.setColor('#00ff00').drawRect(area.x1, area.y1, area.x2, area.y2);
+    g.setColor(GREEN_DARKER).drawRect(area.x1, area.y1, area.x2, area.y2);
+  }
+
+  function drawWaveformBorder() {
+    for (let i = 0; i < 40; i++) {
+      const color = i % 5 === 0 ? 3 : 1;
+      const height = i % 5 === 0 ? 2 : 1;
+      bC.setColor(color);
+      // Draw vertical teeth lines on top of the main horizontal line
+      bC.drawLine(245 + i * 3, 143 - height, 245 + i * 3, 143);
+      // Draw horizontal lines on top of the main vertical line
+      bC.drawLine(367 - height, 22 + i * 3, 367, 22 + i * 3);
+    }
+    bC.setColor(3).drawLine(245, 144, 367, 144).drawLine(368, 144, 368, 22);
+    bC.flip();
   }
 
   function handleLeftKnob(dir) {
@@ -142,7 +177,7 @@ function CustomRadio() {
 
       const name = file.replace(/\.wav$/i, '');
       const displayName = name.length > 19 ? name.slice(0, 16) + '...' : name;
-      g.setColor(i === selectedIndex ? '#00ff00' : '#007f00').drawString(
+      g.setColor(i === selectedIndex ? GREEN : GREEN_DARK).drawString(
         displayName,
         MENU_LIST_AREA.x1 + paddingLeft,
         y,
@@ -194,7 +229,7 @@ function CustomRadio() {
     );
 
     // Set up font and alignment
-    g.setColor('#00ff00').setFontMonofonto16().setFontAlign(-1, -1, 0);
+    g.setColor(GREEN).setFontMonofonto16().setFontAlign(-1, -1, 0);
 
     const display = song.replace(/\.wav$/i, '');
     const displayName =
@@ -246,6 +281,7 @@ function CustomRadio() {
 
     menuLoad();
     drawAllBoundaries();
+    drawWaveformBorder();
   };
 
   return self;
