@@ -69,6 +69,7 @@ function CustomRadio() {
   let selectedIndex = 0;
 
   // Colors
+  const BLACK = '#000000';
   const GREEN = '#00ff00';
   const GREEN_DARK = '#007f00';
   const GREEN_DARKER = '#003300';
@@ -81,6 +82,7 @@ function CustomRadio() {
     drawBoundaries(NOW_PLAYING_AREA);
     drawBoundaries(WAVEFORM_FULL_AREA);
     drawBoundaries(WAVEFORM_AREA);
+    drawWaveformBorder();
   }
 
   function drawBoundaries(area) {
@@ -88,17 +90,39 @@ function CustomRadio() {
   }
 
   function drawWaveformBorder() {
+    // Clear the waveform area
+    // g.setColor(BLACK).fillRect(WAVEFORM_AREA);
+
+    const ticks = 5;
+    const ticksSpacing = 3;
+
+    const x1 = WAVEFORM_AREA.x1;
+    const y1 = WAVEFORM_AREA.y1;
+    const x2 = WAVEFORM_AREA.x2;
+    const y2 = WAVEFORM_AREA.y2;
+
+    const bottom = y2 - 1;
+    const right = x2;
+
     for (let i = 0; i < 40; i++) {
-      const color = i % 5 === 0 ? 3 : 1;
-      const height = i % 5 === 0 ? 2 : 1;
-      bC.setColor(color);
-      // Draw vertical teeth lines on top of the main horizontal line
-      bC.drawLine(245 + i * 3, 143 - height, 245 + i * 3, 143);
-      // Draw horizontal lines on top of the main vertical line
-      bC.drawLine(367 - height, 22 + i * 3, 367, 22 + i * 3);
+      const color = i % ticks === 0 ? GREEN : GREEN_DARK;
+      const height = i % ticks === 0 ? 2 : 1;
+
+      const xpos = x1 + i * ticksSpacing;
+      const ypos = bottom - height;
+
+      g.setColor(color);
+      // Vertical ticks
+      g.drawLine(xpos, ypos, xpos, bottom);
+      // Horizontal ticks
+      g.drawLine(right - height, y1 + i * 3, right, y1 + i * 3);
     }
-    bC.setColor(3).drawLine(245, 144, 367, 144).drawLine(368, 144, 368, 22);
-    bC.flip();
+
+    g.setColor(GREEN);
+    // Bottom horizontal
+    g.drawLine(x1, bottom, x2, bottom);
+    // Right vertical
+    g.drawLine(x2, bottom, x2, y1);
   }
 
   function handleLeftKnob(dir) {
@@ -157,7 +181,7 @@ function CustomRadio() {
     const visibleFiles = songFiles.slice(start, start + pageSize);
 
     // Clear the previous menu area
-    g.setColor('#000').fillRect(
+    g.setColor(BLACK).fillRect(
       MENU_LIST_AREA.x1,
       MENU_LIST_AREA.y1,
       MENU_LIST_AREA.x2,
@@ -221,7 +245,7 @@ function CustomRadio() {
     Pip.radioClipPlaying = true;
 
     // Clear the previous now playing area
-    g.setColor('#000').fillRect(
+    g.setColor(BLACK).fillRect(
       NOW_PLAYING_AREA.x1,
       NOW_PLAYING_AREA.y1,
       NOW_PLAYING_AREA.x2,
@@ -260,7 +284,7 @@ function CustomRadio() {
     currentAudio = null;
     Pip.radioClipPlaying = false;
 
-    g.setColor('#000').fillRect(
+    g.setColor(BLACK).fillRect(
       NOW_PLAYING_AREA.x1,
       NOW_PLAYING_AREA.y1,
       NOW_PLAYING_AREA.x2,
