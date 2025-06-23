@@ -15,19 +15,28 @@
 
 ### Description
 
-...
+Custom Radio lets you browse and play your own `.wav` music files directly from
+the `/RADIO` folder, giving you full control over your playlist for wasteland
+adventures.
 
 ### Controls
 
-- ...
+- Turn the top-left and top-right knobs to scroll through songs.
+- Press the top-left knob in to play the selected song.
 
 ### Instructions
 
-...
+Upload your `.wav` files to the `/RADIO` folder using the Radio tool here:
+https://pip-boy.com/3000-mk-v-radio, or upload directy to your SD using the File
+Uploader feature here: https://pip-boy.com/3000-mk-v-maintenance.
 
 ### Tips
 
-...
+- Press the top-left knob on a currently playing song to stop it.
+- Avoid adding more than ~100 songs to the `/RADIO` folder to keep performance
+  smooth.
+- Keep scrolling to get to the next/previous pages, the list paginates by 10
+  songs at a time.
 
 ### License(s)
 
