@@ -51,12 +51,24 @@ you can use in your apps:
 
 ```js
 /**
+ * Draw a line between x1,y1 and x2,y2 in the current foreground color.
+ * @param {number} x1 - The X coordinate of the left point
+ * @param {number} y1 - The Y coordinate of the top point
+ * @param {number} x2 - The X coordinate of the right point
+ * @param {number} y2 - The Y coordinate of the bottom point
+ * @returns {Graphics} - The instance of Graphics this was called on, to allow call chaining
+ * @link https://www.espruino.com/Reference#l_Graphics_drawLine
+ */
+drawLine(x1, y1, x2, y2);
+
+/**
  * Draws a hollow rectangle on the screen.
  * @param {number} x1 - The left X coordinate
  *                      OR an object containing {x,y,x2,y2} or {x,y,w,h}
  * @param {number} y1 - The top Y coordinate
  * @param {number} x2 - The right X coordinate
  * @param {number} y2 - The bottom Y coordinate
+ * @returns {Graphics} - The instance of Graphics this was called on, to allow call chaining
  * @link https://www.espruino.com/Reference#l_Graphics_drawRect
  */
 drawRect(x1, y1, x2, y2);
@@ -68,6 +80,7 @@ drawRect(x1, y1, x2, y2);
  * @param {number} y1 - The top Y coordinate
  * @param {number} x2 - The right X coordinate
  * @param {number} y2 - The bottom Y coordinate
+ * @returns {Graphics} - The instance of Graphics this was called on, to allow call chaining
  * @link https://www.espruino.com/Reference#l_Graphics_fillRect
  */
 fillRect(x1, y1, x2, y2);
@@ -78,6 +91,7 @@ fillRect(x1, y1, x2, y2);
  * @param {number} x - The X position of the leftmost pixel
  * @param {number} y - The Y position of the topmost pixel
  * @param {boolean} solid - Whether to draw the text solid or not
+ * @returns {Graphics} - The instance of Graphics this was called on, to allow call chaining
  * @link https://www.espruino.com/Reference#l_Graphics_drawString
  */
 drawString(str, x, y, solid);
@@ -87,6 +101,7 @@ drawString(str, x, y, solid);
  * @param {number} x - X alignment. -1 = Left, 0 = Center, 1 = Right
  * @param {number} y - Y alignment. -1 = Top, 0 = Center, 1 = Bottom
  * @param {number} rotation - 0 = No rotation, 1 = 90° cw, 2 = 180°, 3 = 270° cw
+ * @return {Graphics} - The instance of Graphics this was called on, to allow call chaining
  * @link https://www.espruino.com/Reference#l_Graphics_setFontAlign
  */
 setFontAlign(x, y, rotation);

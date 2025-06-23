@@ -11,13 +11,13 @@ function CustomRadio() {
   // General
   const APP_NAME = 'Custom Radio';
   const APP_VERSION = '3.0.0';
-  const DEBUG = false;
 
   // Screen
   const SCREEN_WIDTH = g.getWidth(); // Width (480px)
   const SCREEN_HEIGHT = g.getHeight(); // Height (320px)
+  const SHOW_BOUNDARIES = false;
 
-  // UX Positions
+  // UX Mapping
   const SCREEN_XY = {
     x1: 60, // Left X (60px)
     y1: 50, // Top Y (50px)
@@ -98,7 +98,7 @@ function CustomRadio() {
   }
 
   function drawAllBoundaries() {
-    if (DEBUG === false) return;
+    if (SHOW_BOUNDARIES === false) return;
 
     drawBoundaries(SCREEN_XY);
     drawBoundaries(LEFT_HALF_XY);
@@ -111,6 +111,7 @@ function CustomRadio() {
   function drawAppTitleAndVersion() {
     const appName = APP_NAME.toUpperCase();
     const appVersion = 'v' + APP_VERSION;
+    const padding = 5;
     const titleWidth = g.stringWidth(appName);
 
     g.setColor(GREEN)
@@ -123,9 +124,17 @@ function CustomRadio() {
       .setFont('6x8')
       .drawString(
         appVersion,
-        LEFT_HALF_XY.x1 + titleWidth + 5,
+        LEFT_HALF_XY.x1 + titleWidth + padding,
         SCREEN_XY.y1 + 16,
       );
+
+    // Draw a line under the title
+    g.setColor(GREEN_DARKER).drawLine(
+      LEFT_HALF_XY.x1,
+      LEFT_HALF_XY.y1 - padding,
+      LEFT_HALF_XY.x2,
+      LEFT_HALF_XY.y1 - padding,
+    );
   }
 
   function drawBoundaries(area) {
@@ -165,19 +174,17 @@ function CustomRadio() {
     // Set up the font and alignment
     g.setFontMonofonto16().setFontAlign(-1, -1, 0);
 
-    const paddingTop = 10;
-    const paddingLeft = 10;
+    const padding = 5;
     const rowHeight = 20;
 
     // Draw each song in the list
     visibleFiles.forEach((file, i) => {
-      const y = LEFT_HALF_XY.y1 + i * rowHeight + paddingTop;
-
+      const y = LEFT_HALF_XY.y1 + i * rowHeight + padding;
       const name = file.replace(/\.wav$/i, '');
       const displayName = name.length > 19 ? name.slice(0, 16) + '...' : name;
       g.setColor(i === selectedIndex ? GREEN : GREEN_DARK).drawString(
         displayName,
-        LEFT_HALF_XY.x1 + paddingLeft,
+        LEFT_HALF_XY.x1 + padding,
         y,
         true,
       );
