@@ -1,0 +1,31 @@
+2.1.1
+https://github.com/CodyTolene/pip-apps/pull/60
+- Clean up, further refactoring and optimization of the code.
+
+2.1.0
+https://github.com/CodyTolene/pip-apps/pull/59
+- File minification and compression.
+
+2.0.0
+https://github.com/CodyTolene/pip-apps/pull/30
+- Handle self referencing directories in new Pip-Boy v1.29
+- Backwards support < v1.29
+
+1.2.0
+https://github.com/CodyTolene/pip-apps/pull/9
+- Previously performed a deep, recursive traversal of the entire directory tree up front. Which was memory intensive and sometimes failed.
+- Now, things are lazy and only load 1 depth at a time. Click into folders now rather than listing out all contents right away like it was previously.
+
+1.1.0
+https://github.com/CodyTolene/pip-apps/pull/7
+- Fix up the recursion error for directories nested > 2 deep.
+
+1.0.1
+https://github.com/CodyTolene/pip-apps/pull/5
+- Fix File Explorer in-app name.
+- Add 'type' to app meta.
+- Polishing.
+
+1.0.0
+https://github.com/CodyTolene/pip-apps/pull/3
+- Add new app.

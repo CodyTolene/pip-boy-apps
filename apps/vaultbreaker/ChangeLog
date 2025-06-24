@@ -1,0 +1,10 @@
+v1.0.1
+https://github.com/CodyTolene/pip-apps/pull/32
+- Works with new 1.29 update theme settings
+- Can now use the radio knob to launch the ball
+- Fixed a bug where the ball would get stuck at the top of the screen
+- Updated opening text
+
+1.0.0
+https://github.com/CodyTolene/pip-apps/pull/23
+- Add new app.
