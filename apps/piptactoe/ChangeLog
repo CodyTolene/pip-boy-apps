@@ -1,0 +1,18 @@
+1.1.2
+https://github.com/CodyTolene/pip-apps/pull/63
+- Clean up, further refactoring and optimization of the code.
+- Add minified Pip-Tac-Toe game file from https://github.com/pip-4111/Pip-Tac-Toe
+
+1.1.1
+https://github.com/CodyTolene/pip-apps/pull/60
+- File minification and compression.
+
+1.1.0
+https://github.com/CodyTolene/pip-apps/pull/57
+- Replaces hardcoded canvas width with dynamic sizing and increases font size/color.
+- Implements a center-first CPU move optimization and thicker grid lines.
+
+1.0.0
+https://github.com/pip-4111/Pip-Tac-Toe
+https://github.com/CodyTolene/pip-apps/pull/45
+- Add new app.

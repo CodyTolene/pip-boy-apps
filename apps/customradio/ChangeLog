@@ -1,0 +1,61 @@
+3.1.0
+https://github.com/CodyTolene/pip-boy-apps/pull/5
+- Add Pip-Boy footer with Time and Battery Charge display.
+- Adjust vertical coordinates to make space for the footer.
+- Introduce clearFooterBar, drawFooterBar, and footer interval logic.
+
+3.0.0
+https://github.com/CodyTolene/pip-boy-apps/pull/3
+- Convert Custom Radio v2.x to a standalone Custom Radio app (as v3.x).
+
+2.5.0
+https://github.com/CodyTolene/pip-apps/pull/67
+- Stabilize Custom Radio & minimize.
+
+2.4.1
+https://github.com/CodyTolene/pip-apps/pull/60
+- Clean up, further refactoring and optimization of the code.
+
+2.4.0
+https://github.com/CodyTolene/pip-apps/pull/59
+- File minification and compression.
+
+2.3.0
+https://github.com/CodyTolene/pip-apps/pull/52
+- Restore default radio KPSS station.
+- Enhance redraw.
+- Fix up next random song not playing if scrolled in song list while playing.
+- On front play/tuner click, toggle LED and play random songs.
+- Restructure and clean up.
+
+2.2.0
+https://github.com/CodyTolene/pip-apps/pull/51
+- Close [Bug] Custom Radio/PipUI+ Menu Conflicts #49
+- Close [Feature] Custom Radio - Keep playing song when scrolling song list #48
+- Test and stabilize.
+
+2.1.1
+https://github.com/CodyTolene/pip-apps/pull/41
+- Refactors the global radio functionality by encapsulating variables and functions under the new `Pip.CustomRadio` namespace. 
+- No functional changes.
+
+2.1.0
+https://github.com/CodyTolene/pip-apps/pull/39
+- Add a new "Random" option to play all music in the "/RADIO" folder randomly.
+- Display the currently playing song in the bottom right.
+- Remove the ".wav" file extension from the displayed file list.
+- Fix issue of waveform displaying over other tabs. Reported by "mindlesszombie", thank you!
+- Polishing and app stability updates.
+
+2.0.0
+https://github.com/CodyTolene/pip-apps/pull/38
+- Update Custom Radio to version 2.0.0 which overwrites the firmwares current radio via the bootloader. 
+- This Override can be turned on or off via a configurable override by using the Custom Radio app.
+
+1.1.0
+https://github.com/CodyTolene/pip-apps/pull/12
+- Fix up files playing randomly
+
+1.0.0
+https://github.com/CodyTolene/pip-apps/pull/10
+- Add new app.

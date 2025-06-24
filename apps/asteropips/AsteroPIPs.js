@@ -2,7 +2,7 @@
 // Name: AsteroPIPs
 // License: CC-BY-NC-4.0
 // Description: A simple asteroids for the Pip-Boy 3000 Mk V.
-// Version: 1.0.0
+// Version: 1.0.1
 // =============================================================================
 
 var W = g.getWidth();
