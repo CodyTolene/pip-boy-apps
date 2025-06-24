@@ -1,4 +1,26 @@
-# Pip-Boy Mod Tool
+<div align="center">
+  <img align="center" src=".github/images/logo.png" />
+  <h1 align="center">Pip-Boy Apps</h1>
+  <p align="center">
+    A forked repository of the official <a href="https://github.com/thewandcompany/pip-boy" target="_blank">Mod Tool</a> from The Wand Company to house all the great apps and games made by fellow vault-dwellers for the Pip-Boy 3000 Mk V device. Apps are hosted on <a href="https://pip-boy.com/" target="_blank">pip-boy.com</a> and are open-source for all to enjoy.
+  </p>
+  <p align="center">
+    <a href="https://gear.bethesda.net/products/fallout-series-pip-boy-die-cast-replica" target="_blank">
+      Bethesda Store
+    </a>&nbsp;&#9679;&nbsp;
+    <a href="https://www.thewandcompany.com/pip-boy/upgrade/">
+      The Wand Company
+    </a>&nbsp;&#9679;&nbsp;
+    <a href="https://github.com/thewandcompany/pip-boy" target="_blank">
+      Official Mod Tool
+    </a>&nbsp;&#9679;&nbsp;
+    <a href="https://pip-boy.com" target="_blank">
+      Pip-Boy.com
+    </a>
+  </p>
+</div>
+
+## Pip-Boy Mod Tool
 
 A tool to modify your pip-boy by adding apps and changing settings.
 
