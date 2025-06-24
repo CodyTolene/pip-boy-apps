@@ -137,7 +137,7 @@ setFontAlign(x, y, rotation);
 To build and run this application locally using Docker:
 
 ```sh
-git clone https://github.com/thewandcompany/pip-boy.git
+git clone https://github.com/CodyTolene/pip-boy-apps.git
 git submodule update --init --recursive
 docker build -t pip-boy-mod-tool .
 docker run -dit --name pip-boy-mod-tool -p 8080:80 pip-boy-mod-tool
