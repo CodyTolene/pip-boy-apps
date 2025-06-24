@@ -1,3 +1,7 @@
+2.2.0
+https://github.com/thewandcompany/pip-boy/pull/5
+- Update app structure to use the new Pip-Boy Mod Tool workflow.
+
 2.1.0
 https://github.com/CodyTolene/pip-apps/pull/66
 - Add new block type (solid, hollow) selector to the start menu.
