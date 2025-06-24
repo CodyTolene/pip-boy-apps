@@ -161,6 +161,7 @@ function CustomRadio() {
   }
 
   function drawFooterBar() {
+    clearFooterBar();
     footerInterval = setInterval(() => {
       drawFooter();
     }, INTERVAL_FOOTER_MS);
