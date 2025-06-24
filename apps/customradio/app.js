@@ -16,7 +16,7 @@ function CustomRadio() {
   // Screen
   const SCREEN_WIDTH = g.getWidth(); // Width (480px)
   const SCREEN_HEIGHT = g.getHeight(); // Height (320px)
-  const SHOW_BOUNDARIES = true;
+  const SHOW_BOUNDARIES = false;
 
   // UX Mapping
   const SCREEN_XY = {
