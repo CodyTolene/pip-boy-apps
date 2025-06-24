@@ -1,7 +1,7 @@
 {
   "id": "customradio",
   "name": "Custom Radio",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "Custom Radio lets you browse and play your own `.wav` music files directly from the `/RADIO` folder, giving you full control over your playlist for wasteland adventures.",
   "icon": "customradio.png",
   "tags": "",

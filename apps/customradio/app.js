@@ -11,43 +11,43 @@ function CustomRadio() {
 
   // General
   const APP_NAME = 'Custom Radio';
-  const APP_VERSION = '3.0.0';
+  const APP_VERSION = '3.1.0';
 
   // Screen
   const SCREEN_WIDTH = g.getWidth(); // Width (480px)
   const SCREEN_HEIGHT = g.getHeight(); // Height (320px)
-  const SHOW_BOUNDARIES = false;
+  const SHOW_BOUNDARIES = true;
 
   // UX Mapping
   const SCREEN_XY = {
-    x1: 60, // Left X (60px)
-    y1: 50, // Top Y (50px)
-    x2: SCREEN_WIDTH - 60, // Right X (420px)
-    y2: SCREEN_HEIGHT - 10, // Bottom Y (310px)
+    x1: 60,
+    y1: 40,
+    x2: SCREEN_WIDTH - 60,
+    y2: SCREEN_HEIGHT - 20,
   };
   const LEFT_HALF_XY = {
-    x1: SCREEN_XY.x1 + 10, // Left X (60px)
-    y1: SCREEN_XY.y1 + 30, // Top Y (70px)
-    x2: (SCREEN_XY.x2 + SCREEN_XY.x1) / 2, // Right X (240px)
-    y2: SCREEN_XY.y2 - 20, // Bottom Y (290px)
+    x1: SCREEN_XY.x1 + 10,
+    y1: SCREEN_XY.y1 + 30,
+    x2: (SCREEN_XY.x2 + SCREEN_XY.x1) / 2,
+    y2: SCREEN_XY.y2 - 20,
   };
   const RIGHT_HALF_XY = {
-    x1: LEFT_HALF_XY.x2 + 10, // Left X (250px)
-    y1: SCREEN_XY.y1 + 30, // Top Y (70px)
-    x2: SCREEN_XY.x2 - 10, // Right X (410px)
-    y2: SCREEN_XY.y2 - 20, // Bottom Y (290px)
+    x1: LEFT_HALF_XY.x2 + 10,
+    y1: SCREEN_XY.y1 + 30,
+    x2: SCREEN_XY.x2 - 10,
+    y2: SCREEN_XY.y2 - 20,
   };
   const NOW_PLAYING_XY = {
-    x1: LEFT_HALF_XY.x2 + 10, // Left X (250px)
-    y1: SCREEN_XY.y2 - 100, // Top Y (320px)
-    x2: SCREEN_XY.x2 - 10, // Right X (410px)
-    y2: SCREEN_XY.y2 - 60, // Bottom Y (250px)
+    x1: LEFT_HALF_XY.x2 + 10,
+    y1: SCREEN_XY.y2 - 100,
+    x2: SCREEN_XY.x2 - 10,
+    y2: SCREEN_XY.y2 - 60,
   };
   const WAVEFORM_XY = {
-    x1: LEFT_HALF_XY.x2 + 45, // Left X (285px)
-    y1: SCREEN_XY.y1 + 37, // Top Y (87px)
-    x2: SCREEN_XY.x2 - 12, // Right X (408px)
-    y2: SCREEN_XY.y2 - 101, // Bottom Y (209px)
+    x1: LEFT_HALF_XY.x2 + 45,
+    y1: SCREEN_XY.y1 + 37,
+    x2: SCREEN_XY.x2 - 12,
+    y2: SCREEN_XY.y2 - 101,
   };
 
   // Physical interfaces
@@ -74,16 +74,29 @@ function CustomRadio() {
   let randomIndex = 0;
 
   // Waveform
+  const INTERVAL_WAVEFORM_MS = 50;
   let animationAngle = 0;
   let waveformGfx = null;
   let waveformInterval = null;
   let waveformPoints = null;
+
+  // Footer
+  const INTERVAL_FOOTER_MS = 49.99923706054;
+  let footerInterval = null;
 
   // Colors
   const BLACK = '#000000';
   const GREEN = '#00ff00';
   const GREEN_DARK = '#007f00';
   const GREEN_DARKER = '#003300';
+
+  function clearFooterBar() {
+    if (footerInterval) {
+      clearInterval(footerInterval);
+    }
+
+    footerInterval = null;
+  }
 
   function clearNowPlaying() {
     g.setColor(BLACK).fillRect(NOW_PLAYING_XY);
@@ -145,6 +158,12 @@ function CustomRadio() {
 
   function drawBoundaries(area) {
     g.setColor(GREEN_DARKER).drawRect(area.x1, area.y1, area.x2, area.y2);
+  }
+
+  function drawFooterBar() {
+    footerInterval = setInterval(() => {
+      drawFooter();
+    }, INTERVAL_FOOTER_MS);
   }
 
   function drawNowPlaying(song) {
@@ -280,10 +299,10 @@ function CustomRadio() {
 
       waveformGfx.drawPolyAA(waveformPoints);
       animationAngle += 0.3;
-      Pip.blitImage(waveformGfx, 285, 85, {
+      Pip.blitImage(waveformGfx, 285, 75, {
         noScanEffect: true,
       });
-    }, 50);
+    }, INTERVAL_WAVEFORM_MS);
   }
 
   function handleLeftKnob(dir) {
@@ -345,7 +364,9 @@ function CustomRadio() {
   }
 
   function handleTopButton() {
+    clearFooterBar();
     clearWaveform();
+
     removeListeners();
 
     bC.clear(1).flip();
@@ -479,9 +500,8 @@ function CustomRadio() {
 
     drawWaveform();
     drawWaveformBorder();
-
     drawAppTitleAndVersion();
-
+    drawFooterBar();
     drawAllBoundaries();
   };
 
