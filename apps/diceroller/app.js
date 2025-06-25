@@ -9,16 +9,16 @@ function DiceRoller() {
   const self = {};
 
   const APP_NAME = 'Dice Roller';
-  const APP_VERSION = '1.0.0';
+  const APP_VERSION = '1.1.0';
 
   // General constants
-  const DICE_TYPES = ['D4', 'D6', 'D8', 'D10', 'D12', 'D20'];
+  const DICE_TYPES = ['D2', 'D4', 'D6', 'D8', 'D10', 'D12', 'D20'];
   const ELASTICITY = 0.95;
   const FRICTION = 0.98;
   const THROW_POWER = 8.0;
 
   // States
-  let currentDiceIndex = 5; // D20
+  let currentDiceIndex = DICE_TYPES.indexOf('D20');
   let dice = { x: 100, y: 100, vx: 2, vy: 3 };
   let face = 1;
   let faceTimer = null;
@@ -57,39 +57,51 @@ function DiceRoller() {
   const GREEN_DARK = '#007f00';
 
   function animateDice() {
-    dice.x += dice.vx;
-    dice.y += dice.vy;
-
+    const type = DICE_TYPES[currentDiceIndex];
+    const isCoin = type === 'D2';
     const radius = 30;
     const padding = 5;
 
-    if (
-      dice.x < DICE_BOX_XY.x1 + radius + padding ||
-      dice.x > DICE_BOX_XY.x2 - radius - padding
-    ) {
-      dice.vx = -dice.vx * ELASTICITY;
-      dice.x = Math.max(
-        DICE_BOX_XY.x1 + radius + padding,
-        Math.min(dice.x, DICE_BOX_XY.x2 - radius - padding),
-      );
-    }
+    if (isCoin) {
+      // Keep D2 coin centered during flip
+      dice.x = (DICE_BOX_XY.x1 + DICE_BOX_XY.x2) / 2;
+      dice.y = (DICE_BOX_XY.y1 + DICE_BOX_XY.y2) / 2;
+    } else {
+      // Update dice position
+      dice.x += dice.vx;
+      dice.y += dice.vy;
 
-    if (
-      dice.y < DICE_BOX_XY.y1 + radius + padding ||
-      dice.y > DICE_BOX_XY.y2 - radius - padding
-    ) {
-      dice.vy = -dice.vy * ELASTICITY;
-      dice.y = Math.max(
-        DICE_BOX_XY.y1 + radius + padding,
-        Math.min(dice.y, DICE_BOX_XY.y2 - radius - padding),
-      );
-    }
+      // Bounce off walls
+      if (
+        dice.x < DICE_BOX_XY.x1 + radius + padding ||
+        dice.x > DICE_BOX_XY.x2 - radius - padding
+      ) {
+        dice.vx = -dice.vx * ELASTICITY;
+        dice.x = Math.max(
+          DICE_BOX_XY.x1 + radius + padding,
+          Math.min(dice.x, DICE_BOX_XY.x2 - radius - padding),
+        );
+      }
 
-    dice.vx *= FRICTION;
-    dice.vy *= FRICTION;
+      // Bounce off floor/ceiling
+      if (
+        dice.y < DICE_BOX_XY.y1 + radius + padding ||
+        dice.y > DICE_BOX_XY.y2 - radius - padding
+      ) {
+        dice.vy = -dice.vy * ELASTICITY;
+        dice.y = Math.max(
+          DICE_BOX_XY.y1 + radius + padding,
+          Math.min(dice.y, DICE_BOX_XY.y2 - radius - padding),
+        );
+      }
+
+      // Apply friction
+      dice.vx *= FRICTION;
+      dice.vy *= FRICTION;
+    }
 
     const speed = Math.sqrt(dice.vx * dice.vx + dice.vy * dice.vy);
-    const max = getSidesFromDiceType(DICE_TYPES[currentDiceIndex]);
+    const max = getSidesFromDiceType(type);
 
     if (faceTimer) {
       clearTimeout(faceTimer);
@@ -97,7 +109,8 @@ function DiceRoller() {
 
     const nextDelay = Math.max(50, 600 - speed * 80);
     faceTimer = setTimeout(() => {
-      face = Math.floor(Math.random() * max) + 1;
+      // Alternate D2 face using rollCount
+      face = isCoin ? (rollCount % 2) + 1 : Math.floor(Math.random() * max) + 1;
       drawDice();
     }, nextDelay);
 
@@ -112,7 +125,16 @@ function DiceRoller() {
         clearTimeout(faceTimer);
       }
 
-      face = Math.floor(Math.random() * max) + 1;
+      if (isCoin && rollCount % 2 === 0) {
+        // Make sure coin doesn't land on edge
+        rollCount++;
+      }
+
+      face = isCoin
+        ? Math.random() < 0.5
+          ? 1
+          : 2
+        : Math.floor(Math.random() * max) + 1;
       drawDice();
       isRolling = false;
     }
@@ -150,28 +172,48 @@ function DiceRoller() {
 
     const size = 60;
     const radius = size / 2;
-    const sides = getDrawSidesFromDiceType(DICE_TYPES[currentDiceIndex]);
+    const type = DICE_TYPES[currentDiceIndex];
+    let result = face.toString();
+    const isCoin = type === 'D2';
+    const flipPhase = rollCount % 2;
 
     g.setColor(GREEN);
 
-    const points = [];
-    for (let i = 0; i < sides; i++) {
-      const angle = Math.PI / 2 + (i * Math.PI * 2) / sides;
-      points.push([
-        dice.x + radius * Math.cos(angle),
-        dice.y + radius * Math.sin(angle),
-      ]);
+    if (isCoin) {
+      if (isRolling && flipPhase === 0) {
+        // Coin edge
+        g.fillRect(dice.x - radius, dice.y - 2, dice.x + radius, dice.y + 2);
+        result = ''; // No label when on edge
+      } else {
+        // Coin face
+        g.drawCircle(dice.x, dice.y, radius);
+        result = face === 1 ? 'H' : 'T';
+      }
+    } else {
+      // Draw polygonal dice
+      const sides = getDrawSidesFromDiceType(type);
+      const points = [];
+      for (let i = 0; i < sides; i++) {
+        const angle = Math.PI / 2 + (i * Math.PI * 2) / sides;
+        points.push([
+          dice.x + radius * Math.cos(angle),
+          dice.y + radius * Math.sin(angle),
+        ]);
+      }
+      for (let i = 0; i < sides; i++) {
+        const p1 = points[i];
+        const p2 = points[(i + 1) % sides];
+        g.drawLine(p1[0], p1[1], p2[0], p2[1]);
+      }
     }
 
-    for (let i = 0; i < sides; i++) {
-      const p1 = points[i];
-      const p2 = points[(i + 1) % sides];
-      g.drawLine(p1[0], p1[1], p2[0], p2[1]);
+    if (result) {
+      g.setFont('6x8', 3);
+      g.setFontAlign(-1, -1, 0);
+      const textWidth = g.stringWidth(result);
+      const textHeight = g.getFontHeight();
+      g.drawString(result, dice.x - textWidth / 2 + 2, dice.y - textHeight / 2);
     }
-
-    g.setFont('6x8', 3);
-    g.setFontAlign(0, 0);
-    g.drawString(face + '', dice.x, dice.y);
 
     lastDraw = {
       x: dice.x - radius - 2,
@@ -213,6 +255,8 @@ function DiceRoller() {
 
   function getDrawSidesFromDiceType(type) {
     switch (type) {
+      case 'D2':
+        return 0;
       case 'D4':
         return 3;
       case 'D6':
@@ -237,6 +281,12 @@ function DiceRoller() {
   function handleLeftKnob(dir) {
     let now = Date.now();
     if (now - lastLeftKnobTime < KNOB_DEBOUNCE) {
+      return;
+    }
+
+    const type = DICE_TYPES[currentDiceIndex];
+    if (type === 'D2' && isRolling) {
+      // If coin is already flipping, ignore until resting
       return;
     }
 
@@ -291,11 +341,13 @@ function DiceRoller() {
     dice.vx = (Math.random() * 6 - 3) * THROW_POWER;
     dice.vy = (Math.random() * 6 - 3) * THROW_POWER;
     rollCount = 0;
+
     if (interval) {
       clearInterval(interval);
     }
-
-    interval = setInterval(animateDice, 100);
+    const isCoin = DICE_TYPES[currentDiceIndex] === 'D2';
+    const frameRate = isCoin ? 150 : 100; // Slighly slower for a D2 coin flip
+    interval = setInterval(animateDice, frameRate);
   }
 
   function setListeners() {

@@ -4,7 +4,7 @@
 
 **Author:** Cody Tolene
 
-**Version:** 1.0.0
+**Version:** 1.1.0
 
 **Website(s):**
 
@@ -15,8 +15,8 @@
 
 ### Description
 
-Toss tabletop dice: D4, D6, D8, D10, D12, and D20. War never changes, but your
-roll might!
+Toss tabletop dice: D2, D4, D6, D8, D10, D12, and D20. War never changes, but
+your roll might!
 
 ### Controls
 
