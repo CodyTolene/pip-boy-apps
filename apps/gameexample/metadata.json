@@ -1,12 +1,12 @@
 {
   "id": "gameexample",
   "name": "Game Example",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A game example that you can use as a template for your own game.",
   "icon": "gameexample.png",
   "tags": "game",
   "type": "app",
   "readme": "README.md",
   "custom": "",
-  "storage": [{ "name": "USER/GameExample.js", "url": "GameExample.js" }]
+  "storage": [{ "name": "USER/gameexample.js", "url": "app.min.js" }]
 }

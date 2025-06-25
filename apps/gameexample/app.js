@@ -10,7 +10,7 @@ function GameExample() {
 
   // General
   const GAME_NAME = 'Game';
-  const GAME_VERSION = '1.0.0';
+  const GAME_VERSION = '1.0.1';
 
   // Intervals
   const MAIN_LOOP_SPEED_MS = 1000 / 60; // 60 FPS
