@@ -5,12 +5,14 @@
 //  Description: Directory and media file explorer for the Pip-Boy 3000 Mk V.
 // =============================================================================
 
+const fs = require('fs');
+const s = require('Storage');
+
 function FileExplorer() {
   const self = {};
-  const fs = require('fs');
 
   const APP_NAME = 'File Explorer';
-  const APP_VERSION = '2.1.1';
+  const APP_VERSION = '2.1.2';
 
   const SCREEN_WIDTH = g.getWidth();
   const SCREEN_HEIGHT = g.getHeight();
@@ -32,11 +34,10 @@ function FileExplorer() {
   let currentPath = ROOT_PATH;
 
   try {
-    let s = require('Storage');
-    let l = s.list();
+    const l = s.list();
     if (l.includes('VERSION') && l.includes('.bootcde')) {
-      let versionStr = s.read('VERSION') || '';
-      let versionNum = parseFloat(versionStr);
+      const versionStr = s.read('VERSION') || '';
+      const versionNum = parseFloat(versionStr);
       isModernVersion = versionNum >= 1.29;
     }
   } catch (e) {
