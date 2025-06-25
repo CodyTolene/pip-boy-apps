@@ -1,12 +1,17 @@
 {
   "id": "diceroller",
   "name": "Dice Roller",
-  "version": "1.0.0",
-  "description": "Toss tabletop dice: D4, D6, D8, D10, D12, and D20. War never changes, but your roll might!",
+  "version": "1.1.0",
+  "description": "Toss tabletop dice: D2, D4, D6, D8, D10, D12, and D20. War never changes, but your roll might!",
   "icon": "diceroller.png",
   "tags": "",
   "type": "app",
   "readme": "README.md",
   "custom": "",
-  "storage": [{ "name": "USER/diceroller.js", "url": "app.min.js" }]
+  "storage": [
+    { "name": "USER/diceroller.js", "url": "app.min.js" },
+    { "name": "USER/coin-drop.wav", "url": "coin-drop.wav" },
+    { "name": "USER/coin-flip.wav", "url": "coin-flip.wav" },
+    { "name": "USER/dice-throw.wav", "url": "dice-throw.wav" }
+  ]
 }
