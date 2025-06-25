@@ -56,6 +56,13 @@ function DiceRoller() {
   const GREEN = '#00ff00';
   const GREEN_DARK = '#007f00';
 
+  // Sounds
+  const SOUNDS = {
+    coinDrop: 'USER/coin-drop.wav',
+    coinFlip: 'USER/coin-flip.wav',
+    diceThrow: 'USER/dice-throw.wav',
+  };
+
   function animateDice() {
     const type = DICE_TYPES[currentDiceIndex];
     const isCoin = type === 'D2';
@@ -125,16 +132,19 @@ function DiceRoller() {
         clearTimeout(faceTimer);
       }
 
-      if (isCoin && rollCount % 2 === 0) {
-        // Make sure coin doesn't land on edge
-        rollCount++;
+      if (isCoin) {
+        if (rollCount % 2 === 0) {
+          // Make sure coin doesn't land on edge
+          rollCount++;
+        }
+
+        face = Math.random() < 0.5 ? 1 : 2;
+        // Play the coin drop sound
+        Pip.audioStart(SOUNDS.coinDrop);
+      } else {
+        face = Math.floor(Math.random() * max) + 1;
       }
 
-      face = isCoin
-        ? Math.random() < 0.5
-          ? 1
-          : 2
-        : Math.floor(Math.random() * max) + 1;
       drawDice();
       isRolling = false;
     }
@@ -279,18 +289,17 @@ function DiceRoller() {
   }
 
   function handleLeftKnob(dir) {
+    if (isRolling) {
+      // Still rolling, ignore left knob
+      return;
+    }
+
     let now = Date.now();
     if (now - lastLeftKnobTime < KNOB_DEBOUNCE) {
       return;
     }
-
-    const type = DICE_TYPES[currentDiceIndex];
-    if (type === 'D2' && isRolling) {
-      // If coin is already flipping, ignore until resting
-      return;
-    }
-
     lastLeftKnobTime = now;
+
     rollDice();
   }
 
@@ -345,8 +354,20 @@ function DiceRoller() {
     if (interval) {
       clearInterval(interval);
     }
+
     const isCoin = DICE_TYPES[currentDiceIndex] === 'D2';
-    const frameRate = isCoin ? 150 : 100; // Slighly slower for a D2 coin flip
+    let frameRate = 100;
+
+    if (isCoin) {
+      // For D2 coin flip, we want a slightly slower animation
+      frameRate = 150;
+      // Play the coin flip sound
+      Pip.audioStart(SOUNDS.coinFlip);
+    } else {
+      // Play the dice throw sound
+      Pip.audioStart(SOUNDS.diceThrow);
+    }
+
     interval = setInterval(animateDice, frameRate);
   }
 

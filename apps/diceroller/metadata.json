@@ -8,5 +8,10 @@
   "type": "app",
   "readme": "README.md",
   "custom": "",
-  "storage": [{ "name": "USER/diceroller.js", "url": "app.min.js" }]
+  "storage": [
+    { "name": "USER/diceroller.js", "url": "app.min.js" },
+    { "name": "USER/coin-drop.wav", "url": "coin-drop.wav" },
+    { "name": "USER/coin-flip.wav", "url": "coin-flip.wav" },
+    { "name": "USER/dice-throw.wav", "url": "dice-throw.wav" }
+  ]
 }
