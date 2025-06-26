@@ -1,0 +1,12 @@
+{
+  "id": "portahack",
+  "name": "Porta Hack",
+  "version": "1.0.0",
+  "description": "...",
+  "icon": "portahack.png",
+  "tags": "",
+  "type": "app",
+  "readme": "README.md",
+  "custom": "",
+  "storage": [{ "name": "USER/portahack.js", "url": "PortaHack.js" }]
+}
