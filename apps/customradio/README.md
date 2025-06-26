@@ -4,7 +4,7 @@
 
 **Author:** Cody Tolene
 
-**Version:** 3.0.0
+**Version:** 3.1.1
 
 **Website(s):**
 
@@ -23,7 +23,8 @@ adventures.
 
 - Turn the top-left and top-right knobs to scroll through songs.
 - Press the top-left knob in to play the selected song.
-- Press the top torch button to exit the app.
+- Press the top-right torch button to toggle the screen brightness.
+- Press the bottom-right power button to restart the device.
 
 ### Instructions
 

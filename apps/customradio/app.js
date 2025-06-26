@@ -360,11 +360,7 @@ function CustomRadio() {
     }
   }
 
-  function handleRightKnob(dir) {
-    menuScroll(dir);
-  }
-
-  function handleTopButton() {
+  function handlePowerButton() {
     clearFooterBar();
     clearWaveform();
 
@@ -372,6 +368,20 @@ function CustomRadio() {
 
     bC.clear(1).flip();
     E.reboot();
+  }
+
+  function handleRightKnob(dir) {
+    menuScroll(dir);
+  }
+
+  function handleTopButton() {
+    const brightnessLevels = [1, 5, 10, 15, 20];
+    const currentIndex = brightnessLevels.findIndex(
+      (level) => level === Pip.brightness,
+    );
+    const nextIndex = (currentIndex + 1) % brightnessLevels.length;
+    Pip.brightness = brightnessLevels[nextIndex];
+    Pip.updateBrightness();
   }
 
   function onMusicStopped() {
@@ -477,6 +487,11 @@ function CustomRadio() {
     Pip.on(KNOB_RIGHT, handleRightKnob);
     Pip.on(BTN_TOP, handleTopButton);
     Pip.on(MUSIC_STOPPED, onMusicStopped);
+    setWatch(() => handlePowerButton(), BTN_POWER, {
+      debounce: 50,
+      edge: 'rising',
+      repeat: !0,
+    });
   }
 
   function stopSong() {
