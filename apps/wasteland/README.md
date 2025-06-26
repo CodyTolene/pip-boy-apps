@@ -4,8 +4,6 @@
 
 **Author:** Cody Tolene
 
-**Version:** 1.2.0
-
 **Website(s):**
 
 - [Personal Site](https://www.CodyTolene.com)
@@ -19,10 +17,11 @@ A DOOM inspired RPG engine for the Pip-Boy 3000 Mk V.
 
 ### Controls
 
-- Use the front radio on/off button to move forward.
-- Turn top left or top right knob to rotate character 45 degrees.
-- Press top left knob in to move backwards.
-- Press the top torch button to exit.
+- Use the front radio play button to move forward.
+- Use the top-left or top right knob to turn the character 45 degrees.
+- Use the top-left knob button to move backwards.
+- Use the top-right torch button to toggle the screen brightness.
+- Use the bottom-right power button to exit the game.
 
 ### License(s)
 

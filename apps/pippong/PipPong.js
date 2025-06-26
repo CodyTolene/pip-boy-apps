@@ -2,14 +2,13 @@
 //  Name: Pip-Pong
 //  License: CC-BY-NC-4.0
 //  Repository: https://github.com/CodyTolene/pip-boy-apps
-//  Description: A simple pong game for the Pip-Boy 3000 Mk V.
 // =============================================================================
 
 function PipPong() {
   const self = {};
 
   const GAME_NAME = 'Pip-Pong';
-  const GAME_VERSION = '1.2.0';
+  const GAME_VERSION = '1.2.1';
 
   const SCREEN_WIDTH = g.getWidth();
   const SCREEN_HEIGHT = g.getHeight();
@@ -32,6 +31,16 @@ function PipPong() {
   let gameLoopInterval, inputInterval;
   let gameOver = false;
   let playerScore = 0;
+
+  function adjustBrightness() {
+    const brightnessLevels = [1, 5, 10, 15, 20];
+    const currentIndex = brightnessLevels.findIndex(
+      (level) => level === Pip.brightness,
+    );
+    const nextIndex = (currentIndex + 1) % brightnessLevels.length;
+    Pip.brightness = brightnessLevels[nextIndex];
+    Pip.updateBrightness();
+  }
 
   function drawBall() {
     drawRect(ball.x, ball.y, BALL_SIZE, BALL_SIZE, COLOR_RED);
@@ -124,7 +133,6 @@ function PipPong() {
   function handleInput() {
     if (BTN_TUNEUP.read()) movePlayer(-1);
     else if (BTN_TUNEDOWN.read()) movePlayer(1);
-    else if (BTN_TORCH.read()) stopGame();
   }
 
   function moveAI() {
@@ -264,13 +272,17 @@ function PipPong() {
       else if (dir > 0) movePlayer(-1);
     });
 
-    setWatch(
-      () => {
-        stopGame();
-      },
-      BTN_TORCH,
-      { repeat: true, edge: 'rising', debounce: 10 },
-    );
+    Pip.removeAllListeners('torch');
+    Pip.on('torch', function () {
+      adjustBrightness();
+    });
+
+    // Restart the device with the power button
+    setWatch(() => stopGame(), BTN_POWER, {
+      debounce: 50,
+      edge: 'rising',
+      repeat: !0,
+    });
   };
 
   return self;

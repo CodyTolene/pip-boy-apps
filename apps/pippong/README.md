@@ -4,8 +4,6 @@
 
 **Author:** Cody Tolene
 
-**Version:** 1.2.0
-
 **Website(s):**
 
 - [Personal Site](https://www.CodyTolene.com)
@@ -22,7 +20,8 @@ forth.
 
 - Use any knob to move up and down.
 - Use the front radio tuner button to start and restart the game.
-- Use the top torch button to exit the game.
+- Use the top-right torch button to toggle the screen brightness.
+- Use the bottom-right power button to exit the game.
 
 ### Instructions
 

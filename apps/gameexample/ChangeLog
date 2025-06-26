@@ -1,3 +1,8 @@
+1.0.2
+https://github.com/CodyTolene/pip-boy-apps/pull/12
+- Update torch button (top right) to toggle screen brightness when pressed.
+- Update power button (bot right) to restart the device when pressed.
+
 1.0.1
 https://github.com/CodyTolene/pip-boy-apps/pull/10
 - A few minor adjustments to how the app name is displayed in the Pip-Boy app menu.

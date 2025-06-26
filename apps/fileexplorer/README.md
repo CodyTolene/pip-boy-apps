@@ -4,8 +4,6 @@
 
 **Author:** Cody Tolene
 
-**Version:** 2.1.1
-
 **Website(s):**
 
 - [Personal Site](https://www.CodyTolene.com)
@@ -23,8 +21,9 @@ intended.
 
 - Use the top-left or top-right rotary wheels or the front radio tuner to
   scroll.
-- Press the left rotary wheel or front radio tuner to play or stop media.
-- Press the top torch button to restart the device.
+- Use the left rotary wheel or front radio tuner to play or stop media.
+- Use the top-right torch button to toggle the screen brightness.
+- Use the bottom-right power button to exit the app.
 
 ### Instructions
 

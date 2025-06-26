@@ -2,8 +2,6 @@
 //  Name: Custom Radio
 //  License: CC-BY-NC-4.0
 //  Repository: https://github.com/CodyTolene/pip-boy-apps
-//  Description: A custom music player that allows you to choose the music you
-//               want to play from the `/RADIO` directory without restriction.
 // =============================================================================
 
 function CustomRadio() {
@@ -375,6 +373,7 @@ function CustomRadio() {
   }
 
   function handleTopButton() {
+    // Adjust brightness
     const brightnessLevels = [1, 5, 10, 15, 20];
     const currentIndex = brightnessLevels.findIndex(
       (level) => level === Pip.brightness,

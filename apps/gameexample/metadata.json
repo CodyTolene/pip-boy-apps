@@ -1,7 +1,7 @@
 {
   "id": "gameexample",
   "name": "Game Example",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A game example that you can use as a template for your own game.",
   "icon": "gameexample.png",
   "tags": "game",

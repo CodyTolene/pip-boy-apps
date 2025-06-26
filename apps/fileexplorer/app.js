@@ -2,7 +2,6 @@
 //  Name: File Explorer
 //  License: CC-BY-NC-4.0
 //  Repository: https://github.com/CodyTolene/pip-boy-apps
-//  Description: Directory and media file explorer for the Pip-Boy 3000 Mk V.
 // =============================================================================
 
 const fs = require('fs');
@@ -12,7 +11,7 @@ function FileExplorer() {
   const self = {};
 
   const APP_NAME = 'File Explorer';
-  const APP_VERSION = '2.1.2';
+  const APP_VERSION = '2.1.3';
 
   const SCREEN_WIDTH = g.getWidth();
   const SCREEN_HEIGHT = g.getHeight();
@@ -209,12 +208,25 @@ function FileExplorer() {
     if (BTN_TUNEDOWN.read()) scrollDown();
     if (BTN_PLAY.read()) selectEntry();
     if (BTN_TORCH.read()) {
-      Pip.audioStop();
-      Pip.videoStop();
-      currentAudio = null;
-      isVideoPlaying = false;
-      E.reboot();
+      const brightnessLevels = [1, 5, 10, 15, 20];
+      const currentIndex = brightnessLevels.findIndex(
+        (level) => level === Pip.brightness,
+      );
+      const nextIndex = (currentIndex + 1) % brightnessLevels.length;
+      Pip.brightness = brightnessLevels[nextIndex];
+      Pip.updateBrightness();
     }
+  }
+
+  function handlePowerButton() {
+    Pip.audioStop();
+    Pip.videoStop();
+
+    currentAudio = null;
+    isVideoPlaying = false;
+
+    bC.clear(1).flip();
+    E.reboot();
   }
 
   function showLoadingScreen() {
@@ -251,6 +263,12 @@ function FileExplorer() {
     Pip.on('knob2', function (dir) {
       if (dir < 0) scrollUp();
       else if (dir > 0) scrollDown();
+    });
+
+    setWatch(() => handlePowerButton(), BTN_POWER, {
+      debounce: 50,
+      edge: 'rising',
+      repeat: !0,
     });
   };
 

@@ -4,8 +4,6 @@
 
 **Author:** @TetrisKid48
 
-**Version:** 1.0.1
-
 **Website(s):**
 
 - [GitHub](https://tetriskid48.github.io)
