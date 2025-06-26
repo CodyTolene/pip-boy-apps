@@ -373,6 +373,7 @@ function CustomRadio() {
   }
 
   function handleTopButton() {
+    // Adjust brightness
     const brightnessLevels = [1, 5, 10, 15, 20];
     const currentIndex = brightnessLevels.findIndex(
       (level) => level === Pip.brightness,
