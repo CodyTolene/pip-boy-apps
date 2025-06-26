@@ -19,10 +19,10 @@ adventures.
 
 ### Controls
 
-- Turn the top-left and top-right knobs to scroll through songs.
-- Press the top-left knob in to play the selected song.
-- Press the top-right torch button to toggle the screen brightness.
-- Press the bottom-right power button to restart the device.
+- Use the top-left and top-right knobs to scroll through songs.
+- Use the top-left knob in to play/stop the currently selected song.
+- Use the top-right torch button to toggle the screen brightness.
+- Use the bottom-right power button to restart the device.
 
 ### Instructions
 
@@ -32,7 +32,6 @@ Uploader feature here: https://pip-boy.com/3000-mk-v-maintenance.
 
 ### Tips
 
-- Press the top-left knob on a currently playing song to stop it.
 - Avoid adding more than ~100 songs to the `/RADIO` folder to keep performance
   smooth.
 - Keep scrolling to get to the next/previous pages, the list paginates by 10
