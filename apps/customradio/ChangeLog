@@ -1,3 +1,8 @@
+3.1.1
+https://github.com/CodyTolene/pip-boy-apps/pull/11
+- Update torch button (top right) to toggle screen brightness when pressed.
+- Update power button (bot right) to restart the device when pressed.
+
 3.1.0
 https://github.com/CodyTolene/pip-boy-apps/pull/5
 - Add Pip-Boy footer with Time and Battery Charge display.

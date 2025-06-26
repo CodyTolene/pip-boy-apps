@@ -11,7 +11,7 @@ function CustomRadio() {
 
   // General
   const APP_NAME = 'Custom Radio';
-  const APP_VERSION = '3.1.0';
+  const APP_VERSION = '3.1.1';
 
   // Screen
   const SCREEN_WIDTH = g.getWidth(); // Width (480px)
@@ -360,11 +360,7 @@ function CustomRadio() {
     }
   }
 
-  function handleRightKnob(dir) {
-    menuScroll(dir);
-  }
-
-  function handleTopButton() {
+  function handlePowerButton() {
     clearFooterBar();
     clearWaveform();
 
@@ -372,6 +368,25 @@ function CustomRadio() {
 
     bC.clear(1).flip();
     E.reboot();
+  }
+
+  function handleRightKnob(dir) {
+    menuScroll(dir);
+  }
+
+  function handleTopButton() {
+    const brightness = [2, 10, 20];
+    const index = brightness.findIndex((a) => a >= Pip.brightness);
+    let nextIndex = index;
+
+    if (index >= brightness.length - 1) {
+      nextIndex = index - 1;
+    } else if (index === 0) {
+      nextIndex = index + 1;
+    }
+
+    Pip.brightness = brightness[nextIndex];
+    Pip.updateBrightness();
   }
 
   function onMusicStopped() {
@@ -477,6 +492,11 @@ function CustomRadio() {
     Pip.on(KNOB_RIGHT, handleRightKnob);
     Pip.on(BTN_TOP, handleTopButton);
     Pip.on(MUSIC_STOPPED, onMusicStopped);
+    setWatch(() => handlePowerButton(), BTN_POWER, {
+      debounce: 50,
+      edge: 'rising',
+      repeat: !0,
+    });
   }
 
   function stopSong() {
