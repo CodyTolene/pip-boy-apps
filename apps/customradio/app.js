@@ -11,7 +11,7 @@ function CustomRadio() {
 
   // General
   const APP_NAME = 'Custom Radio';
-  const APP_VERSION = '3.1.0';
+  const APP_VERSION = '3.1.1';
 
   // Screen
   const SCREEN_WIDTH = g.getWidth(); // Width (480px)
