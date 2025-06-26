@@ -4,8 +4,6 @@
 
 **Author:** Cody Tolene
 
-**Version:** 3.1.1
-
 **Website(s):**
 
 - [Personal Site](https://www.CodyTolene.com)

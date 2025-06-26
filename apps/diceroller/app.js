@@ -2,7 +2,6 @@
 //  Name: Dice Roller
 //  License: CC-BY-NC-4.0
 //  Repository: https://github.com/CodyTolene/pip-boy-apps
-//  Description: A simple dice rolling app for the Pip-Boy 3000 Mk V.
 // =============================================================================
 
 function DiceRoller() {

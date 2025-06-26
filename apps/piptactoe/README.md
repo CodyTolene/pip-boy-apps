@@ -4,8 +4,6 @@
 
 **Author:** @pip-4111
 
-**Version:** 1.1.2
-
 **Website(s):**
 
 - [GitHub](https://github.com/pip-4111)

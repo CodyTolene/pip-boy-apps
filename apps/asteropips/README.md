@@ -4,8 +4,6 @@
 
 **Author:** @killes007
 
-**Version:** 1.0.0
-
 **Website(s):**
 
 - [GitHub](https://github.com/killes007)

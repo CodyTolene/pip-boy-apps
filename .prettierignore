@@ -4,6 +4,7 @@
 # Except these files and directories:
 !.github/CODEOWNERS
 !.scripts/
+!.vscode/
 !apps/
 !README.md
 
