@@ -23,7 +23,7 @@ stimpak breaks.
 - Use the top-right knob to move pieces left and right.
 - Use the front radio tuner button to move pieces faster.
 - Use the top-right torch button to toggle the screen brightness.
-- Use the bottom-right power button to restart the device.
+- Use the bottom-right power button to exit the game.
 
 ### Instructions
 

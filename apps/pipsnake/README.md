@@ -22,7 +22,7 @@ hand-eye coordination during extended shelter stays.
 - Use any knobs to move clockwise and counter-clockwise.
 - Use the front radio tuner button to restart.
 - Use the top-right torch button to toggle the screen brightness.
-- Use the bottom-right power button to restart the device.
+- Use the bottom-right power button to exit the game.
 
 ### Instructions
 

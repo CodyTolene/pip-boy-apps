@@ -22,7 +22,7 @@ adventures.
 - Use the top-left and top-right knobs to scroll through songs.
 - Use the top-left knob in to play/stop the currently selected song.
 - Use the top-right torch button to toggle the screen brightness.
-- Use the bottom-right power button to restart the device.
+- Use the bottom-right power button to exit the app.
 
 ### Instructions
 

@@ -23,7 +23,7 @@ intended.
   scroll.
 - Use the left rotary wheel or front radio tuner to play or stop media.
 - Use the top-right torch button to toggle the screen brightness.
-- Use the bottom-right power button to restart the device.
+- Use the bottom-right power button to exit the app.
 
 ### Instructions
 
