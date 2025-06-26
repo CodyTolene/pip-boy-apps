@@ -11,7 +11,7 @@ function CustomRadio() {
 
   // General
   const APP_NAME = 'Custom Radio';
-  const APP_VERSION = '3.1.1';
+  const APP_VERSION = '3.1.0';
 
   // Screen
   const SCREEN_WIDTH = g.getWidth(); // Width (480px)
@@ -375,17 +375,12 @@ function CustomRadio() {
   }
 
   function handleTopButton() {
-    const brightness = [2, 10, 20];
-    const index = brightness.findIndex((a) => a >= Pip.brightness);
-    let nextIndex = index;
-
-    if (index >= brightness.length - 1) {
-      nextIndex = index - 1;
-    } else if (index === 0) {
-      nextIndex = index + 1;
-    }
-
-    Pip.brightness = brightness[nextIndex];
+    const brightnessLevels = [1, 5, 10, 15, 20];
+    const currentIndex = brightnessLevels.findIndex(
+      (level) => level === Pip.brightness,
+    );
+    const nextIndex = (currentIndex + 1) % brightnessLevels.length;
+    Pip.brightness = brightnessLevels[nextIndex];
     Pip.updateBrightness();
   }
 
