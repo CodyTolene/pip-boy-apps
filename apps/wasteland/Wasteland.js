@@ -1,34 +1,33 @@
 // =============================================================================
 // Name: Wasteland
 // License: CC-BY-NC-4.0
-// Repository: https://github.com/CodyTolene/pip-apps
-// Description: A DOOM inspired RPG engine for the Pip-Boy 3000 Mk V.
+// Repository: https://github.com/CodyTolene/pip-boy-apps
 // =============================================================================
 
 function Wasteland() {
   const self = {};
 
-  const GAME_NAME = "Wasteland";
-  const GAME_VERSION = "1.2.0";
+  const GAME_NAME = 'Wasteland';
+  const GAME_VERSION = '1.2.1';
 
   const SCREEN_WIDTH = g.getWidth();
   const SCREEN_HEIGHT = g.getHeight();
 
-  const COLOR_GREEN = "#0F0";
-  const COLOR_WHITE = "#FFF";
+  const COLOR_GREEN = '#0F0';
+  const COLOR_WHITE = '#FFF';
 
   const MAP = [
-    "###################",
-    "#                 #",
-    "#                 #",
-    "#   ####   ####   #",
-    "#                 #",
-    "#        V        #",
-    "#                 #",
-    "#   ###########   #",
-    "#                 #",
-    "#                 #",
-    "###################",
+    '###################',
+    '#                 #',
+    '#                 #',
+    '#   ####   ####   #',
+    '#                 #',
+    '#        V        #',
+    '#                 #',
+    '#   ###########   #',
+    '#                 #',
+    '#                 #',
+    '###################',
   ];
 
   const NUM_RAYS = 13;
@@ -42,15 +41,31 @@ function Wasteland() {
   const OFFSET_X = PADDING / 3;
 
   const player = { x: 1, y: 1, angle: 0, speed: 1 };
+  let buttonHandlerInterval = null;
+  let startGameInterval = null;
+
+  const KNOB_LEFT = 'knob1';
+  const KNOB_RIGHT = 'knob2';
+  const BTN_TOP = 'torch';
 
   for (let j = 0; j < MAP.length; j++) {
-    const i = MAP[j].indexOf("V");
+    const i = MAP[j].indexOf('V');
     if (i !== -1) {
       player.x = i + 0.5;
       player.y = j + 0.5;
-      MAP[j] = MAP[j].substring(0, i) + " " + MAP[j].substring(i + 1);
+      MAP[j] = MAP[j].substring(0, i) + ' ' + MAP[j].substring(i + 1);
       break;
     }
+  }
+
+  function adjustBrightness() {
+    const brightnessLevels = [1, 5, 10, 15, 20];
+    const currentIndex = brightnessLevels.findIndex(
+      (level) => level === Pip.brightness,
+    );
+    const nextIndex = (currentIndex + 1) % brightnessLevels.length;
+    Pip.brightness = brightnessLevels[nextIndex];
+    Pip.updateBrightness();
   }
 
   function drawFrame() {
@@ -78,7 +93,7 @@ function Wasteland() {
   }
 
   function drawGearIcon(x, y, scale) {
-    g.setColor("#FFF");
+    g.setColor('#FFF');
     const toothLength = 2 * scale;
     const toothOffset = 4 * scale;
     const radius = 3 * scale;
@@ -89,7 +104,7 @@ function Wasteland() {
         x + dx - toothLength / 2,
         y + dy - toothLength / 2,
         x + dx + toothLength / 2,
-        y + dy + toothLength / 2
+        y + dy + toothLength / 2,
       );
     f(-toothOffset, 0);
     f(toothOffset, 0);
@@ -100,14 +115,29 @@ function Wasteland() {
     f(-diag, diag);
     f(diag, diag);
     g.fillCircle(x, y, radius);
-    g.setColor("#000");
+    g.setColor('#000');
     g.fillCircle(x, y, hole);
+  }
+
+  function handlePowerButton() {
+    if (buttonHandlerInterval) {
+      clearInterval(buttonHandlerInterval);
+      buttonHandlerInterval = null;
+    }
+
+    if (startGameInterval) {
+      clearInterval(startGameInterval);
+      startGameInterval = null;
+    }
+
+    bC.clear(1).flip();
+    E.reboot();
   }
 
   function isWall(x, y) {
     const i = Math.floor(x);
     const j = Math.floor(y);
-    return MAP[j] && MAP[j][i] === "#";
+    return MAP[j] && MAP[j][i] === '#';
   }
 
   function moveBackward() {
@@ -118,9 +148,9 @@ function Wasteland() {
     if (!isWall(nx, ny)) {
       player.x = nx;
       player.y = ny;
-      Pip.audioStart("USER/F_STEP.wav");
+      Pip.audioStart('USER/F_STEP.wav');
     } else {
-      Pip.audioStart("USER/OOF.wav");
+      Pip.audioStart('USER/OOF.wav');
     }
     drawFrame();
   }
@@ -133,9 +163,9 @@ function Wasteland() {
     if (!isWall(nx, ny)) {
       player.x = nx;
       player.y = ny;
-      Pip.audioStart("USER/F_STEP.wav");
+      Pip.audioStart('USER/F_STEP.wav');
     } else {
-      Pip.audioStart("USER/OOF.wav");
+      Pip.audioStart('USER/OOF.wav');
     }
     drawFrame();
   }
@@ -144,49 +174,68 @@ function Wasteland() {
     player.angle += (Math.PI / 4) * dir;
     if (player.angle < 0) player.angle += Math.PI * 2;
     else if (player.angle > Math.PI * 2) player.angle -= Math.PI * 2;
-    Pip.audioStart("USER/F_STEP_2.wav");
+    Pip.audioStart('USER/F_STEP_2.wav');
     drawFrame();
   }
 
   self.run = function () {
     g.clear();
     g.setColor(COLOR_GREEN);
-    g.setFont("6x8", 4);
+    g.setFont('6x8', 4);
     g.drawString(GAME_NAME, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 20);
     g.setColor(COLOR_WHITE);
-    g.setFont("6x8", 2);
-    g.drawString("Press   to START", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 15);
-    g.setFont("6x8", 1);
-    g.drawString(" v" + GAME_VERSION, SCREEN_WIDTH / 2 - 5, SCREEN_HEIGHT - 20);
+    g.setFont('6x8', 2);
+    g.drawString('Press   to START', SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 15);
+    g.setFont('6x8', 1);
+    g.drawString(' v' + GAME_VERSION, SCREEN_WIDTH / 2 - 5, SCREEN_HEIGHT - 20);
     drawGearIcon(SCREEN_WIDTH / 2 - 20, SCREEN_HEIGHT / 2 + 15, 2.5);
-    g.setFont("6x8", 1);
+    g.setFont('6x8', 1);
 
-    const waitLoop = setInterval(() => {
+    startGameInterval = setInterval(() => {
       if (BTN_PLAY.read()) {
-        clearInterval(waitLoop);
+        if (startGameInterval) {
+          clearInterval(startGameInterval);
+          startGameInterval = null;
+        }
+
         drawFrame();
 
-        Pip.removeAllListeners("knob1");
-        Pip.on("knob1", function (dir) {
-          if (dir === 0) moveBackward();
-          else rotate(dir);
+        Pip.removeAllListeners(KNOB_LEFT);
+        Pip.on(KNOB_LEFT, function (dir) {
+          if (dir === 0) {
+            moveBackward();
+          } else {
+            rotate(dir);
+          }
         });
 
-        Pip.removeAllListeners("knob2");
-        Pip.on("knob2", function (dir) {
+        Pip.removeAllListeners(KNOB_RIGHT);
+        Pip.on(KNOB_RIGHT, function (dir) {
           rotate(dir);
         });
 
-        const watch = setInterval(() => {
-          if (BTN_PLAY.read()) moveForward();
-          else if (BTN_TORCH.read()) {
-            clearInterval(watch);
-            bC.clear(1).flip();
-            E.reboot();
+        if (buttonHandlerInterval) {
+          clearInterval(buttonHandlerInterval);
+          buttonHandlerInterval = null;
+        }
+        buttonHandlerInterval = setInterval(() => {
+          if (BTN_PLAY.read()) {
+            moveForward();
           }
         }, 100);
       }
     }, 100);
+
+    Pip.removeAllListeners(BTN_TOP);
+    Pip.on(BTN_TOP, function () {
+      adjustBrightness();
+    });
+
+    setWatch(() => handlePowerButton(), BTN_POWER, {
+      debounce: 50,
+      edge: 'rising',
+      repeat: !0,
+    });
   };
 
   return self;

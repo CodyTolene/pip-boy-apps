@@ -1,15 +1,14 @@
 // =============================================================================
 //  Name: Pip-Snake
 //  License: CC-BY-NC-4.0
-//  Repository: https://github.com/CodyTolene/pip-apps
-//  Description: A simple snake game for the Pip-Boy 3000 Mk V.
+//  Repository: https://github.com/CodyTolene/pip-boy-apps
 // =============================================================================
 
 function PipSnake() {
   const self = {};
 
   const GAME_NAME = 'Pip-Snake';
-  const GAME_VERSION = '1.2.0';
+  const GAME_VERSION = '1.2.1';
 
   const SCREEN_WIDTH = g.getWidth();
   const SCREEN_HEIGHT = g.getHeight();
@@ -39,6 +38,16 @@ function PipSnake() {
   let gameOver = 0;
   let gameLoopInterval = 0;
   let score = 0;
+
+  function adjustBrightness() {
+    const brightnessLevels = [1, 5, 10, 15, 20];
+    const currentIndex = brightnessLevels.findIndex(
+      (level) => level === Pip.brightness,
+    );
+    const nextIndex = (currentIndex + 1) % brightnessLevels.length;
+    Pip.brightness = brightnessLevels[nextIndex];
+    Pip.updateBrightness();
+  }
 
   function drawCell(x, y, color) {
     g.setColor(color);
@@ -94,8 +103,6 @@ function PipSnake() {
       directionIndex = (directionIndex + 3) % 4;
     } else if (BTN_TUNEUP.read()) {
       directionIndex = (directionIndex + 1) % 4;
-    } else if (BTN_TORCH.read()) {
-      stopGame();
     } else if (BTN_PLAY.read()) {
       resetGame();
     }
@@ -213,6 +220,17 @@ function PipSnake() {
       if (gameOver) return;
       if (dir < 0) directionIndex = (directionIndex + 3) % 4;
       else if (dir > 0) directionIndex = (directionIndex + 1) % 4;
+    });
+
+    Pip.removeAllListeners('torch');
+    Pip.on('torch', function () {
+      adjustBrightness();
+    });
+
+    setWatch(() => stopGame(), BTN_POWER, {
+      debounce: 50,
+      edge: 'rising',
+      repeat: !0,
     });
   };
 

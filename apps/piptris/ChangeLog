@@ -1,0 +1,38 @@
+2.2.1
+https://github.com/CodyTolene/pip-boy-apps/pull/12
+- Update torch button (top right) to toggle screen brightness when pressed.
+- Update power button (bot right) to restart the device when pressed.
+
+2.2.0
+https://github.com/thewandcompany/pip-boy/pull/5
+- Update app structure to use the new Pip-Boy Mod Tool workflow.
+
+2.1.0
+https://github.com/CodyTolene/pip-apps/pull/66
+- Add new block type (solid, hollow) selector to the start menu.
+- Fix bug of line count not resetting when starting a new game.
+
+2.0.0
+https://github.com/CodyTolene/pip-apps/pull/64
+- Complete revamp of Piptris with better rendering and more responsiveness.
+
+1.1.2
+https://github.com/CodyTolene/pip-apps/pull/60
+- Clean up, further refactoring and optimization of the code.
+
+1.1.1
+https://github.com/CodyTolene/pip-apps/pull/59
+- File minification and compression.
+
+1.1.0
+https://github.com/CodyTolene/pip-apps/pull/58
+- Swap knob mappings: Left knob now rotates shapes, right knob moves them left/right.
+- Add instant drop behavior on left knob press.
+- Fix bug: Moving shape too much/fast into a wall crashed the game.
+- Refactor to ES6 class (doesn't work with minification it seems, undone): Encapsulated all state and behavior inside a Piptris class function body.
+- Converted .forEach calls to for loops for better performance.
+- Debounce knob input: Prevented accidental multiple inputs due to hardware noise.
+
+1.0.0
+https://github.com/CodyTolene/pip-apps/pull/56
+- Add new app.

@@ -1,15 +1,14 @@
 // =============================================================================
 //  Name: Piptris
 //  License: CC-BY-NC-4.0
-//  Repository: https://github.com/CodyTolene/pip-apps
-//  Description: A simple Tetris inspired game for the Pip-Boy 3000 Mk V.
+//  Repository: https://github.com/CodyTolene/pip-boy-apps
 // =============================================================================
 
 function Piptris() {
   const self = {};
 
   const GAME_NAME = 'Piptris';
-  const GAME_VERSION = '2.2.0';
+  const GAME_VERSION = '2.2.1';
 
   // Game State
   let blockCurrent = null;
@@ -538,17 +537,28 @@ function Piptris() {
     }
   }
 
-  function handleRightKnob(dir) {
-    move(dir > 0 ? 1 : -1);
-  }
-
-  function handleTopButton() {
+  function handlePowerButton() {
     removeListeners();
 
     clearInterval(mainLoopInterval);
 
     bC.clear(1).flip();
     E.reboot();
+  }
+
+  function handleRightKnob(dir) {
+    move(dir > 0 ? 1 : -1);
+  }
+
+  function handleTopButton() {
+    // Adjust brightness
+    const brightnessLevels = [1, 5, 10, 15, 20];
+    const currentIndex = brightnessLevels.findIndex(
+      (level) => level === Pip.brightness,
+    );
+    const nextIndex = (currentIndex + 1) % brightnessLevels.length;
+    Pip.brightness = brightnessLevels[nextIndex];
+    Pip.updateBrightness();
   }
 
   function merge(piece) {
@@ -705,15 +715,24 @@ function Piptris() {
 
     Pip.on(KNOB_LEFT, togglePreviewStyle);
     Pip.on(KNOB_RIGHT, togglePreviewStyle);
+    Pip.on(BTN_TOP, handleTopButton);
 
     inputInterval = setInterval(() => {
       if (BTN_PLAY.read()) {
         clearInterval(inputInterval);
         Pip.removeListener(KNOB_LEFT, togglePreviewStyle);
         Pip.removeListener(KNOB_RIGHT, togglePreviewStyle);
+        Pip.removeAllListeners(BTN_TOP);
         startGame();
       }
     }, 100);
+
+    // Handle power button press to restart the device
+    setWatch(() => handlePowerButton(), BTN_POWER, {
+      debounce: 50,
+      edge: 'rising',
+      repeat: !0,
+    });
   };
 
   return self;

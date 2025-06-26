@@ -45,6 +45,11 @@
   padding: 10px;
   width: 49%;
 }
+@media (max-width: 650px) {
+  .panel-body .column {
+    width: 100%;
+  }
+}
 .panel-body,.panel {
   padding-bottom: 10px;
 }

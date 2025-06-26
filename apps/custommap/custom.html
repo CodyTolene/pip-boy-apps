@@ -1,21 +1,36 @@
 <html>
   <head>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../../css/spectre.min.css">
-    <link rel="stylesheet" href="../../css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../css/spectre.min.css" />
+    <link rel="stylesheet" href="../../css/main.css" />
   </head>
   <body>
-
     <h2>Custom Map</h2>
     <p></p>
 
     <p>Upload an image (2048x2048px):</p>
-    <p><input class="form-input" id="customfile" type="file"></p>
-    <div style="float:right">Preview:<br/><canvas id="preview" style="width:256px;height:256px"></canvas></div>
-    <img class="thumbnail" id="customimage" src="" face="custom" style="display:none"/>
-    <p><button id="upload" class="btn btn-primary disabled" style>Upload</button></p>
+    <p><input class="form-input" id="customfile" type="file" /></p>
+    <div style="float: right">
+      Preview:<br /><canvas
+        id="preview"
+        style="width: 256px; height: 256px"
+      ></canvas>
+    </div>
+    <img
+      class="thumbnail"
+      id="customimage"
+      src=""
+      face="custom"
+      style="display: none"
+    />
+    <p>
+      <button id="upload" class="btn btn-primary disabled" style>Upload</button>
+    </p>
 
     <script src="../../core/lib/customize.js"></script>
     <script src="../../webtools/imageconverter.js"></script>
@@ -26,36 +41,40 @@
       var mapImage = undefined;
 
       function drawPreview() {
-        var img = document.getElementById("customimage");
-        const canvas = document.getElementById("preview");
+        var img = document.getElementById('customimage');
+        const canvas = document.getElementById('preview');
         canvas.width = MAPSIZE; // setting size clears canvas
         canvas.height = MAPSIZE;
-        const ctx = canvas.getContext("2d",{willReadFrequently:true});
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
         var y = 0;
         ctx.drawImage(img, 0, 0, 2048, 2048);
         var options = {
-          mode:"2bitbw",
-          output:"raw",
-          transparent:false,
-          compression:false
+          mode: '2bitbw',
+          output: 'raw',
+          transparent: false,
+          compression: false,
           //diffusion:dither,
           //contrast: brightness ? -64 : 64,
           //brightness:64*brightness
         };
-        mapImage = "";
-        for (var y=0;y<MAPSIZE;y+=TILESIZE) {
-          for (var x=0;x<MAPSIZE;x+=TILESIZE) {
+        mapImage = '';
+        for (var y = 0; y < MAPSIZE; y += TILESIZE) {
+          for (var x = 0; x < MAPSIZE; x += TILESIZE) {
             let imageData = ctx.getImageData(x, y, TILESIZE, TILESIZE);
             let rgba = imageData.data;
             options.rgbaOut = rgba;
             options.width = TILESIZE;
             options.height = TILESIZE;
             mapImage += imageconverter.RGBAtoString(rgba, options).substr(3); // convert image, cut off the header
-            let outputImageData = new ImageData(options.rgbaOut, options.width, options.height);
-            ctx.putImageData(outputImageData,x,y);
+            let outputImageData = new ImageData(
+              options.rgbaOut,
+              options.width,
+              options.height,
+            );
+            ctx.putImageData(outputImageData, x, y);
           }
         }
-        document.getElementById("upload").classList.remove("disabled")
+        document.getElementById('upload').classList.remove('disabled');
       }
 
       // If options changed
@@ -63,35 +82,30 @@
         drawPreview();
       });*/
 
-
       // Custom image upload
       document.getElementById('customfile').onchange = function (evt) {
-      var tgt = evt.target || window.event.srcElement, files = tgt.files;
-      if (FileReader && files && files.length) {
-        var fr = new FileReader();
-        fr.onload = function () {
-          document.getElementById("customimage").onload = drawPreview;
-          document.getElementById("customimage").src = fr.result;
+        var tgt = evt.target || window.event.srcElement,
+          files = tgt.files;
+        if (FileReader && files && files.length) {
+          var fr = new FileReader();
+          fr.onload = function () {
+            document.getElementById('customimage').onload = drawPreview;
+            document.getElementById('customimage').src = fr.result;
+          };
+          fr.readAsDataURL(files[0]);
         }
-        fr.readAsDataURL(files[0]);
-      }
-    }
+      };
       // When the 'upload' button is clicked...
-      document.getElementById("upload").addEventListener("click", function() {
-        var js = "";
+      document.getElementById('upload').addEventListener('click', function () {
+        var js = '';
 
         sendCustomizedApp({
-          storage:[
-            {name:"MAP/MAP.img", content:mapImage},
-          ]
+          storage: [{ name: 'MAP/MAP.img', content: mapImage }],
         });
       });
 
-
       // Called when we know what device we're using
-      function onInit(device) {
-      }
-
+      function onInit(device) {}
     </script>
   </body>
 </html>

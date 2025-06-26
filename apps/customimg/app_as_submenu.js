@@ -3,8 +3,10 @@ delete Pip.removeSubmenu;
 
 {
   // load start screen
-  let f = E.openFile("USER/customimg.img","r");
-  let o = 0, a = new Uint8Array(bC.buffer), b = f.read(2048);
+  let f = E.openFile('USER/customimg.img', 'r');
+  let o = 0,
+    a = new Uint8Array(bC.buffer),
+    b = f.read(2048);
   while (b) {
     a.set(b, o);
     o += b.length;
@@ -24,11 +26,11 @@ delete Pip.removeSubmenu;
   }
 
   let interval = setInterval(() => bC.flip(), 25);
-  Pip.on("knob1", onKnob);
-  Pip.on("knob2", onKnob);
-  Pip.removeSubmenu = function() {
-    Pip.removeListener("knob1", onKnob);
-    Pip.removeListener("knob2", onKnob);
+  Pip.on('knob1', onKnob);
+  Pip.on('knob2', onKnob);
+  Pip.removeSubmenu = function () {
+    Pip.removeListener('knob1', onKnob);
+    Pip.removeListener('knob2', onKnob);
     if (interval) clearInterval(interval);
     interval = undefined;
   };

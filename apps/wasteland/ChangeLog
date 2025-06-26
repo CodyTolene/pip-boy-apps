@@ -1,0 +1,16 @@
+1.2.1
+https://github.com/CodyTolene/pip-boy-apps/pull/12
+- Update torch button (top right) to toggle screen brightness when pressed.
+- Update power button (bot right) to restart the device when pressed.
+
+1.2.0
+https://github.com/thewandcompany/pip-boy/pull/8
+- Update app structure to use the new Pip-Boy Mod Tool workflow.
+
+1.1.0
+https://github.com/CodyTolene/pip-apps/pull/60
+- File minification and compression.
+
+1.0.0
+https://github.com/CodyTolene/pip-apps/pull/42
+- Add new app.

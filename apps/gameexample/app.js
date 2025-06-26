@@ -1,8 +1,7 @@
 // =============================================================================
 //  Name: Game Example
 //  License: CC-BY-NC-4.0
-//  Repository: https://github.com/CodyTolene/pip-apps
-//  Description: A simple game example for the Pip-Boy 3000 Mk V.
+//  Repository: https://github.com/CodyTolene/pip-boy-apps
 // =============================================================================
 
 function GameExample() {
@@ -10,7 +9,7 @@ function GameExample() {
 
   // General
   const GAME_NAME = 'Game';
-  const GAME_VERSION = '1.0.0';
+  const GAME_VERSION = '1.0.2';
 
   // Intervals
   const MAIN_LOOP_SPEED_MS = 1000 / 60; // 60 FPS
@@ -137,6 +136,17 @@ function GameExample() {
     }
   }
 
+  function handlePowerButton() {
+    Pip.removeAllListeners(KNOB_LEFT);
+    Pip.removeAllListeners(KNOB_RIGHT);
+    Pip.removeAllListeners(BTN_TOP);
+
+    clearInterval(mainLoopInterval);
+
+    g.clear();
+    E.reboot();
+  }
+
   function handleRightKnob(dir) {
     if (dir !== 0) {
       eraseBlock();
@@ -161,14 +171,13 @@ function GameExample() {
   }
 
   function handleTopButton() {
-    Pip.removeAllListeners(KNOB_LEFT);
-    Pip.removeAllListeners(KNOB_RIGHT);
-    Pip.removeAllListeners(BTN_TOP);
-
-    clearInterval(mainLoopInterval);
-
-    g.clear();
-    E.reboot();
+    const brightnessLevels = [1, 5, 10, 15, 20];
+    const currentIndex = brightnessLevels.findIndex(
+      (level) => level === Pip.brightness,
+    );
+    const nextIndex = (currentIndex + 1) % brightnessLevels.length;
+    Pip.brightness = brightnessLevels[nextIndex];
+    Pip.updateBrightness();
   }
 
   function mainLoop() {
@@ -202,6 +211,12 @@ function GameExample() {
     Pip.on(BTN_TOP, handleTopButton);
 
     mainLoopInterval = setInterval(mainLoop, MAIN_LOOP_SPEED_MS);
+
+    setWatch(() => handlePowerButton(), BTN_POWER, {
+      debounce: 50,
+      edge: 'rising',
+      repeat: !0,
+    });
   };
 
   return self;

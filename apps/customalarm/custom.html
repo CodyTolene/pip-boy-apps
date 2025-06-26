@@ -1,33 +1,42 @@
 <html>
   <head>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../../css/spectre.min.css">
-    <link rel="stylesheet" href="../../css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../css/spectre.min.css" />
+    <link rel="stylesheet" href="../../css/main.css" />
   </head>
   <body>
     <p>Upload a (less than 10 sec) audio file:</p>
-    <p><input class="form-input" id="fileInput" type="file"></p>
+    <p><input class="form-input" id="fileInput" type="file" /></p>
 
-    <p><button id="upload" class="btn btn-primary disabled" style>Upload</button></p>
+    <p>
+      <button id="upload" class="btn btn-primary disabled" style>Upload</button>
+    </p>
 
     <script src="../../core/lib/customize.js"></script>
 
-
     <script>
       const fileInput = document.getElementById('fileInput');
-      let wavContents = "";
+      let wavContents = '';
 
       fileInput.addEventListener('change', (event) => {
         const file = event.target.files[0];
         const SAMPLERATE = 16000;
-        const offlineAudioContext = new OfflineAudioContext(1, SAMPLERATE*10/*buffer length*/, SAMPLERATE);
+        const offlineAudioContext = new OfflineAudioContext(
+          1,
+          SAMPLERATE * 10 /*buffer length*/,
+          SAMPLERATE,
+        );
 
         const reader = new FileReader();
         reader.onload = (e) => {
-          offlineAudioContext.decodeAudioData(e.target.result)
-            .then(audioBuffer => {
+          offlineAudioContext
+            .decodeAudioData(e.target.result)
+            .then((audioBuffer) => {
               const bufferLength = audioBuffer.length;
               const numberOfChannels = audioBuffer.numberOfChannels;
 
@@ -37,17 +46,62 @@
               // TODO: could average channels?
 
               // convert it to 16 bit format and append)
-              wavContents = String.fromCharCode(82, 73, 70, 70, 134, 2, 0, 0, 87, 65, 86, 69, 102, 109, 116, 32, 16, 0, 0, 0, 1, 0, 1, 0, 128, 62, 0, 0, 0, 125, 0, 0, 2, 0, 16, 0, 100, 97, 116, 97, 98, 2, 0, 0);
+              wavContents = String.fromCharCode(
+                82,
+                73,
+                70,
+                70,
+                134,
+                2,
+                0,
+                0,
+                87,
+                65,
+                86,
+                69,
+                102,
+                109,
+                116,
+                32,
+                16,
+                0,
+                0,
+                0,
+                1,
+                0,
+                1,
+                0,
+                128,
+                62,
+                0,
+                0,
+                0,
+                125,
+                0,
+                0,
+                2,
+                0,
+                16,
+                0,
+                100,
+                97,
+                116,
+                97,
+                98,
+                2,
+                0,
+                0,
+              );
               for (let i = 0; i < pcmData.length; i++) {
                 var v = Math.round(pcmData[i] * 32767); // we expect this to wrap over negative->positive anyway
-                if (v<-32768) v=-32768;
-                if (v>32767) v=32767;
-                wavContents += String.fromCharCode(v&255,v>>8);
+                if (v < -32768) v = -32768;
+                if (v > 32767) v = 32767;
+                wavContents += String.fromCharCode(v & 255, v >> 8);
               }
 
-              document.getElementById("upload").classList.remove("disabled");
+              document.getElementById('upload').classList.remove('disabled');
             })
-            .catch(error => {
+            .catch((error) => {
               console.error('Error decoding audio data:', error);
             });
         };
@@ -55,21 +109,16 @@
       });
 
       // When the 'upload' button is clicked...
-      document.getElementById("upload").addEventListener("click", function() {
-        var js = "";
-        Util.showModal("Uploading...");
+      document.getElementById('upload').addEventListener('click', function () {
+        var js = '';
+        Util.showModal('Uploading...');
         sendCustomizedApp({
-          storage:[
-            {name:"ALARM/CUSTOM.WAV", content:wavContents},
-          ]
+          storage: [{ name: 'ALARM/CUSTOM.WAV', content: wavContents }],
         });
       });
 
-
       // Called when we know what device we're using
-      function onInit(device) {
-      }
-
+      function onInit(device) {}
     </script>
   </body>
 </html>

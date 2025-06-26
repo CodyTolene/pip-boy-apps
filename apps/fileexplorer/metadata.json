@@ -1,12 +1,12 @@
 {
   "id": "fileexplorer",
   "name": "File Explorer",
-  "version": "2.1.1",
+  "version": "2.1.3",
   "description": "Seamlessly browse your system's directories and view pre-approved images and videos. Designed for clarity, built for the future, just the way Vault-Tec intended.",
   "icon": "fileexplorer.png",
   "tags": "utility",
   "type": "app",
   "readme": "README.md",
   "custom": "",
-  "storage": [{ "name": "USER/FileExplorer.js", "url": "FileExplorer.js" }]
+  "storage": [{ "name": "USER/fileexplorer.js", "url": "app.min.js" }]
 }
