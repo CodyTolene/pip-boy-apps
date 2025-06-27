@@ -12,12 +12,14 @@ function PortaHack() {
   let correctPassword = null;
   let cursorCol = 0;
   let cursorRow = 0;
+  let gameOverCooldown = 0;
+  let isGameOver = false;
   let junkLinesLeft = [];
   let junkLinesRight = [];
   let selectedWord = null;
 
   // Intervals
-  let mainLoopInterval = null;
+  let playButtonInterval = null;
   let gameOverInterval = null;
 
   // Font
@@ -166,22 +168,24 @@ function PortaHack() {
 
     const padding = ATTEMPT_COUNTER.padding;
     const textHeight = ATTEMPT_COUNTER.textHeight;
-    let text = attemptsRemaining + ' ATTEMPT(S) LEFT: ';
-    // Draw the number of attempts left
-    for (let i = 0; i < attemptsRemaining; i++) {
-      // TODO - Replace `[i]` with square characters
-      text += '[' + (i + 1) + '] ';
-    }
+    const y = ATTEMPT_COUNTER_XY.y1 + textHeight + padding;
+    let text = attemptsRemaining + ' ATTEMPT(S) LEFT:';
 
     gb.setColor(GREEN)
       .setFont(FONT)
       .setFontAlign(-1, -1)
-      .drawString(
-        text,
-        ATTEMPT_COUNTER_XY.x1 + padding,
-        // Please on second of three lines
-        ATTEMPT_COUNTER_XY.y1 + textHeight + padding,
-      );
+      .drawString(text, ATTEMPT_COUNTER_XY.x1 + padding, y);
+
+    const boxSize = 8;
+    const boxPadding = 5;
+    const startX =
+      ATTEMPT_COUNTER_XY.x1 + padding + gb.stringWidth(text) + boxPadding;
+
+    // Draw attempt boxes
+    for (let i = 0; i < attemptsRemaining; i++) {
+      const x = startX + i * (boxSize + boxPadding);
+      gb.setColor(GREEN).fillRect(x, y, x + boxSize, y + boxSize);
+    }
   }
 
   function drawBoundaries(area) {
@@ -259,11 +263,11 @@ function PortaHack() {
   }
 
   function drawGameOverScreen() {
-    // Clear entire screen
+    isGameOver = true;
+    gameOverCooldown = Date.now() + 1000;
     clearScreen();
     removeListeners();
 
-    // Draw "GAME OVER" center screen
     const gameOverText = 'GAME OVER';
     gb.setColor(GREEN)
       .setFontMonofonto18()
@@ -271,10 +275,9 @@ function PortaHack() {
       .drawString(
         gameOverText,
         (SCREEN_WIDTH - gb.stringWidth(gameOverText)) / 2,
-        (SCREEN_HEIGHT - FONT_HEIGHT) / 2,
+        SCREEN_HEIGHT / 2,
       );
 
-    // Draw "Press Play to restart" below "GAME OVER"
     const replayText = 'Press play to restart';
     gb.setColor(GREEN_DARK)
       .setFontMonofonto16()
@@ -282,7 +285,7 @@ function PortaHack() {
       .drawString(
         replayText,
         (SCREEN_WIDTH - gb.stringWidth(replayText)) / 2,
-        (SCREEN_HEIGHT - FONT_HEIGHT) / 2 + 30,
+        SCREEN_HEIGHT / 2 + 30,
       );
 
     if (gameOverInterval) {
@@ -294,7 +297,7 @@ function PortaHack() {
     let playHandled = false;
     gameOverInterval = setInterval(() => {
       // When play button is pressed, restart the game
-      if (BTN_PLAY.read()) {
+      if (Date.now() >= gameOverCooldown && BTN_PLAY.read()) {
         if (!playHandled) {
           playHandled = true;
           clearInterval(gameOverInterval);
@@ -304,7 +307,7 @@ function PortaHack() {
       } else {
         playHandled = false;
       }
-    }, 100);
+    }, FPS);
   }
 
   function drawHeader() {
@@ -339,7 +342,7 @@ function PortaHack() {
     }
   }
 
-  function drawPasswordGrid(passwords, area, startAddress, junkLines, isLeft) {
+  function drawPasswordGrid(passwords, area, startAddress, junkLines) {
     const lineHeight = 10;
     gb.setFont('6x8').setFontAlign(-1, -1);
 
@@ -382,6 +385,8 @@ function PortaHack() {
   }
 
   function drawSuccessScreen() {
+    isGameOver = true;
+    gameOverCooldown = Date.now() + 1000;
     clearScreen();
     removeListeners();
 
@@ -392,17 +397,17 @@ function PortaHack() {
       .drawString(
         successText,
         (SCREEN_WIDTH - gb.stringWidth(successText)) / 2,
-        (SCREEN_HEIGHT - FONT_HEIGHT) / 2,
+        SCREEN_HEIGHT / 2,
       );
 
-    const proceedText = 'Press play to restart';
+    const replayText = 'Press play to restart';
     gb.setColor(GREEN_DARK)
       .setFontMonofonto16()
       .setFontAlign(-1, -1)
       .drawString(
-        proceedText,
-        (SCREEN_WIDTH - gb.stringWidth(proceedText)) / 2,
-        (SCREEN_HEIGHT - FONT_HEIGHT) / 2 + 30,
+        replayText,
+        (SCREEN_WIDTH - gb.stringWidth(replayText)) / 2,
+        SCREEN_HEIGHT / 2 + 30,
       );
 
     if (gameOverInterval) {
@@ -412,7 +417,8 @@ function PortaHack() {
 
     let playHandled = false;
     gameOverInterval = setInterval(() => {
-      if (BTN_PLAY.read()) {
+      // When play button is pressed, restart the game
+      if (Date.now() >= gameOverCooldown && BTN_PLAY.read()) {
         if (!playHandled) {
           playHandled = true;
           clearInterval(gameOverInterval);
@@ -422,7 +428,7 @@ function PortaHack() {
       } else {
         playHandled = false;
       }
-    }, 100);
+    }, FPS);
   }
 
   function getJunkLine(len, embedWord) {
@@ -472,20 +478,29 @@ function PortaHack() {
   }
 
   function handlePlayButton() {
-    let now = Date.now();
-    if (now - lastPlayPressTime < KNOB_DEBOUNCE) {
-      return;
-    }
-    lastPlayPressTime = now;
+    const playState = BTN_PLAY.read();
+    const now = Date.now();
 
-    select();
+    if (
+      playState &&
+      !lastPlayState &&
+      now - lastPlayPressTime >= KNOB_DEBOUNCE
+    ) {
+      lastPlayPressTime = now;
+
+      if (!isGameOver) {
+        select();
+      }
+    }
+
+    lastPlayState = playState;
   }
 
   function handlePowerButton() {
     removeListeners();
 
-    if (mainLoopInterval) {
-      clearInterval(mainLoopInterval);
+    if (playButtonInterval) {
+      clearInterval(playButtonInterval);
     }
 
     bC.clear(1).flip();
@@ -537,14 +552,6 @@ function PortaHack() {
     Pip.updateBrightness();
   }
 
-  function main() {
-    const playState = BTN_PLAY.read();
-    if (playState && !lastPlayState) {
-      handlePlayButton();
-    }
-    lastPlayState = playState;
-  }
-
   function removeListeners() {
     Pip.removeAllListeners(KNOB_LEFT);
     Pip.removeAllListeners(KNOB_RIGHT);
@@ -556,10 +563,12 @@ function PortaHack() {
       clearInterval(gameOverInterval);
       gameOverInterval = null;
     }
-    if (mainLoopInterval) {
-      clearInterval(mainLoopInterval);
-      mainLoopInterval = null;
+    if (playButtonInterval) {
+      clearInterval(playButtonInterval);
+      playButtonInterval = null;
     }
+
+    isGameOver = false;
 
     cursorCol = 0;
     cursorRow = 0;
@@ -691,14 +700,12 @@ function PortaHack() {
       PASSWORD_GRID_LEFT_XY,
       0x964,
       junkLinesLeft,
-      true,
     );
     drawPasswordGrid(
       RIGHT_PASSWORDS,
       PASSWORD_GRID_RIGHT_XY,
       0xa30,
       junkLinesRight,
-      false,
     );
 
     drawBoundaries(SCREEN_XY);
@@ -714,10 +721,10 @@ function PortaHack() {
     if (gameOverInterval) {
       clearInterval(gameOverInterval);
     }
-    if (mainLoopInterval) {
-      clearInterval(mainLoopInterval);
+    if (playButtonInterval) {
+      clearInterval(playButtonInterval);
     }
-    mainLoopInterval = setInterval(main, FPS);
+    playButtonInterval = setInterval(handlePlayButton, FPS);
   }
 
   self.run = function () {
