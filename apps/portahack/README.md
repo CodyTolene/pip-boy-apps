@@ -13,8 +13,9 @@ A recreation of the in-game hacking sequence, played right from your wrist!
 
 ### Controls
 
-- Use the left dial moves cursor left and right, press to select.
+- Use the left dial moves cursor left and right.
 - Use the right dial moves cursor up and down.
+- Use the front radio play button or the left dial button to select a word.
 - Use the top-right torch button to toggle the screen brightness.
 - Use the bottom-right power button to exit the game.
 
