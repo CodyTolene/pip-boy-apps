@@ -65,14 +65,22 @@ function PortaHack() {
   };
 
   // Password Grids
-  const GRID_LEFT_XY = {
+  const PASSWORD_GRID_LEFT_XY = {
     x1: SCREEN_XY.x1,
-    x2: SCREEN_XY.x1 + (SCREEN_XY.x2 - SCREEN_XY.x1) / 2,
+    x2: SCREEN_XY.x1 + (SCREEN_XY.x2 - SCREEN_XY.x1) * 0.38,
     y1: ATTEMPT_COUNTER_XY.y2,
     y2: SCREEN_XY.y2,
   };
-  const GRID_RIGHT_XY = {
-    x1: SCREEN_XY.x1 + (SCREEN_XY.x2 - SCREEN_XY.x1) / 2,
+  const PASSWORD_GRID_RIGHT_XY = {
+    x1: PASSWORD_GRID_LEFT_XY.x2,
+    x2: PASSWORD_GRID_LEFT_XY.x2 + (SCREEN_XY.x2 - SCREEN_XY.x1) * 0.38,
+    y1: ATTEMPT_COUNTER_XY.y2,
+    y2: SCREEN_XY.y2,
+  };
+
+  // Log of selected passwords
+  const LOG_XY = {
+    x1: PASSWORD_GRID_RIGHT_XY.x2,
     x2: SCREEN_XY.x2,
     y1: ATTEMPT_COUNTER_XY.y2,
     y2: SCREEN_XY.y2,
@@ -103,6 +111,12 @@ function PortaHack() {
   }
 
   function drawAttemptCounter(attemptsRemaining) {
+    if (attemptsRemaining < 0 || attemptsRemaining > MAX_ATTEMPTS) {
+      throw new Error(
+        'Invalid number of attempts remaining: ' + attemptsRemaining,
+      );
+    }
+
     // Clear previous
     gb.setColor(BLACK).fillRect(ATTEMPT_COUNTER_XY);
 
@@ -146,7 +160,7 @@ function PortaHack() {
       .setFont('6x' + textHeight)
       .setFontAlign(-1, -1)
       .drawString(
-        text,
+        text.toUpperCase(),
         HEADER_XY.x1 + HEADER.padding,
         HEADER_XY.y1 + HEADER.padding,
       );
@@ -180,8 +194,8 @@ function PortaHack() {
   }
 
   self.run = function () {
-    if (!gb) {
-      throw new Error('Pip-Boy graphics buffer not available!');
+    if (!gb || !bC) {
+      throw new Error('Pip-Boy graphics not available!');
     }
 
     bC.clear();
@@ -195,8 +209,9 @@ function PortaHack() {
     drawBoundaries(HEADER_XY);
     drawBoundaries(PASSWORD_MESSAGE_XY);
     drawBoundaries(ATTEMPT_COUNTER_XY);
-    drawBoundaries(GRID_LEFT_XY);
-    drawBoundaries(GRID_RIGHT_XY);
+    drawBoundaries(PASSWORD_GRID_LEFT_XY);
+    drawBoundaries(PASSWORD_GRID_RIGHT_XY);
+    drawBoundaries(LOG_XY);
   };
 
   return self;
