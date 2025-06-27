@@ -5,10 +5,16 @@ function PortaHack() {
   const GAME_VERSION = '1.0.0';
   const DEBUG = false;
 
-  // Game mechanics
+  // Game
   const FPS = 1000 / 60;
   const MAX_ATTEMPTS = 4;
   let attemptsRemaining = MAX_ATTEMPTS;
+  let correctPassword = null;
+  let cursorCol = 0;
+  let cursorRow = 0;
+  let junkLinesLeft = [];
+  let junkLinesRight = [];
+  let selectedWord = null;
 
   // Intervals
   let mainLoopInterval = null;
@@ -137,12 +143,7 @@ function PortaHack() {
   const KNOB_DEBOUNCE = 100;
   let lastLeftKnobTime = 0;
   let lastPlayPressTime = 0;
-
-  let cursorRow = 0;
-  let cursorCol = 0;
-  let selectedWord = null;
-  let junkLinesLeft = [];
-  let junkLinesRight = [];
+  let lastPlayState = false;
 
   function clearScreen() {
     gb.setColor(BLACK).fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -277,17 +278,10 @@ function PortaHack() {
     gb.setColor(BLACK).fillRect(LOG_XY);
     gb.setFont('6x8').setFontAlign(-1, -1);
 
-    const seen = {};
     for (let i = 0; i < entriesToShow.length; i++) {
       const y = LOG_XY.y2 - lineHeight * (entriesToShow.length - i);
       const entry = entriesToShow[i];
-      const isUsedMessage = entry === '> Recheck Fail';
-      const base = entry.startsWith('> ') ? entry : '';
-      const isTriedWord = !isUsedMessage && seen[base];
-      seen[base] = true;
-
-      gb.setColor(isUsedMessage ? GREEN : isTriedWord ? GREEN_DARKER : GREEN);
-      gb.drawString(entry, LOG_XY.x1 + 2, y);
+      gb.setColor(GREEN).drawString(entry, LOG_XY.x1 + 2, y);
     }
   }
 
@@ -314,10 +308,14 @@ function PortaHack() {
     // Clear previous.
     gb.setColor(BLACK).fillRect(PASSWORD_MESSAGE_XY);
 
-    const isWarning = attemptsRemaining <= 1;
-    const text = isWarning
-      ? '!!! WARNING: LOCKOUT IMMINENT !!!'
-      : 'ENTER PASSWORD NOW';
+    let text = '';
+    if (attemptsRemaining <= 0) {
+      text = '!!! ACCESS DENIED !!!';
+    } else if (attemptsRemaining === 1) {
+      text = '!!! WARNING: LOCKOUT IMMINENT !!!';
+    } else {
+      text = 'ENTER PASSWORD NOW';
+    }
 
     gb.setColor(GREEN)
       .setFont(FONT)
@@ -442,9 +440,11 @@ function PortaHack() {
   }
 
   function main() {
-    if (BTN_PLAY.read()) {
+    const playState = BTN_PLAY.read();
+    if (playState && !lastPlayState) {
       handlePlayButton();
     }
+    lastPlayState = playState;
   }
 
   function removeListeners() {
@@ -470,20 +470,42 @@ function PortaHack() {
     const lineHeight = 10;
     const maxLines = Math.floor((LOG_XY.y2 - LOG_XY.y1) / lineHeight);
 
+    if (attemptsRemaining <= 0) return;
+
     if (inWord) {
       selectedWord = junk.line.substr(junk.embedAt, word.length);
-      if (logEntries.includes('> ' + selectedWord)) {
-        // Already used, push both lines
-        if (logEntries.length >= maxLines - 1) {
-          logEntries = logEntries.slice(2);
-        }
+      const existing = logEntries.findIndex((e) => e === '> ' + selectedWord);
+      if (existing !== -1) {
+        const likenessLine = logEntries[existing + 1];
         logEntries.push('> ' + selectedWord);
-        logEntries.push('> Recheck Fail');
+        if (likenessLine && likenessLine.startsWith('> Likeness')) {
+          logEntries.push(likenessLine);
+        }
       } else {
-        if (logEntries.length >= maxLines) {
-          logEntries.shift();
+        if (selectedWord === correctPassword) {
+          logEntries.push('> ' + selectedWord);
+          logEntries.push('> ACCESS GRANTED');
+        } else {
+          let likeness = 0;
+          for (
+            let i = 0;
+            i < Math.min(selectedWord.length, correctPassword.length);
+            i++
+          ) {
+            if (selectedWord[i] === correctPassword[i]) likeness++;
+          }
+          while (logEntries.length >= maxLines - 1) {
+            logEntries.shift();
+          }
+          logEntries.push('> ' + selectedWord);
+          logEntries.push('> Likeness = ' + likeness);
+          attemptsRemaining--;
+          drawAttemptCounter();
+          drawPasswordMessage();
+          if (attemptsRemaining === 0) {
+            logEntries.push('> ACCESS DENIED');
+          }
         }
-        logEntries.push('> ' + selectedWord);
       }
     } else {
       selectedWord = junk.line[cursorCol];
@@ -519,6 +541,10 @@ function PortaHack() {
     ) {
       throw new Error('Mismatch between password lists and junk lines');
     }
+
+    const allPasswords = LEFT_PASSWORDS.concat(RIGHT_PASSWORDS);
+    correctPassword = allPasswords[(Math.random() * allPasswords.length) | 0];
+    console.log('Password: ', correctPassword);
   }
 
   self.run = function () {
