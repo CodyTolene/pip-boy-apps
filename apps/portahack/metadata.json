@@ -1,0 +1,12 @@
+{
+  "id": "portahack",
+  "name": "Porta Hack",
+  "version": "1.0.0",
+  "description": "A recreation of the in-game hacking sequence, played right from your wrist",
+  "icon": "portahack.png",
+  "tags": "",
+  "type": "app",
+  "readme": "README.md",
+  "custom": "",
+  "storage": [{ "name": "USER/portahack.js", "url": "PortaHack.min.js" }]
+}
