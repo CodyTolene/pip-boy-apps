@@ -283,7 +283,7 @@ function PortaHack() {
       .drawString(
         gameOverText,
         (SCREEN_WIDTH - gb.stringWidth(gameOverText)) / 2,
-        SCREEN_HEIGHT / 2,
+        SCREEN_HEIGHT / 3,
       );
 
     const replayText = 'Press play to restart';
@@ -293,7 +293,7 @@ function PortaHack() {
       .drawString(
         replayText,
         (SCREEN_WIDTH - gb.stringWidth(replayText)) / 2,
-        SCREEN_HEIGHT / 2 + 30,
+        SCREEN_HEIGHT / 3 + 30,
       );
 
     if (gameOverInterval) {
@@ -405,7 +405,7 @@ function PortaHack() {
       .drawString(
         successText,
         (SCREEN_WIDTH - gb.stringWidth(successText)) / 2,
-        SCREEN_HEIGHT / 2,
+        SCREEN_HEIGHT / 3,
       );
 
     const replayText = 'Press play to restart';
@@ -415,7 +415,7 @@ function PortaHack() {
       .drawString(
         replayText,
         (SCREEN_WIDTH - gb.stringWidth(replayText)) / 2,
-        SCREEN_HEIGHT / 2 + 30,
+        SCREEN_HEIGHT / 3 + 30,
       );
 
     if (gameOverInterval) {
