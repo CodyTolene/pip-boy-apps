@@ -8,5 +8,5 @@
   "type": "app",
   "readme": "README.md",
   "custom": "",
-  "storage": [{ "name": "USER/portahack.js", "url": "PortaHack.js" }]
+  "storage": [{ "name": "USER/portahack.js", "url": "PortaHack.min.js" }]
 }

@@ -3,11 +3,11 @@ function PortaHack() {
 
   const GAME_NAME = 'Porta Hack';
   const GAME_VERSION = '1.0.0';
-  const DEBUG = true;
+  const DEBUG = false;
 
   // Game mechanics
   const FPS = 1000 / 60;
-  const MAX_ATTEMPTS = 4; // Max attempts
+  const MAX_ATTEMPTS = 4;
   let attemptsRemaining = MAX_ATTEMPTS;
 
   // Intervals
@@ -136,6 +136,12 @@ function PortaHack() {
   const KNOB_DEBOUNCE = 100;
   let lastLeftKnobTime = 0;
 
+  let cursorRow = 0;
+  let cursorCol = 0;
+  let selectedWord = null;
+  let junkLinesLeft = [];
+  let junkLinesRight = [];
+
   function clearScreen() {
     gb.setColor(BLACK).fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
   }
@@ -177,15 +183,53 @@ function PortaHack() {
     gb.setColor(WHITE).drawRect(area);
   }
 
+  function drawCursor() {
+    const addrLen = 7;
+
+    // Clear and re-draw the old line
+    if (
+      typeof drawCursor.prevRow !== 'undefined' &&
+      typeof drawCursor.prevCol !== 'undefined'
+    ) {
+      const prevIsLeft = drawCursor.prevRow < MAX_ROWS_PER_COLUMN;
+      const prevArea = prevIsLeft
+        ? PASSWORD_GRID_LEFT_XY
+        : PASSWORD_GRID_RIGHT_XY;
+      const prevOffset = prevIsLeft ? 0 : MAX_ROWS_PER_COLUMN;
+      const prevJunk = prevIsLeft
+        ? junkLinesLeft[drawCursor.prevRow]
+        : junkLinesRight[drawCursor.prevRow - prevOffset];
+      const prevY = prevArea.y1 + (drawCursor.prevRow - prevOffset) * 10;
+      const prevAddr =
+        '0xF' + (0x964 + drawCursor.prevRow).toString(16).padStart(3, '0');
+      gb.setColor(BLACK).fillRect(prevArea.x1, prevY, prevArea.x2, prevY + 10);
+      gb.setColor(GREEN).setFont('6x8').setFontAlign(-1, -1);
+      gb.drawString(prevAddr + ' ' + prevJunk.line, prevArea.x1 + 2, prevY);
+    }
+
+    // Save new cursor position
+    drawCursor.prevRow = cursorRow;
+    drawCursor.prevCol = cursorCol;
+
+    // Highlight current character
+    const isLeft = cursorRow < MAX_ROWS_PER_COLUMN;
+    const area = isLeft ? PASSWORD_GRID_LEFT_XY : PASSWORD_GRID_RIGHT_XY;
+    const offset = isLeft ? 0 : MAX_ROWS_PER_COLUMN;
+    const junk = isLeft
+      ? junkLinesLeft[cursorRow]
+      : junkLinesRight[cursorRow - offset];
+    const y = area.y1 + (cursorRow - offset) * 10;
+    const charX = area.x1 + 2 + (addrLen + cursorCol) * 6;
+
+    gb.setColor(GREEN_DARK).fillRect(charX, y, charX + 6, y + 10);
+    gb.setColor(GREEN).drawString(junk.line[cursorCol], charX, y);
+  }
+
   function drawHeader() {
     // Clear previous
     gb.setColor(BLACK).fillRect(HEADER_XY);
-
     const text =
       'ROBCO INDUSTRIES (TM) ' + GAME_NAME + ' v' + GAME_VERSION + ' PROTOCOL';
-    const textHeight = HEADER.textHeight;
-
-    // Draw header message
     gb.setColor(GREEN)
       .setFont(FONT_SIZE)
       .setFontAlign(-1, -1)
@@ -196,94 +240,81 @@ function PortaHack() {
       );
   }
 
-  function drawPasswordGrid(passwords, area, startAddress) {
+  function drawPasswordGrid(passwords, area, startAddress, junkLines, isLeft) {
     const lineHeight = 10;
-    const addressBase = startAddress;
-    const charsPerLine = 12;
-    gb.setColor(GREEN).setFont('6x8').setFontAlign(-1, -1);
+    gb.setFont('6x8').setFontAlign(-1, -1);
 
     for (let i = 0; i < passwords.length; i++) {
-      const addr = '0xF' + (addressBase + i).toString(16).padStart(3, '0');
-      const junkLeft = getJunkLine(charsPerLine, passwords[i]);
-      gb.drawString(
-        addr + ' ' + junkLeft,
-        area.x1 + 2,
-        area.y1 + i * lineHeight,
-      );
+      const addr = '0xF' + (startAddress + i).toString(16).padStart(3, '0');
+      const junk = junkLines[i];
+
+      if (!junk || typeof junk.line !== 'string') {
+        console.log('Missing junk line at index:', i);
+        continue;
+      }
+
+      const line = junk.line;
+      const y = area.y1 + i * lineHeight;
+      gb.setColor(GREEN).drawString(addr + ' ' + line, area.x1 + 2, y);
     }
   }
 
   function drawPasswordMessage() {
     // Clear previous.
     gb.setColor(BLACK).fillRect(PASSWORD_MESSAGE_XY);
-
-    const textHeight = PASSWORD_MESSAGE.textHeight;
-    gb.setColor(GREEN).setFont(FONT_SIZE).setFontAlign(-1, -1);
-
     const isWarning = attemptsRemaining <= 1;
-
-    // Draw password message.
-    if (isWarning) {
-      // Warning message
-      gb.drawString(
-        '!!! WARNING: LOCKOUT IMMINENT !!!',
+    const text = isWarning
+      ? '!!! WARNING: LOCKOUT IMMINENT !!!'
+      : 'ENTER PASSWORD NOW';
+    gb.setColor(GREEN)
+      .setFont(FONT_SIZE)
+      .setFontAlign(-1, -1)
+      .drawString(
+        text,
         PASSWORD_MESSAGE_XY.x1 + PASSWORD_MESSAGE.padding,
         PASSWORD_MESSAGE_XY.y1 + PASSWORD_MESSAGE.padding,
       );
-    } else {
-      // Default message
-      gb.drawString(
-        'ENTER PASSWORD NOW',
-        PASSWORD_MESSAGE_XY.x1 + PASSWORD_MESSAGE.padding,
-        PASSWORD_MESSAGE_XY.y1 + PASSWORD_MESSAGE.padding,
-      );
-    }
   }
 
   function getJunkLine(len, embedWord) {
-    const JUNK = '{}[]<>?/\\|!@#$%^&*()-_=+;:\'",.`~ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    let line = '';
+    const JUNK = '{}[]<>?/\\|!@#$%^&*()-_=+;:"\',.`~ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    let result = '';
     const embedAt = (Math.random() * (len - embedWord.length)) | 0;
     for (let i = 0; i < len; i++) {
       if (i === embedAt) {
-        line += embedWord;
+        result += embedWord;
         i += embedWord.length - 1;
       } else {
-        line += JUNK[(Math.random() * JUNK.length) | 0];
+        result += JUNK[(Math.random() * JUNK.length) | 0];
       }
     }
-    return line;
+    return { line: result, embedAt: embedAt };
   }
 
   function handleLeftKnob(dir) {
     let now = Date.now();
-    if (now - lastLeftKnobTime < KNOB_DEBOUNCE) {
-      return;
-    }
+    if (now - lastLeftKnobTime < KNOB_DEBOUNCE) return;
     lastLeftKnobTime = now;
 
     if (dir === 0) {
-      // Click
+      // click
       // TODO - Select the highlighted password
     } else {
-      // Rotate
-      // TODO - Move selection up or down
+      cursorCol = (cursorCol + (dir > 0 ? 1 : -1) + 12) % 12;
+      drawCursor();
     }
   }
 
   function handlePowerButton() {
     removeListeners();
-
-    if (mainLoopInterval) {
-      clearInterval(mainLoopInterval);
-    }
-
+    if (mainLoopInterval) clearInterval(mainLoopInterval);
     bC.clear(1).flip();
     E.reboot();
   }
 
   function handleRightKnob(dir) {
-    // TODO - Move selection right or left
+    cursorRow = (cursorRow + (dir > 0 ? 1 : -1) + TOTAL_ROWS) % TOTAL_ROWS;
+    drawCursor();
   }
 
   function handleTopButton() {
@@ -316,6 +347,25 @@ function PortaHack() {
     Pip.on(BTN_TOP, handleTopButton);
   }
 
+  function setupJunkLines() {
+    const leftLength = LEFT_PASSWORDS.length;
+    const rightLength = RIGHT_PASSWORDS.length;
+
+    if (leftLength === 0 || rightLength === 0) {
+      throw new Error('Password slices are empty');
+    }
+
+    junkLinesLeft = LEFT_PASSWORDS.map((p) => getJunkLine(12, p));
+    junkLinesRight = RIGHT_PASSWORDS.map((p) => getJunkLine(12, p));
+
+    if (
+      junkLinesLeft.length !== leftLength ||
+      junkLinesRight.length !== rightLength
+    ) {
+      throw new Error('Mismatch between password lists and junk lines');
+    }
+  }
+
   self.run = function () {
     if (!gb || !bC) {
       throw new Error('Pip-Boy graphics not available!');
@@ -329,8 +379,21 @@ function PortaHack() {
     drawPasswordMessage();
     drawAttemptCounter();
 
-    drawPasswordGrid(LEFT_PASSWORDS, PASSWORD_GRID_LEFT_XY, 0x964);
-    drawPasswordGrid(RIGHT_PASSWORDS, PASSWORD_GRID_RIGHT_XY, 0xa30);
+    setupJunkLines();
+    drawPasswordGrid(
+      LEFT_PASSWORDS,
+      PASSWORD_GRID_LEFT_XY,
+      0x964,
+      junkLinesLeft,
+      true,
+    );
+    drawPasswordGrid(
+      RIGHT_PASSWORDS,
+      PASSWORD_GRID_RIGHT_XY,
+      0xa30,
+      junkLinesRight,
+      false,
+    );
 
     drawBoundaries(SCREEN_XY);
     drawBoundaries(HEADER_XY);
