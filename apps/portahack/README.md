@@ -2,12 +2,10 @@
 
 ### Info
 
-**Author:** @pip-4111
+**Author(s):**
 
-**Website(s):**
-
-- [GitHub](https://github.com/pip-4111)
-- [GitHub - Porta Hack](https://github.com/pip-4111/Porta-Hack)
+- [@pip-4111](https://github.com/pip-4111)
+- [@CodyTolene](https://github.com/CodyTolene)
 
 ### Description
 
