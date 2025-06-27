@@ -3,11 +3,15 @@ function PortaHack() {
 
   const GAME_NAME = 'Porta Hack';
   const GAME_VERSION = '1.0.0';
-  const DEBUG = true;
+  const DEBUG = false;
 
-  // Game
+  // Game mechanics
   const MAX_ATTEMPTS = 4; // Max attempts
   let attemptsRemaining = MAX_ATTEMPTS;
+
+  // Font
+  const FONT_HEIGHT = 8;
+  const FONT_SIZE = '6x' + FONT_HEIGHT;
 
   // Graphics buffer
   const gb = g;
@@ -24,10 +28,10 @@ function PortaHack() {
 
   // Header Message
   const HEADER = {
-    // + 8 text + 2 padding top + 2 padding bottom
-    height: 8 + 2 * 2,
+    // FONT_HEIGHT + 2 padding top + 2 padding bottom
+    height: FONT_HEIGHT + 2 * 2,
     padding: 2,
-    textHeight: 8,
+    textHeight: FONT_HEIGHT,
   };
   const HEADER_XY = {
     x1: SCREEN_XY.x1,
@@ -38,10 +42,10 @@ function PortaHack() {
 
   // Password Message
   const PASSWORD_MESSAGE = {
-    // + 8 text + 2 padding top + 2 padding bottom
-    height: 8 + 2 * 2,
+    // FONT_HEIGHT + 2 padding top + 2 padding bottom
+    height: FONT_HEIGHT + 2 * 2,
     padding: 2,
-    textHeight: 8,
+    textHeight: FONT_HEIGHT,
   };
   const PASSWORD_MESSAGE_XY = {
     x1: SCREEN_XY.x1,
@@ -52,10 +56,10 @@ function PortaHack() {
 
   // Password Attempt Counter
   const ATTEMPT_COUNTER = {
-    // + 8 text * 3 lines + 2 padding top + 2 padding bottom
-    height: 8 * 3 + 2 + 2,
+    // FONT_HEIGHT * 3 lines + 2 padding top + 2 padding bottom
+    height: FONT_HEIGHT * 3 + 2 + 2,
     padding: 2,
-    textHeight: 8,
+    textHeight: FONT_HEIGHT,
   };
   const ATTEMPT_COUNTER_XY = {
     x1: SCREEN_XY.x1,
@@ -103,14 +107,29 @@ function PortaHack() {
     'PIKE', 'BAKE', 'BITE', 'BIND', 'VINE', 'VILE', 'VOYAGE', 'MOID', 'SOIL',
     'GAINING', 'PAINTED', 'RAVINGS', 'MAILING', 'WAILING', 'RAILING', 'ARROW',
     'SUBJECT', 'EJECTS', 'ABJECT', 'REJECT', 'OBSESS', 'JANE', 'MARK', 'MARY',
-    'FREEDOM', 'FRENCH', 'FLEETING', 'FLOP', 'VAULT',
+    'FREEDOM', 'FRENCH', 'FLEETING', 'FLOP', 'VAULT', 'ACCESS', 'ARMORY', 
+    'TARGET', 'BUFFER', 'CIRCUIT', 'ENCRYPT', 'OVERRIDE', 'PROTOCOL', 'SUBSYS',
+    'CRYPTO', 'UPLOAD', 'BOOTSEQ', 'FAILSAFE', 'NETWORK', 'SECURE', 'DISARM',
+    'ARCHIVE', 'CLEARANCE', 'DISPOSAL', 'EXPUNGED', 'FACILITY', 'FORMS', 
+    'PERMIT', 'POLICY', 'QUOTA', 'RESTRICT', 'TERMINAL', 'VAULT-TEC', 
+    'APPROVED', 'REJECTED', 'SUBMIT', 'RECORDS', 'OBEY', 'CONFORM', 'GLORIOUS',
+    'SURVIVAL', 'PROTECT', 'LOYALTY', 'CITIZEN', 'ISOLATED', 'HOPELESS', 
+    'EXILED', 'ORDERED', 'MOURNING', 'EXPIRED', 'DECEASED', 'ALERTED', 
+    'MISTER', 'ROBCO', 'RADIO', 'DINER', 'NUKA', 'PIPBOY', 'ATOMIC',
+    'BLISSFUL', 'OPTIMISM', 'PRESET', 'GENERATOR', 'TRIAGE', 'HYGIENE',
+    'ELEVATOR', 'HYDROGEN', 'VAULTDOOR', 'BYTE', 'INDEX', 'LOGIN', 'CACHE',
+    'ERROR', 'BUNKER', 'REACTOR', 'SHELTER', 'CONTROL', 'FISSION', 'CANTEEN'
   ];
+  const MAX_ROWS_PER_COLUMN = 25;
+  const TOTAL_ROWS = MAX_ROWS_PER_COLUMN * 2;
+  const LEFT_PASSWORDS = PASSWORDS.slice(0, MAX_ROWS_PER_COLUMN);
+  const RIGHT_PASSWORDS = PASSWORDS.slice(MAX_ROWS_PER_COLUMN, TOTAL_ROWS);
 
   function clearScreen() {
     gb.setColor(BLACK).fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
   }
 
-  function drawAttemptCounter(attemptsRemaining) {
+  function drawAttemptCounter() {
     if (attemptsRemaining < 0 || attemptsRemaining > MAX_ATTEMPTS) {
       throw new Error(
         'Invalid number of attempts remaining: ' + attemptsRemaining,
@@ -130,7 +149,7 @@ function PortaHack() {
     }
 
     gb.setColor(GREEN)
-      .setFont('6x' + textHeight)
+      .setFont(FONT_SIZE)
       .setFontAlign(-1, -1)
       .drawString(
         text,
@@ -157,7 +176,7 @@ function PortaHack() {
 
     // Draw header message
     gb.setColor(GREEN)
-      .setFont('6x' + textHeight)
+      .setFont(FONT_SIZE)
       .setFontAlign(-1, -1)
       .drawString(
         text.toUpperCase(),
@@ -166,14 +185,31 @@ function PortaHack() {
       );
   }
 
-  function drawPasswordMessage(isWarning) {
+  function drawPasswordGrid(passwords, area, startAddress) {
+    const lineHeight = 10;
+    const addressBase = startAddress;
+    const charsPerLine = 12;
+    gb.setColor(GREEN).setFont('6x8').setFontAlign(-1, -1);
+
+    for (let i = 0; i < passwords.length; i++) {
+      const addr = '0xF' + (addressBase + i).toString(16).padStart(3, '0');
+      const junkLeft = getJunkLine(charsPerLine, passwords[i]);
+      gb.drawString(
+        addr + ' ' + junkLeft,
+        area.x1 + 2,
+        area.y1 + i * lineHeight,
+      );
+    }
+  }
+
+  function drawPasswordMessage() {
     // Clear previous.
     gb.setColor(BLACK).fillRect(PASSWORD_MESSAGE_XY);
 
     const textHeight = PASSWORD_MESSAGE.textHeight;
-    gb.setColor(GREEN)
-      .setFont('6x' + textHeight)
-      .setFontAlign(-1, -1);
+    gb.setColor(GREEN).setFont(FONT_SIZE).setFontAlign(-1, -1);
+
+    const isWarning = attemptsRemaining <= 1;
 
     // Draw password message.
     if (isWarning) {
@@ -193,6 +229,21 @@ function PortaHack() {
     }
   }
 
+  function getJunkLine(len, embedWord) {
+    const JUNK = '{}[]<>?/\\|!@#$%^&*()-_=+;:\'",.`~ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    let line = '';
+    const embedAt = (Math.random() * (len - embedWord.length)) | 0;
+    for (let i = 0; i < len; i++) {
+      if (i === embedAt) {
+        line += embedWord;
+        i += embedWord.length - 1;
+      } else {
+        line += JUNK[(Math.random() * JUNK.length) | 0];
+      }
+    }
+    return line;
+  }
+
   self.run = function () {
     if (!gb || !bC) {
       throw new Error('Pip-Boy graphics not available!');
@@ -202,8 +253,11 @@ function PortaHack() {
     clearScreen();
 
     drawHeader();
-    drawPasswordMessage(false);
-    drawAttemptCounter(attemptsRemaining);
+    drawPasswordMessage();
+    drawAttemptCounter();
+
+    drawPasswordGrid(LEFT_PASSWORDS, PASSWORD_GRID_LEFT_XY, 0x964);
+    drawPasswordGrid(RIGHT_PASSWORDS, PASSWORD_GRID_RIGHT_XY, 0xa30);
 
     drawBoundaries(SCREEN_XY);
     drawBoundaries(HEADER_XY);
