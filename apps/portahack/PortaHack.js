@@ -3,11 +3,15 @@ function PortaHack() {
 
   const GAME_NAME = 'Porta Hack';
   const GAME_VERSION = '1.0.0';
-  const DEBUG = false;
+  const DEBUG = true;
 
   // Game mechanics
+  const FPS = 1000 / 60;
   const MAX_ATTEMPTS = 4; // Max attempts
   let attemptsRemaining = MAX_ATTEMPTS;
+
+  // Intervals
+  let mainLoopInterval = null;
 
   // Font
   const FONT_HEIGHT = 8;
@@ -124,6 +128,13 @@ function PortaHack() {
   const TOTAL_ROWS = MAX_ROWS_PER_COLUMN * 2;
   const LEFT_PASSWORDS = PASSWORDS.slice(0, MAX_ROWS_PER_COLUMN);
   const RIGHT_PASSWORDS = PASSWORDS.slice(MAX_ROWS_PER_COLUMN, TOTAL_ROWS);
+
+  // Knobs and Buttons
+  const KNOB_LEFT = 'knob1';
+  const KNOB_RIGHT = 'knob2';
+  const BTN_TOP = 'torch';
+  const KNOB_DEBOUNCE = 100;
+  let lastLeftKnobTime = 0;
 
   function clearScreen() {
     gb.setColor(BLACK).fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -244,6 +255,67 @@ function PortaHack() {
     return line;
   }
 
+  function handleLeftKnob(dir) {
+    let now = Date.now();
+    if (now - lastLeftKnobTime < KNOB_DEBOUNCE) {
+      return;
+    }
+    lastLeftKnobTime = now;
+
+    if (dir === 0) {
+      // Click
+      // TODO - Select the highlighted password
+    } else {
+      // Rotate
+      // TODO - Move selection up or down
+    }
+  }
+
+  function handlePowerButton() {
+    removeListeners();
+
+    if (mainLoopInterval) {
+      clearInterval(mainLoopInterval);
+    }
+
+    bC.clear(1).flip();
+    E.reboot();
+  }
+
+  function handleRightKnob(dir) {
+    // TODO - Move selection right or left
+  }
+
+  function handleTopButton() {
+    // Adjust brightness
+    const brightnessLevels = [1, 5, 10, 15, 20];
+    const currentIndex = brightnessLevels.findIndex(
+      (level) => level === Pip.brightness,
+    );
+    const nextIndex = (currentIndex + 1) % brightnessLevels.length;
+    Pip.brightness = brightnessLevels[nextIndex];
+    Pip.updateBrightness();
+  }
+
+  function main() {
+    if (BTN_PLAY.read()) {
+      // Click
+      // TODO - Select the highlighted password
+    }
+  }
+
+  function removeListeners() {
+    Pip.removeAllListeners(KNOB_LEFT);
+    Pip.removeAllListeners(KNOB_RIGHT);
+    Pip.removeAllListeners(BTN_TOP);
+  }
+
+  function setListeners() {
+    Pip.on(KNOB_LEFT, handleLeftKnob);
+    Pip.on(KNOB_RIGHT, handleRightKnob);
+    Pip.on(BTN_TOP, handleTopButton);
+  }
+
   self.run = function () {
     if (!gb || !bC) {
       throw new Error('Pip-Boy graphics not available!');
@@ -251,6 +323,7 @@ function PortaHack() {
 
     bC.clear();
     clearScreen();
+    removeListeners();
 
     drawHeader();
     drawPasswordMessage();
@@ -266,6 +339,20 @@ function PortaHack() {
     drawBoundaries(PASSWORD_GRID_LEFT_XY);
     drawBoundaries(PASSWORD_GRID_RIGHT_XY);
     drawBoundaries(LOG_XY);
+
+    setListeners();
+
+    if (mainLoopInterval) {
+      clearInterval(mainLoopInterval);
+    }
+    mainLoopInterval = setInterval(main, FPS);
+
+    // Handle power button press to restart the device
+    setWatch(() => handlePowerButton(), BTN_POWER, {
+      debounce: 50,
+      edge: 'rising',
+      repeat: !0,
+    });
   };
 
   return self;
