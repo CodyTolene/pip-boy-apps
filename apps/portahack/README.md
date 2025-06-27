@@ -28,7 +28,7 @@ attempts.
 
 Try finding hidden code snippets to reset your attempts or remove incorrect
 words from the board. The number that appears next to your attempted guess
-indicates how many letters your guess shares with the correct password
+indicates how many letters your guess shares with the correct password.
 
 ### License
 
@@ -37,4 +37,4 @@ International License. See
 [CC-BY-NC-4.0](https://creativecommons.org/licenses/by-nc/4.0/) for more
 information.
 
-`SPDX-License-Identifiers: CC-BY-NC-4.0`
+`SPDX-License-Identifier: CC-BY-NC-4.0`

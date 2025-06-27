@@ -611,6 +611,11 @@ function PortaHack() {
     const lineHeight = 10;
     const maxLines = Math.floor((LOG_XY.y2 - LOG_XY.y1) / lineHeight);
 
+    // Remove initial prompt if it's the only thing there
+    if (logEntries.length === 1 && logEntries[0] === '> . ') {
+      logEntries.pop();
+    }
+
     if (attemptsRemaining <= 0) {
       // Go to game over sreen
       drawGameOverScreen();
@@ -723,6 +728,9 @@ function PortaHack() {
     drawBoundaries(PASSWORD_GRID_LEFT_XY);
     drawBoundaries(PASSWORD_GRID_RIGHT_XY);
     drawBoundaries(LOG_XY);
+
+    logEntries.push('> . ');
+    drawLog();
 
     setListeners();
 
