@@ -18,6 +18,7 @@ function PortaHack() {
 
   // Intervals
   let mainLoopInterval = null;
+  let gameOverInterval = null;
 
   // Font
   const FONT_HEIGHT = 8;
@@ -107,6 +108,10 @@ function PortaHack() {
   const GREEN = '#00ff00';
   const GREEN_DARK = '#007f00';
   const GREEN_DARKER = '#003300';
+
+  // Video
+  const VIDEO_STOPPED = 'videoStopped';
+  const VIDEO_BOOT = 'BOOT/BOOT.avi';
 
   // All available passwords to select from
   // prettier-ignore
@@ -253,6 +258,55 @@ function PortaHack() {
     }
   }
 
+  function drawGameOverScreen() {
+    // Clear entire screen
+    clearScreen();
+    removeListeners();
+
+    // Draw "GAME OVER" center screen
+    const gameOverText = 'GAME OVER';
+    gb.setColor(GREEN)
+      .setFontMonofonto18()
+      .setFontAlign(-1, -1)
+      .drawString(
+        gameOverText,
+        (SCREEN_WIDTH - gb.stringWidth(gameOverText)) / 2,
+        (SCREEN_HEIGHT - FONT_HEIGHT) / 2,
+      );
+
+    // Draw "Press Play to restart" below "GAME OVER"
+    const replayText = 'Press play to restart';
+    gb.setColor(GREEN_DARK)
+      .setFontMonofonto16()
+      .setFontAlign(-1, -1)
+      .drawString(
+        replayText,
+        (SCREEN_WIDTH - gb.stringWidth(replayText)) / 2,
+        (SCREEN_HEIGHT - FONT_HEIGHT) / 2 + 30,
+      );
+
+    if (gameOverInterval) {
+      clearInterval(gameOverInterval);
+      gameOverInterval = null;
+    }
+
+    // Restart game handling
+    let playHandled = false;
+    gameOverInterval = setInterval(() => {
+      // When play button is pressed, restart the game
+      if (BTN_PLAY.read()) {
+        if (!playHandled) {
+          playHandled = true;
+          clearInterval(gameOverInterval);
+          gameOverInterval = null;
+          restartGame();
+        }
+      } else {
+        playHandled = false;
+      }
+    }, 100);
+  }
+
   function drawHeader() {
     // Clear previous
     gb.setColor(BLACK).fillRect(HEADER_XY);
@@ -310,7 +364,7 @@ function PortaHack() {
 
     let text = '';
     if (attemptsRemaining <= 0) {
-      text = '!!! ACCESS DENIED !!!';
+      text = '!!! ACCESS DENIED !!! Select again to restart.';
     } else if (attemptsRemaining === 1) {
       text = '!!! WARNING: LOCKOUT IMMINENT !!!';
     } else {
@@ -325,6 +379,50 @@ function PortaHack() {
         PASSWORD_MESSAGE_XY.x1 + PASSWORD_MESSAGE.padding,
         PASSWORD_MESSAGE_XY.y1 + PASSWORD_MESSAGE.padding,
       );
+  }
+
+  function drawSuccessScreen() {
+    clearScreen();
+    removeListeners();
+
+    const successText = 'ACCESS GRANTED';
+    gb.setColor(GREEN)
+      .setFontMonofonto18()
+      .setFontAlign(-1, -1)
+      .drawString(
+        successText,
+        (SCREEN_WIDTH - gb.stringWidth(successText)) / 2,
+        (SCREEN_HEIGHT - FONT_HEIGHT) / 2,
+      );
+
+    const proceedText = 'Press play to restart';
+    gb.setColor(GREEN_DARK)
+      .setFontMonofonto16()
+      .setFontAlign(-1, -1)
+      .drawString(
+        proceedText,
+        (SCREEN_WIDTH - gb.stringWidth(proceedText)) / 2,
+        (SCREEN_HEIGHT - FONT_HEIGHT) / 2 + 30,
+      );
+
+    if (gameOverInterval) {
+      clearInterval(gameOverInterval);
+      gameOverInterval = null;
+    }
+
+    let playHandled = false;
+    gameOverInterval = setInterval(() => {
+      if (BTN_PLAY.read()) {
+        if (!playHandled) {
+          playHandled = true;
+          clearInterval(gameOverInterval);
+          gameOverInterval = null;
+          restartGame();
+        }
+      } else {
+        playHandled = false;
+      }
+    }, 100);
   }
 
   function getJunkLine(len, embedWord) {
@@ -453,6 +551,32 @@ function PortaHack() {
     Pip.removeAllListeners(BTN_TOP);
   }
 
+  function restartGame() {
+    if (gameOverInterval) {
+      clearInterval(gameOverInterval);
+      gameOverInterval = null;
+    }
+    if (mainLoopInterval) {
+      clearInterval(mainLoopInterval);
+      mainLoopInterval = null;
+    }
+
+    cursorCol = 0;
+    cursorRow = 0;
+
+    attemptsRemaining = MAX_ATTEMPTS;
+    selectedWord = null;
+    logEntries = [];
+    junkLinesLeft = [];
+    junkLinesRight = [];
+    correctPassword = null;
+
+    drawCursor.prevRow = undefined;
+    drawCursor.prevCol = undefined;
+
+    self.run();
+  }
+
   function select() {
     const isLeft = cursorRow < MAX_ROWS_PER_COLUMN;
     const offset = isLeft ? 0 : MAX_ROWS_PER_COLUMN;
@@ -470,7 +594,11 @@ function PortaHack() {
     const lineHeight = 10;
     const maxLines = Math.floor((LOG_XY.y2 - LOG_XY.y1) / lineHeight);
 
-    if (attemptsRemaining <= 0) return;
+    if (attemptsRemaining <= 0) {
+      // Go to game over sreen
+      drawGameOverScreen();
+      return;
+    }
 
     if (inWord) {
       selectedWord = junk.line.substr(junk.embedAt, word.length);
@@ -478,32 +606,35 @@ function PortaHack() {
       if (existing !== -1) {
         const likenessLine = logEntries[existing + 1];
         logEntries.push('> ' + selectedWord);
-        if (likenessLine && likenessLine.startsWith('> Likeness')) {
+        if (likenessLine && likenessLine.startsWith('>')) {
           logEntries.push(likenessLine);
         }
       } else {
         if (selectedWord === correctPassword) {
           logEntries.push('> ' + selectedWord);
           logEntries.push('> ACCESS GRANTED');
+          drawLog();
+          drawSuccessScreen();
+          return;
         } else {
           let likeness = 0;
-          for (
-            let i = 0;
-            i < Math.min(selectedWord.length, correctPassword.length);
-            i++
-          ) {
-            if (selectedWord[i] === correctPassword[i]) likeness++;
+          if (selectedWord.length === correctPassword.length) {
+            for (let i = 0; i < selectedWord.length; i++) {
+              if (selectedWord[i] === correctPassword[i]) likeness++;
+            }
           }
           while (logEntries.length >= maxLines - 1) {
             logEntries.shift();
           }
           logEntries.push('> ' + selectedWord);
-          logEntries.push('> Likeness = ' + likeness);
+          logEntries.push(
+            '> ' + likeness + '/' + correctPassword.length + ' correct.',
+          );
           attemptsRemaining--;
           drawAttemptCounter();
           drawPasswordMessage();
           if (attemptsRemaining === 0) {
-            logEntries.push('> ACCESS DENIED');
+            logEntries.push('> Entry denied');
           }
         }
       }
@@ -547,14 +678,8 @@ function PortaHack() {
     console.log('Password: ', correctPassword);
   }
 
-  self.run = function () {
-    if (!gb || !bC) {
-      throw new Error('Pip-Boy graphics not available!');
-    }
-
-    bC.clear();
-    clearScreen();
-    removeListeners();
+  function startGame() {
+    Pip.removeAllListeners(VIDEO_STOPPED);
 
     drawHeader();
     drawPasswordMessage();
@@ -586,10 +711,23 @@ function PortaHack() {
 
     setListeners();
 
+    if (gameOverInterval) {
+      clearInterval(gameOverInterval);
+    }
     if (mainLoopInterval) {
       clearInterval(mainLoopInterval);
     }
     mainLoopInterval = setInterval(main, FPS);
+  }
+
+  self.run = function () {
+    if (!gb || !bC) {
+      throw new Error('Pip-Boy graphics not available!');
+    }
+
+    bC.clear();
+    clearScreen();
+    removeListeners();
 
     // Handle power button press to restart the device
     setWatch(() => handlePowerButton(), BTN_POWER, {
@@ -597,6 +735,13 @@ function PortaHack() {
       edge: 'rising',
       repeat: !0,
     });
+
+    if (!DEBUG) {
+      Pip.videoStart('BOOT/BOOT.avi', { x: 40 });
+      Pip.on(VIDEO_STOPPED, startGame);
+    } else {
+      startGame();
+    }
   };
 
   return self;
