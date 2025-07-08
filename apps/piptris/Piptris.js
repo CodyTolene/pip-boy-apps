@@ -7,20 +7,29 @@
 function Piptris() {
   const self = {};
 
-  const GAME_NAME = 'Piptris';
-  const GAME_VERSION = '2.2.1';
+  const GAME_NAME = 'PIPTRIS';
+  const GAME_VERSION = '2.3.0';
+  const DEBUG = false;
 
   // Game State
+  const BLOCK_START_SPEED = 800;
   let blockCurrent = null;
-  let blockDropSpeed = 800;
+  let blockDropSpeed = BLOCK_START_SPEED;
   let blockNext = null;
-  let blockSize = 10;
+  let blockSize = 15;
+  let currentInterval = blockDropSpeed;
   let inputInterval = null;
   let isGameOver = false;
   let linesCleared = 0;
   let mainLoopInterval = null;
   let score = 0;
   let useHollowBlocks = false;
+
+  // Game Difficulty
+  let difficultyLevel = 0;
+  const MIN_DROP_SPEED = 100;
+  const SPEED_STEP = 50;
+  const LINES_PER_LEVEL = 10;
 
   // Screen
   const SCREEN_WIDTH = g.getWidth();
@@ -31,6 +40,11 @@ function Piptris() {
     y1: 10,
     y2: SCREEN_HEIGHT - 10,
   };
+
+  // Colors
+  const COLOR_BLACK = '#000';
+  const COLOR_THEME = g.theme.fg;
+  const COLOR_THEME_DARK = g.blendColor(COLOR_BLACK, COLOR_THEME, 0.5);
 
   // Play Area
   const PLAY_AREA_WIDTH = 10;
@@ -53,7 +67,7 @@ function Piptris() {
   const KNOB_LEFT = 'knob1';
   const KNOB_RIGHT = 'knob2';
   const BTN_TOP = 'torch';
-  const KNOB_DEBOUNCE = 100;
+  const KNOB_DEBOUNCE = 30;
   let lastLeftKnobTime = 0;
 
   // Audio/music
@@ -79,31 +93,8 @@ function Piptris() {
     [[1, 1],[1, 1]],        // O
   ];
 
-  const Theme = {
-    self: [0, 1, 0], // Default color (green)
-    apply: function () {
-      g.setColor(this.self[0], this.self[1], this.self[2]);
-    },
-    get: function () {
-      return this.self;
-    },
-    set: function (rV, gV, bV, system) {
-      if (rV === undefined || gV === undefined || bV === undefined || system) {
-        const hex = g.getColor().toString(16);
-        for (let i = 0; i < 3; i++) {
-          this.self[i] = parseInt(hex.charAt(i), 16) / 15;
-        }
-      } else {
-        this.self[0] = rV;
-        this.self[1] = gV;
-        this.self[2] = bV;
-      }
-      return this;
-    },
-  };
-
   function clearGameArea() {
-    g.setColor('#000');
+    g.setColor(COLOR_BLACK);
     g.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
   }
 
@@ -137,6 +128,7 @@ function Piptris() {
         linesRemoved++;
         linesCleared++;
         y++;
+        updateDifficulty();
       }
     }
 
@@ -178,7 +170,7 @@ function Piptris() {
   }
 
   function drawBlock(x, y) {
-    Theme.apply();
+    g.setColor(COLOR_THEME);
     const block = [
       PLAY_AREA_X + x * blockSize,
       PLAY_AREA_Y + y * blockSize,
@@ -193,7 +185,7 @@ function Piptris() {
   }
 
   function drawBoundaries(area) {
-    Theme.set(0, 1, 0).apply();
+    g.setColor(COLOR_THEME);
     g.drawRect(area.x1, area.y1, area.x2, area.y2);
   }
 
@@ -212,7 +204,7 @@ function Piptris() {
   }
 
   function drawField() {
-    Theme.apply();
+    g.setColor(COLOR_THEME);
     for (let y = 0; y < PLAY_AREA_HEIGHT; y++) {
       for (let x = 0; x < PLAY_AREA_WIDTH; x++) {
         if (PLAY_AREA_BLOCKS[y * PLAY_AREA_WIDTH + x]) {
@@ -223,6 +215,7 @@ function Piptris() {
       }
     }
     drawScore();
+    drawLevel();
     drawLinesCleared();
     drawNextPiece();
   }
@@ -235,19 +228,32 @@ function Piptris() {
 
     g.clear();
 
-    g.setColor('#0F0');
+    g.setColor(COLOR_THEME);
     g.setFont('6x8', 4);
     g.drawString('GAME OVER', centerX, centerY - 20);
 
-    g.setColor('#FFF');
+    g.setColor(COLOR_THEME_DARK);
     g.setFont('6x8', 2);
     g.drawString('Press    to RESTART', centerX, centerY + 15);
 
     drawImageFromJSON(ICON_GEAR, centerX - 45, centerY + 1);
 
-    g.setColor('#0F0');
+    const statsYStart = centerY + 80;
+    const statsLineHeight = 18;
+
+    g.setColor(COLOR_THEME);
     g.setFont('6x8', 2);
-    g.drawString('Score: ' + score, centerX, centerY + 50);
+    g.drawString('Score: ' + score, centerX, statsYStart);
+    g.drawString(
+      'Level: ' + difficultyLevel,
+      centerX,
+      statsYStart + statsLineHeight,
+    );
+    g.drawString(
+      'Lines: ' + linesCleared,
+      centerX,
+      statsYStart + statsLineHeight * 2,
+    );
 
     inputInterval = setInterval(() => {
       if (BTN_PLAY.read()) {
@@ -269,7 +275,7 @@ function Piptris() {
         width: json.width,
       };
 
-      Theme.apply();
+      g.setColor(COLOR_THEME);
       g.drawImage(image, x, y);
     } catch (e) {
       console.log('Failed to load image:', e);
@@ -283,36 +289,85 @@ function Piptris() {
 
     g.setFont('6x8', 2);
     const text = linesCleared.toString();
-    const textWidth = g.stringWidth(text);
+    // const textWidth = g.stringWidth(text);
     const textHeight = 16;
 
-    g.setColor('#000');
-    g.fillRect(
-      linesX - textWidth / 2 - 2,
-      linesY + fontHeight - 6,
-      linesX + textWidth / 2 + 2,
-      linesY + fontHeight + textHeight - 4,
-    );
+    const clearWidth = 80;
+    const clearHeight = fontHeight + textHeight + 10;
 
-    g.setColor('#FFF');
+    const clearX1 = linesX - clearWidth / 2;
+    const clearY1 = linesY + fontHeight - 8;
+    const clearX2 = linesX + clearWidth / 2;
+    const clearY2 = clearY1 + clearHeight;
+
+    g.setColor(COLOR_BLACK);
+    g.fillRect(clearX1, clearY1, clearX2, clearY2);
+
+    if (DEBUG) {
+      drawBoundaries({
+        x1: clearX1 - 1,
+        y1: clearY1 - 1,
+        x2: clearX2 + 1,
+        y2: clearY2 + 1,
+      });
+    }
+
+    g.setColor(COLOR_THEME_DARK);
     g.drawString('LINES', linesX, linesY);
 
-    Theme.apply();
+    g.setColor(COLOR_THEME);
     g.drawString(text, linesX, linesY + fontHeight);
   }
 
   function drawGameName() {
     const fontHeight = 20;
-    const startX = PLAY_AREA.x1 - 65;
-    const startY = PLAY_AREA.y1 + 25;
+    const startX = PLAY_AREA.x1 - 60;
+    const startY = PLAY_AREA.y1 + 35;
 
-    g.setColor('#FFF');
-    g.setFont('6x8', 2);
+    g.setColor(COLOR_THEME);
+    g.setFontMonofonto28();
     g.drawString(GAME_NAME, startX, startY);
 
-    Theme.apply();
+    g.setColor(COLOR_THEME);
     g.setFont('6x8', 1);
     g.drawString('v' + GAME_VERSION, startX, startY + fontHeight);
+  }
+
+  function drawLevel() {
+    const levelX = PLAY_AREA.x1 - 65;
+    const levelY = PLAY_AREA.y2 - 120;
+    const fontHeight = 20;
+
+    g.setFont('6x8', 2);
+    const text = difficultyLevel.toString();
+    const textWidth = g.stringWidth(text);
+    const textHeight = 16;
+
+    const clearPadding = 4;
+    const clearX1 = levelX - textWidth / 2 - clearPadding;
+    const clearY1 = levelY + fontHeight - 4;
+    const clearX2 = levelX + textWidth / 2 + clearPadding;
+    const clearY2 = clearY1 + textHeight + clearPadding;
+
+    g.setColor(COLOR_BLACK);
+    g.fillRect(clearX1, clearY1, clearX2, clearY2);
+
+    if (DEBUG) {
+      drawBoundaries({
+        x1: clearX1 - 1,
+        y1: clearY1 - 1,
+        x2: clearX2 + 1,
+        y2: clearY2 + 1,
+      });
+    }
+
+    // Draw static label (only once in startGame if you want)
+    g.setColor(COLOR_THEME_DARK);
+    g.drawString('LEVEL', levelX, levelY);
+
+    // Draw dynamic level number
+    g.setColor(COLOR_THEME);
+    g.drawString(text, levelX, levelY + fontHeight);
   }
 
   function drawNextPiece() {
@@ -321,23 +376,33 @@ function Piptris() {
     }
 
     const startX = PLAY_AREA.x2 + 65;
-    const startY = PLAY_AREA.y2 - 60;
-    const previewWidth = 40;
-    const previewHeight = 40;
+    const startY = PLAY_AREA.y1 + 25;
 
-    g.setColor('#000');
-    g.fillRect(
-      startX - previewWidth / 2 - 2,
-      startY + 15,
-      startX + previewWidth / 2,
-      startY + 15 + previewHeight,
-    );
+    const previewBlockArea = 4 * blockSize;
+    const previewPadding = 6;
+
+    const clearX1 = startX - previewBlockArea / 2 - previewPadding;
+    const clearY1 = startY + 15 - previewPadding;
+    const clearX2 = startX + previewBlockArea / 2 + previewPadding;
+    const clearY2 = startY + 15 + previewBlockArea + previewPadding;
+
+    g.setColor(COLOR_BLACK);
+    g.fillRect(clearX1, clearY1, clearX2, clearY2);
+
+    if (DEBUG) {
+      drawBoundaries({
+        x1: clearX1 - 1,
+        y1: clearY1 - 1,
+        x2: clearX2 + 1,
+        y2: clearY2 + 1,
+      });
+    }
 
     g.setFont('6x8', 2);
-    g.setColor('#FFF');
+    g.setColor(COLOR_THEME_DARK);
     g.drawString('NEXT', startX, startY);
 
-    Theme.apply();
+    g.setColor(COLOR_THEME);
     const piece = blockNext.shape;
     const piecePixelWidth = piece[0].length * blockSize;
     const offsetX = startX - piecePixelWidth / 2 - 2;
@@ -390,15 +455,16 @@ function Piptris() {
 
     const fastDrop = BTN_PLAY.read();
     const desiredInterval = fastDrop ? 100 : blockDropSpeed;
-    if (mainLoopInterval._interval !== desiredInterval) {
+    if (currentInterval !== desiredInterval) {
       clearInterval(mainLoopInterval);
       mainLoopInterval = setInterval(dropPiece, desiredInterval);
+      currentInterval = desiredInterval;
     }
   }
 
   function drawScore() {
     const scoreX = PLAY_AREA.x2 + 65;
-    const scoreY = PLAY_AREA.y1 + 25;
+    const scoreY = PLAY_AREA.y2 - 60;
     const fontHeight = 20;
 
     g.setFont('6x8', 2);
@@ -406,18 +472,30 @@ function Piptris() {
     const textWidth = g.stringWidth(text);
     const textHeight = 16;
 
-    g.setColor('#000');
-    g.fillRect(
-      scoreX - textWidth / 2 - 2,
-      scoreY + fontHeight - 6,
-      scoreX + textWidth / 2 + 2,
-      scoreY + fontHeight + textHeight - 4,
-    );
+    const clearWidth = 100;
+    const clearHeight = fontHeight + textHeight + 10;
+    const clearX1 = scoreX - clearWidth / 2;
+    const clearY1 = scoreY + fontHeight - 8;
+    const clearX2 = scoreX + clearWidth / 2;
+    const clearY2 = clearY1 + clearHeight;
 
-    g.setColor('#FFF');
+    // Clear
+    g.setColor(COLOR_BLACK);
+    g.fillRect(clearX1, clearY1, clearX2, clearY2);
+
+    if (DEBUG) {
+      drawBoundaries({
+        x1: clearX1 - 1,
+        y1: clearY1 - 1,
+        x2: clearX2 + 1,
+        y2: clearY2 + 1,
+      });
+    }
+
+    g.setColor(COLOR_THEME_DARK);
     g.drawString('SCORE', scoreX, scoreY);
 
-    Theme.apply();
+    g.setColor(COLOR_THEME);
     g.drawString(text, scoreX, scoreY + fontHeight);
   }
 
@@ -429,11 +507,11 @@ function Piptris() {
 
     g.clear();
 
-    g.setColor('#0F0');
-    g.setFont('6x8', 4);
+    g.setColor(COLOR_THEME);
+    g.setFontMonofonto36();
     g.drawString(GAME_NAME, centerX + 10, centerY - 50);
 
-    g.setColor('#FFF');
+    g.setColor(COLOR_THEME_DARK);
     g.setFont('6x8', 2);
     g.drawString('Press    to START', centerX + 10, centerY - 15);
 
@@ -453,10 +531,10 @@ function Piptris() {
     const startX = centerX - blockWidth / 2;
 
     g.setFont('6x8', 1);
-    g.setColor('#FFF');
+    g.setColor(COLOR_THEME_DARK);
     g.drawString('<- BLOCK TYPE ->', centerX, labelY);
 
-    g.setColor('#000');
+    g.setColor(COLOR_BLACK);
     g.fillRect(
       startX - 2,
       startY - 2,
@@ -464,7 +542,7 @@ function Piptris() {
       startY + blockHeight + 2,
     );
 
-    Theme.apply();
+    g.setColor(COLOR_THEME);
     for (let y = 0; y < T_SHAPE.length; y++) {
       for (let x = 0; x < T_SHAPE[y].length; x++) {
         if (T_SHAPE[y][x]) {
@@ -503,7 +581,7 @@ function Piptris() {
   }
 
   function eraseBlock(x, y) {
-    g.setColor('#000');
+    g.setColor(COLOR_BLACK);
     g.fillRect(
       PLAY_AREA_X + x * blockSize,
       PLAY_AREA_Y + y * blockSize,
@@ -592,7 +670,6 @@ function Piptris() {
     }
 
     drawCurrentPiece(false);
-    // drawBoundaries(SCREEN_AREA);
     drawBoundaries(PLAY_AREA);
   }
 
@@ -607,7 +684,7 @@ function Piptris() {
 
   function resetField() {
     PLAY_AREA_BLOCKS.fill(0);
-    g.setColor('#000');
+    g.setColor(COLOR_BLACK);
     g.fillRect(
       PLAY_AREA_X,
       PLAY_AREA_Y,
@@ -644,7 +721,6 @@ function Piptris() {
     }
 
     drawCurrentPiece(false);
-    // drawBoundaries(SCREEN_AREA);
     drawBoundaries(PLAY_AREA);
   }
 
@@ -685,22 +761,50 @@ function Piptris() {
     removeListeners();
     playMusic();
 
-    score = 0;
-    linesCleared = 0;
     isGameOver = false;
     blockCurrent = null;
+
+    if (DEBUG) {
+      // Start at leve 10 for testing
+      difficultyLevel = 10;
+      score = 10000;
+    } else {
+      difficultyLevel = 0;
+      score = 0;
+    }
+    linesCleared = difficultyLevel * LINES_PER_LEVEL;
+    blockDropSpeed = Math.max(
+      BLOCK_START_SPEED - difficultyLevel * SPEED_STEP,
+      MIN_DROP_SPEED,
+    );
+    currentInterval = blockDropSpeed;
     blockNext = getRandomPiece();
 
     clearGameArea();
     resetField();
+    drawLevel();
+    drawScore();
+
     drawBoundaries(PLAY_AREA);
-    // drawBoundaries(SCREEN_AREA);
+
     spawnPiece();
     drawField();
     drawGameName();
 
     setListeners();
     mainLoopInterval = setInterval(dropPiece, blockDropSpeed);
+  }
+
+  function updateDifficulty() {
+    let newLevel = Math.floor(linesCleared / LINES_PER_LEVEL);
+    if (newLevel > difficultyLevel) {
+      difficultyLevel = newLevel;
+      blockDropSpeed = Math.max(
+        BLOCK_START_SPEED - difficultyLevel * SPEED_STEP,
+        MIN_DROP_SPEED,
+      );
+      console.log('Level up! New speed:', blockDropSpeed, 'ms');
+    }
   }
 
   self.run = function () {
