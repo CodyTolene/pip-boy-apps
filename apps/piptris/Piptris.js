@@ -9,7 +9,7 @@ function Piptris() {
 
   const GAME_NAME = 'PIPTRIS';
   const GAME_VERSION = '2.3.0';
-  const DEBUG = true;
+  const DEBUG = false;
 
   // Game State
   const BLOCK_START_SPEED = 800;
@@ -238,9 +238,22 @@ function Piptris() {
 
     drawImageFromJSON(ICON_GEAR, centerX - 45, centerY + 1);
 
+    const statsYStart = centerY + 80;
+    const statsLineHeight = 18;
+
     g.setColor(COLOR_THEME);
     g.setFont('6x8', 2);
-    g.drawString('Score: ' + score, centerX, centerY + 50);
+    g.drawString('Score: ' + score, centerX, statsYStart);
+    g.drawString(
+      'Level: ' + difficultyLevel,
+      centerX,
+      statsYStart + statsLineHeight,
+    );
+    g.drawString(
+      'Lines: ' + linesCleared,
+      centerX,
+      statsYStart + statsLineHeight * 2,
+    );
 
     inputInterval = setInterval(() => {
       if (BTN_PLAY.read()) {
