@@ -3,6 +3,7 @@
 - Pip-Boy theme color support.
 - Move next block to the right side of the screen and the score to the bottom right.
 - Increase the play area to full screen, a 33% size increase overall.
+- Add difficulty scaling.
 
 2.2.1
 https://github.com/CodyTolene/pip-boy-apps/pull/12

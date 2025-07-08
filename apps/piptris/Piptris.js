@@ -9,19 +9,27 @@ function Piptris() {
 
   const GAME_NAME = 'PIPTRIS';
   const GAME_VERSION = '2.3.0';
-  const DEBUG = false;
+  const DEBUG = true;
 
   // Game State
+  const BLOCK_START_SPEED = 800;
   let blockCurrent = null;
-  let blockDropSpeed = 800;
+  let blockDropSpeed = BLOCK_START_SPEED;
   let blockNext = null;
   let blockSize = 15;
+  let currentInterval = blockDropSpeed;
   let inputInterval = null;
   let isGameOver = false;
   let linesCleared = 0;
   let mainLoopInterval = null;
   let score = 0;
   let useHollowBlocks = false;
+
+  // Game Difficulty
+  let difficultyLevel = 0;
+  const MIN_DROP_SPEED = 100;
+  const SPEED_STEP = 50;
+  const LINES_PER_LEVEL = 10;
 
   // Screen
   const SCREEN_WIDTH = g.getWidth();
@@ -120,6 +128,7 @@ function Piptris() {
         linesRemoved++;
         linesCleared++;
         y++;
+        updateDifficulty();
       }
     }
 
@@ -206,6 +215,7 @@ function Piptris() {
       }
     }
     drawScore();
+    drawLevel();
     drawLinesCleared();
     drawNextPiece();
   }
@@ -266,11 +276,12 @@ function Piptris() {
 
     g.setFont('6x8', 2);
     const text = linesCleared.toString();
-    const textWidth = g.stringWidth(text);
+    // const textWidth = g.stringWidth(text);
     const textHeight = 16;
 
     const clearWidth = 80;
     const clearHeight = fontHeight + textHeight + 10;
+
     const clearX1 = linesX - clearWidth / 2;
     const clearY1 = linesY + fontHeight - 8;
     const clearX2 = linesX + clearWidth / 2;
@@ -307,6 +318,43 @@ function Piptris() {
     g.setColor(COLOR_THEME);
     g.setFont('6x8', 1);
     g.drawString('v' + GAME_VERSION, startX, startY + fontHeight);
+  }
+
+  function drawLevel() {
+    const levelX = PLAY_AREA.x1 - 65;
+    const levelY = PLAY_AREA.y2 - 120;
+    const fontHeight = 20;
+
+    g.setFont('6x8', 2);
+    const text = difficultyLevel.toString();
+    const textWidth = g.stringWidth(text);
+    const textHeight = 16;
+
+    const clearPadding = 4;
+    const clearX1 = levelX - textWidth / 2 - clearPadding;
+    const clearY1 = levelY + fontHeight - 4;
+    const clearX2 = levelX + textWidth / 2 + clearPadding;
+    const clearY2 = clearY1 + textHeight + clearPadding;
+
+    g.setColor(COLOR_BLACK);
+    g.fillRect(clearX1, clearY1, clearX2, clearY2);
+
+    if (DEBUG) {
+      drawBoundaries({
+        x1: clearX1 - 1,
+        y1: clearY1 - 1,
+        x2: clearX2 + 1,
+        y2: clearY2 + 1,
+      });
+    }
+
+    // Draw static label (only once in startGame if you want)
+    g.setColor(COLOR_THEME_DARK);
+    g.drawString('LEVEL', levelX, levelY);
+
+    // Draw dynamic level number
+    g.setColor(COLOR_THEME);
+    g.drawString(text, levelX, levelY + fontHeight);
   }
 
   function drawNextPiece() {
@@ -394,9 +442,10 @@ function Piptris() {
 
     const fastDrop = BTN_PLAY.read();
     const desiredInterval = fastDrop ? 100 : blockDropSpeed;
-    if (mainLoopInterval._interval !== desiredInterval) {
+    if (currentInterval !== desiredInterval) {
       clearInterval(mainLoopInterval);
       mainLoopInterval = setInterval(dropPiece, desiredInterval);
+      currentInterval = desiredInterval;
     }
   }
 
@@ -699,14 +748,29 @@ function Piptris() {
     removeListeners();
     playMusic();
 
-    score = 0;
-    linesCleared = 0;
     isGameOver = false;
     blockCurrent = null;
+
+    if (DEBUG) {
+      // Start at leve 10 for testing
+      difficultyLevel = 10;
+      score = 10000;
+    } else {
+      difficultyLevel = 0;
+      score = 0;
+    }
+    linesCleared = difficultyLevel * LINES_PER_LEVEL;
+    blockDropSpeed = Math.max(
+      BLOCK_START_SPEED - difficultyLevel * SPEED_STEP,
+      MIN_DROP_SPEED,
+    );
+    currentInterval = blockDropSpeed;
     blockNext = getRandomPiece();
 
     clearGameArea();
     resetField();
+    drawLevel();
+    drawScore();
 
     drawBoundaries(PLAY_AREA);
 
@@ -716,6 +780,18 @@ function Piptris() {
 
     setListeners();
     mainLoopInterval = setInterval(dropPiece, blockDropSpeed);
+  }
+
+  function updateDifficulty() {
+    let newLevel = Math.floor(linesCleared / LINES_PER_LEVEL);
+    if (newLevel > difficultyLevel) {
+      difficultyLevel = newLevel;
+      blockDropSpeed = Math.max(
+        BLOCK_START_SPEED - difficultyLevel * SPEED_STEP,
+        MIN_DROP_SPEED,
+      );
+      console.log('Level up! New speed:', blockDropSpeed, 'ms');
+    }
   }
 
   self.run = function () {
