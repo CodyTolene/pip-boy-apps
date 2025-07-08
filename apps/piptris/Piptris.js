@@ -8,7 +8,7 @@ function Piptris() {
   const self = {};
 
   const GAME_NAME = 'PIPTRIS';
-  const GAME_VERSION = '2.3.0';
+  const GAME_VERSION = '2.3.1';
   const DEBUG = false;
 
   // Game State
@@ -345,7 +345,7 @@ function Piptris() {
 
     const clearPadding = 4;
     const clearX1 = levelX - textWidth / 2 - clearPadding;
-    const clearY1 = levelY + fontHeight - 4;
+    const clearY1 = levelY + fontHeight - clearPadding * 2;
     const clearX2 = levelX + textWidth / 2 + clearPadding;
     const clearY2 = clearY1 + textHeight + clearPadding;
 

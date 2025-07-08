@@ -1,3 +1,6 @@
+2.3.1
+- Quick patch to "Level" number display clearing.
+
 2.3.0
 - Decrease knob debounce time to 30ms (from 100ms) for more responsive controls.
 - Pip-Boy theme color support.
