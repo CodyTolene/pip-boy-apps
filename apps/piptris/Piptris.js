@@ -7,15 +7,15 @@
 function Piptris() {
   const self = {};
 
-  const GAME_NAME = 'Piptris';
+  const GAME_NAME = 'PIPTRIS';
   const GAME_VERSION = '2.3.0';
-  const DEBUG = true;
+  const DEBUG = false;
 
   // Game State
   let blockCurrent = null;
   let blockDropSpeed = 800;
   let blockNext = null;
-  let blockSize = 10;
+  let blockSize = 15;
   let inputInterval = null;
   let isGameOver = false;
   let linesCleared = 0;
@@ -36,7 +36,7 @@ function Piptris() {
   // Colors
   const COLOR_BLACK = '#000';
   const COLOR_THEME = g.theme.fg;
-  const COLOR_THEME_DARK = g.blendColor(COLOR_BLACK, COLOR_THEME, 0.75);
+  const COLOR_THEME_DARK = g.blendColor(COLOR_BLACK, COLOR_THEME, 0.5);
 
   // Play Area
   const PLAY_AREA_WIDTH = 10;
@@ -269,13 +269,24 @@ function Piptris() {
     const textWidth = g.stringWidth(text);
     const textHeight = 16;
 
+    const clearWidth = 80;
+    const clearHeight = fontHeight + textHeight + 10;
+    const clearX1 = linesX - clearWidth / 2;
+    const clearY1 = linesY + fontHeight - 8;
+    const clearX2 = linesX + clearWidth / 2;
+    const clearY2 = clearY1 + clearHeight;
+
     g.setColor(COLOR_BLACK);
-    g.fillRect(
-      linesX - textWidth / 2 - 2,
-      linesY + fontHeight - 6,
-      linesX + textWidth / 2 + 2,
-      linesY + fontHeight + textHeight - 4,
-    );
+    g.fillRect(clearX1, clearY1, clearX2, clearY2);
+
+    if (DEBUG) {
+      drawBoundaries({
+        x1: clearX1 - 1,
+        y1: clearY1 - 1,
+        x2: clearX2 + 1,
+        y2: clearY2 + 1,
+      });
+    }
 
     g.setColor(COLOR_THEME_DARK);
     g.drawString('LINES', linesX, linesY);
@@ -286,11 +297,11 @@ function Piptris() {
 
   function drawGameName() {
     const fontHeight = 20;
-    const startX = PLAY_AREA.x1 - 65;
-    const startY = PLAY_AREA.y1 + 25;
+    const startX = PLAY_AREA.x1 - 60;
+    const startY = PLAY_AREA.y1 + 35;
 
-    g.setColor(COLOR_THEME_DARK);
-    g.setFont('6x8', 2);
+    g.setColor(COLOR_THEME);
+    g.setFontMonofonto28();
     g.drawString(GAME_NAME, startX, startY);
 
     g.setColor(COLOR_THEME);
@@ -305,16 +316,26 @@ function Piptris() {
 
     const startX = PLAY_AREA.x2 + 65;
     const startY = PLAY_AREA.y1 + 25;
-    const previewWidth = 40;
-    const previewHeight = 40;
+
+    const previewBlockArea = 4 * blockSize;
+    const previewPadding = 6;
+
+    const clearX1 = startX - previewBlockArea / 2 - previewPadding;
+    const clearY1 = startY + 15 - previewPadding;
+    const clearX2 = startX + previewBlockArea / 2 + previewPadding;
+    const clearY2 = startY + 15 + previewBlockArea + previewPadding;
 
     g.setColor(COLOR_BLACK);
-    g.fillRect(
-      startX - previewWidth / 2 - 2,
-      startY + 15,
-      startX + previewWidth / 2,
-      startY + 15 + previewHeight,
-    );
+    g.fillRect(clearX1, clearY1, clearX2, clearY2);
+
+    if (DEBUG) {
+      drawBoundaries({
+        x1: clearX1 - 1,
+        y1: clearY1 - 1,
+        x2: clearX2 + 1,
+        y2: clearY2 + 1,
+      });
+    }
 
     g.setFont('6x8', 2);
     g.setColor(COLOR_THEME_DARK);
@@ -389,13 +410,25 @@ function Piptris() {
     const textWidth = g.stringWidth(text);
     const textHeight = 16;
 
+    const clearWidth = 100;
+    const clearHeight = fontHeight + textHeight + 10;
+    const clearX1 = scoreX - clearWidth / 2;
+    const clearY1 = scoreY + fontHeight - 8;
+    const clearX2 = scoreX + clearWidth / 2;
+    const clearY2 = clearY1 + clearHeight;
+
+    // Clear
     g.setColor(COLOR_BLACK);
-    g.fillRect(
-      scoreX - textWidth / 2 - 2,
-      scoreY + fontHeight - 6,
-      scoreX + textWidth / 2 + 2,
-      scoreY + fontHeight + textHeight - 4,
-    );
+    g.fillRect(clearX1, clearY1, clearX2, clearY2);
+
+    if (DEBUG) {
+      drawBoundaries({
+        x1: clearX1 - 1,
+        y1: clearY1 - 1,
+        x2: clearX2 + 1,
+        y2: clearY2 + 1,
+      });
+    }
 
     g.setColor(COLOR_THEME_DARK);
     g.drawString('SCORE', scoreX, scoreY);
@@ -413,7 +446,7 @@ function Piptris() {
     g.clear();
 
     g.setColor(COLOR_THEME);
-    g.setFont('6x8', 4);
+    g.setFontMonofonto36();
     g.drawString(GAME_NAME, centerX + 10, centerY - 50);
 
     g.setColor(COLOR_THEME_DARK);
@@ -575,10 +608,6 @@ function Piptris() {
     }
 
     drawCurrentPiece(false);
-
-    if (DEBUG) {
-      drawBoundaries(SCREEN_AREA);
-    }
     drawBoundaries(PLAY_AREA);
   }
 
@@ -630,9 +659,6 @@ function Piptris() {
     }
 
     drawCurrentPiece(false);
-    if (DEBUG) {
-      drawBoundaries(SCREEN_AREA);
-    }
     drawBoundaries(PLAY_AREA);
   }
 
@@ -683,9 +709,6 @@ function Piptris() {
     resetField();
 
     drawBoundaries(PLAY_AREA);
-    if (DEBUG) {
-      drawBoundaries(SCREEN_AREA);
-    }
 
     spawnPiece();
     drawField();
