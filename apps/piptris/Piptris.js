@@ -8,7 +8,8 @@ function Piptris() {
   const self = {};
 
   const GAME_NAME = 'Piptris';
-  const GAME_VERSION = '2.2.1';
+  const GAME_VERSION = '2.3.0';
+  const DEBUG = false;
 
   // Game State
   let blockCurrent = null;
@@ -32,6 +33,11 @@ function Piptris() {
     y2: SCREEN_HEIGHT - 10,
   };
 
+  // Colors
+  const COLOR_THEME = g.theme.fg;
+  const COLOR_BLACK = '#000';
+  const COLOR_WHITE = '#FFF';
+
   // Play Area
   const PLAY_AREA_WIDTH = 10;
   const PLAY_AREA_HEIGHT = 20;
@@ -53,7 +59,7 @@ function Piptris() {
   const KNOB_LEFT = 'knob1';
   const KNOB_RIGHT = 'knob2';
   const BTN_TOP = 'torch';
-  const KNOB_DEBOUNCE = 100;
+  const KNOB_DEBOUNCE = 30;
   let lastLeftKnobTime = 0;
 
   // Audio/music
@@ -79,31 +85,8 @@ function Piptris() {
     [[1, 1],[1, 1]],        // O
   ];
 
-  const Theme = {
-    self: [0, 1, 0], // Default color (green)
-    apply: function () {
-      g.setColor(this.self[0], this.self[1], this.self[2]);
-    },
-    get: function () {
-      return this.self;
-    },
-    set: function (rV, gV, bV, system) {
-      if (rV === undefined || gV === undefined || bV === undefined || system) {
-        const hex = g.getColor().toString(16);
-        for (let i = 0; i < 3; i++) {
-          this.self[i] = parseInt(hex.charAt(i), 16) / 15;
-        }
-      } else {
-        this.self[0] = rV;
-        this.self[1] = gV;
-        this.self[2] = bV;
-      }
-      return this;
-    },
-  };
-
   function clearGameArea() {
-    g.setColor('#000');
+    g.setColor(COLOR_BLACK);
     g.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
   }
 
@@ -178,7 +161,7 @@ function Piptris() {
   }
 
   function drawBlock(x, y) {
-    Theme.apply();
+    g.setColor(COLOR_THEME);
     const block = [
       PLAY_AREA_X + x * blockSize,
       PLAY_AREA_Y + y * blockSize,
@@ -193,7 +176,7 @@ function Piptris() {
   }
 
   function drawBoundaries(area) {
-    Theme.set(0, 1, 0).apply();
+    g.setColor(COLOR_THEME);
     g.drawRect(area.x1, area.y1, area.x2, area.y2);
   }
 
@@ -212,7 +195,7 @@ function Piptris() {
   }
 
   function drawField() {
-    Theme.apply();
+    g.setColor(COLOR_THEME);
     for (let y = 0; y < PLAY_AREA_HEIGHT; y++) {
       for (let x = 0; x < PLAY_AREA_WIDTH; x++) {
         if (PLAY_AREA_BLOCKS[y * PLAY_AREA_WIDTH + x]) {
@@ -235,17 +218,17 @@ function Piptris() {
 
     g.clear();
 
-    g.setColor('#0F0');
+    g.setColor(COLOR_THEME);
     g.setFont('6x8', 4);
     g.drawString('GAME OVER', centerX, centerY - 20);
 
-    g.setColor('#FFF');
+    g.setColor(COLOR_WHITE);
     g.setFont('6x8', 2);
     g.drawString('Press    to RESTART', centerX, centerY + 15);
 
     drawImageFromJSON(ICON_GEAR, centerX - 45, centerY + 1);
 
-    g.setColor('#0F0');
+    g.setColor(COLOR_THEME);
     g.setFont('6x8', 2);
     g.drawString('Score: ' + score, centerX, centerY + 50);
 
@@ -269,7 +252,7 @@ function Piptris() {
         width: json.width,
       };
 
-      Theme.apply();
+      g.setColor(COLOR_THEME);
       g.drawImage(image, x, y);
     } catch (e) {
       console.log('Failed to load image:', e);
@@ -286,7 +269,7 @@ function Piptris() {
     const textWidth = g.stringWidth(text);
     const textHeight = 16;
 
-    g.setColor('#000');
+    g.setColor(COLOR_BLACK);
     g.fillRect(
       linesX - textWidth / 2 - 2,
       linesY + fontHeight - 6,
@@ -294,10 +277,10 @@ function Piptris() {
       linesY + fontHeight + textHeight - 4,
     );
 
-    g.setColor('#FFF');
+    g.setColor(COLOR_WHITE);
     g.drawString('LINES', linesX, linesY);
 
-    Theme.apply();
+    g.setColor(COLOR_THEME);
     g.drawString(text, linesX, linesY + fontHeight);
   }
 
@@ -306,11 +289,11 @@ function Piptris() {
     const startX = PLAY_AREA.x1 - 65;
     const startY = PLAY_AREA.y1 + 25;
 
-    g.setColor('#FFF');
+    g.setColor(COLOR_WHITE);
     g.setFont('6x8', 2);
     g.drawString(GAME_NAME, startX, startY);
 
-    Theme.apply();
+    g.setColor(COLOR_THEME);
     g.setFont('6x8', 1);
     g.drawString('v' + GAME_VERSION, startX, startY + fontHeight);
   }
@@ -325,7 +308,7 @@ function Piptris() {
     const previewWidth = 40;
     const previewHeight = 40;
 
-    g.setColor('#000');
+    g.setColor(COLOR_BLACK);
     g.fillRect(
       startX - previewWidth / 2 - 2,
       startY + 15,
@@ -334,10 +317,10 @@ function Piptris() {
     );
 
     g.setFont('6x8', 2);
-    g.setColor('#FFF');
+    g.setColor(COLOR_WHITE);
     g.drawString('NEXT', startX, startY);
 
-    Theme.apply();
+    g.setColor(COLOR_THEME);
     const piece = blockNext.shape;
     const piecePixelWidth = piece[0].length * blockSize;
     const offsetX = startX - piecePixelWidth / 2 - 2;
@@ -406,7 +389,7 @@ function Piptris() {
     const textWidth = g.stringWidth(text);
     const textHeight = 16;
 
-    g.setColor('#000');
+    g.setColor(COLOR_BLACK);
     g.fillRect(
       scoreX - textWidth / 2 - 2,
       scoreY + fontHeight - 6,
@@ -414,10 +397,10 @@ function Piptris() {
       scoreY + fontHeight + textHeight - 4,
     );
 
-    g.setColor('#FFF');
+    g.setColor(COLOR_WHITE);
     g.drawString('SCORE', scoreX, scoreY);
 
-    Theme.apply();
+    g.setColor(COLOR_THEME);
     g.drawString(text, scoreX, scoreY + fontHeight);
   }
 
@@ -429,11 +412,11 @@ function Piptris() {
 
     g.clear();
 
-    g.setColor('#0F0');
+    g.setColor(COLOR_THEME);
     g.setFont('6x8', 4);
     g.drawString(GAME_NAME, centerX + 10, centerY - 50);
 
-    g.setColor('#FFF');
+    g.setColor(COLOR_WHITE);
     g.setFont('6x8', 2);
     g.drawString('Press    to START', centerX + 10, centerY - 15);
 
@@ -453,10 +436,10 @@ function Piptris() {
     const startX = centerX - blockWidth / 2;
 
     g.setFont('6x8', 1);
-    g.setColor('#FFF');
+    g.setColor(COLOR_WHITE);
     g.drawString('<- BLOCK TYPE ->', centerX, labelY);
 
-    g.setColor('#000');
+    g.setColor(COLOR_BLACK);
     g.fillRect(
       startX - 2,
       startY - 2,
@@ -464,7 +447,7 @@ function Piptris() {
       startY + blockHeight + 2,
     );
 
-    Theme.apply();
+    g.setColor(COLOR_THEME);
     for (let y = 0; y < T_SHAPE.length; y++) {
       for (let x = 0; x < T_SHAPE[y].length; x++) {
         if (T_SHAPE[y][x]) {
@@ -503,7 +486,7 @@ function Piptris() {
   }
 
   function eraseBlock(x, y) {
-    g.setColor('#000');
+    g.setColor(COLOR_BLACK);
     g.fillRect(
       PLAY_AREA_X + x * blockSize,
       PLAY_AREA_Y + y * blockSize,
@@ -607,7 +590,7 @@ function Piptris() {
 
   function resetField() {
     PLAY_AREA_BLOCKS.fill(0);
-    g.setColor('#000');
+    g.setColor(COLOR_BLACK);
     g.fillRect(
       PLAY_AREA_X,
       PLAY_AREA_Y,
