@@ -9,12 +9,13 @@ function CustomRadio() {
 
   // General
   const APP_NAME = 'Custom Radio';
-  const APP_VERSION = '3.1.1';
+  const APP_VERSION = '3.2.0';
 
   // Screen
   const SCREEN_WIDTH = g.getWidth(); // Width (480px)
   const SCREEN_HEIGHT = g.getHeight(); // Height (320px)
   const SHOW_BOUNDARIES = false;
+  let originalIdleTimeout = settings.idleTimeout;
 
   // UX Mapping
   const SCREEN_XY = {
@@ -59,6 +60,7 @@ function CustomRadio() {
   const MUSIC_STOPPED = 'audioStopped';
   const MUSIC_DIR = 'RADIO/';
   let currentAudio = null;
+  let nextSongToPlay = null;
 
   // Music List
   const PAGE_SIZE = 10;
@@ -84,9 +86,9 @@ function CustomRadio() {
 
   // Colors
   const BLACK = '#000000';
-  const GREEN = '#00ff00';
-  const GREEN_DARK = '#007f00';
-  const GREEN_DARKER = '#003300';
+  const COLOR_THEME = g.theme.fg;
+  const COLOR_THEME_DARK = g.blendColor('#000', COLOR_THEME, 0.5);
+  const COLOR_THEME_DARKER = g.blendColor('#000', COLOR_THEME, 0.75);
 
   function clearFooterBar() {
     if (footerInterval) {
@@ -131,12 +133,12 @@ function CustomRadio() {
     const padding = 5;
     const titleWidth = g.stringWidth(appName);
 
-    g.setColor(GREEN)
+    g.setColor(COLOR_THEME)
       .setFontAlign(-1, -1, 0) // Align left-top
       .setFontMonofonto16()
       .drawString(appName, LEFT_HALF_XY.x1, SCREEN_XY.y1 + 8);
 
-    g.setColor(GREEN_DARK)
+    g.setColor(COLOR_THEME_DARK)
       .setFontAlign(-1, -1, 0) // Align left-top
       .setFont('6x8')
       .drawString(
@@ -146,7 +148,7 @@ function CustomRadio() {
       );
 
     // Draw a line under the title
-    g.setColor(GREEN_DARKER).drawLine(
+    g.setColor(COLOR_THEME_DARKER).drawLine(
       LEFT_HALF_XY.x1,
       LEFT_HALF_XY.y1 - padding,
       LEFT_HALF_XY.x2,
@@ -155,7 +157,7 @@ function CustomRadio() {
   }
 
   function drawBoundaries(area) {
-    g.setColor(GREEN_DARKER).drawRect(area.x1, area.y1, area.x2, area.y2);
+    g.setColor(COLOR_THEME_DARKER).drawRect(area.x1, area.y1, area.x2, area.y2);
   }
 
   function drawFooterBar() {
@@ -175,14 +177,14 @@ function CustomRadio() {
       display.length > 19 ? display.slice(0, 16) + '...' : display;
 
     // Draw the currently playing song text
-    g.setColor(GREEN)
+    g.setColor(COLOR_THEME)
       .setFontAlign(1, -1, 0) // Align right-top
       .setFontMonofonto16()
       .drawString(displayName, NOW_PLAYING_XY.x2, NOW_PLAYING_XY.y1 + 20);
   }
 
   function drawNowPlayingTitle() {
-    g.setColor(GREEN_DARK)
+    g.setColor(COLOR_THEME_DARK)
       .setFontAlign(1, 1, 0) // Align right-bottom
       .setFont('6x8')
       .drawString('Now Playing', NOW_PLAYING_XY.x2, NOW_PLAYING_XY.y1 + 15);
@@ -206,12 +208,9 @@ function CustomRadio() {
       const y = LEFT_HALF_XY.y1 + i * rowHeight + padding;
       const name = file.replace(/\.wav$/i, '');
       const displayName = name.length > 19 ? name.slice(0, 16) + '...' : name;
-      g.setColor(i === selectedIndex ? GREEN : GREEN_DARK).drawString(
-        displayName,
-        LEFT_HALF_XY.x1 + padding,
-        y,
-        true,
-      );
+      g.setColor(
+        i === selectedIndex ? COLOR_THEME : COLOR_THEME_DARK,
+      ).drawString(displayName, LEFT_HALF_XY.x1 + padding, y, true);
     });
 
     drawAllBoundaries();
@@ -233,7 +232,7 @@ function CustomRadio() {
     const right = x2;
 
     for (let i = 0; i < 40; i++) {
-      const color = i % ticks === 0 ? GREEN : GREEN_DARK;
+      const color = i % ticks === 0 ? COLOR_THEME : COLOR_THEME_DARK;
       const height = i % ticks === 0 ? 2 : 1;
 
       const xpos = x1 + i * ticksSpacing;
@@ -246,7 +245,7 @@ function CustomRadio() {
       g.drawLine(right - height, y1 + i * 3, right, y1 + i * 3);
     }
 
-    g.setColor(GREEN);
+    g.setColor(COLOR_THEME);
     // Bottom horizontal
     g.drawLine(x1, bottom, x2, bottom);
     // Right vertical
@@ -363,6 +362,9 @@ function CustomRadio() {
     clearWaveform();
 
     removeListeners();
+
+    // Restore original idle timeout to allow sleep again
+    settings.idleTimeout = originalIdleTimeout;
 
     bC.clear(1).flip();
     E.reboot();
@@ -503,6 +505,10 @@ function CustomRadio() {
   }
 
   self.run = function () {
+    // Disable sleep by setting idle timeout to 0
+    originalIdleTimeout = settings.idleTimeout;
+    settings.idleTimeout = 0;
+
     bC.clear(1).flip();
 
     Pip.mode = MODE.RADIO;

@@ -1,3 +1,8 @@
+3.2.0
+https://github.com/CodyTolene/pip-boy-apps/pull/26
+- Pip-Boy theme color support.
+- When random songs are playing, prevent the device from sleeping.
+
 3.1.1
 https://github.com/CodyTolene/pip-boy-apps/pull/11
 - Update torch button (top right) to toggle screen brightness when pressed.
