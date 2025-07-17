@@ -1,0 +1,31 @@
+{
+  "enabled": [
+    "perk_actionboy.json",
+    "perk_actiongirl.json",
+    "perk_blackwidow.json",
+    "perk_cannibal.json",
+    "perk_cherchez.json",
+    "perk_childatheart.json",
+    "perk_comprehension.json",
+    "perk_computerwhiz.json",
+    "perk_confirmedbachelor.json",
+    "perk_educated.json",
+    "perk_entomologist.json",
+    "perk_fortunefinder.json",
+    "perk_foureyes.json",
+    "perk_friendofthenight.json",
+    "perk_heaveho.json",
+    "perk_hunter.json",
+    "perk_intensetraining.json",
+    "perk_ladykiller.json",
+    "perk_missfortune.json",
+    "perk_mysteriousstranger.json",
+    "perk_radchild.json",
+    "perk_rapidreload.json",
+    "perk_retention.json",
+    "perk_runngun.json",
+    "perk_stealthgirl.json",
+    "perk_swiftlearner.json",
+    "perk_weaponhandling.json"
+  ]
+}
