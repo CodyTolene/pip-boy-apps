@@ -60,6 +60,7 @@ function CustomRadio() {
   const MUSIC_STOPPED = 'audioStopped';
   const MUSIC_DIR = 'RADIO/';
   let currentAudio = null;
+  let nextSongToPlay = null;
 
   // Music List
   const PAGE_SIZE = 10;
