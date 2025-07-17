@@ -1,201 +1,208 @@
 {
   "id": "statsdisplay",
   "name": "Stats Display",
-  "version": "2.4.0",
+  "version": "2.5.0",
   "description": "The SPECIAL/Skills/Perks menu for the Pip-Boy 3000 Mk V.",
   "icon": "app.png",
   "tags": "stats",
   "type": "app",
   "readme": "README.md",
   "storage": [
-    { "name": "USER/statsdisplay.js", "url": "app.js" },
     {
-      "name": "USER/StatsDisplay/PERKS/ALL/actionboy.json",
-      "url": "StatsDisplay/PERKS/ALL/actionboy.json"
+      "name": "USER/statsdisplay.js",
+      "url": "app.js"
     },
     {
-      "name": "USER/StatsDisplay/PERKS/ALL/actiongirl.json",
-      "url": "StatsDisplay/PERKS/ALL/actiongirl.json"
+      "name": "USER/stats_display.json",
+      "url": "StatsDisplay/stats_display.json"
     },
     {
-      "name": "USER/StatsDisplay/PERKS/ALL/blackwidow.json",
-      "url": "StatsDisplay/PERKS/ALL/blackwidow.json"
+      "name": "USER/perk_actionboy.json",
+      "url": "StatsDisplay/PERKS/actionboy.json"
     },
     {
-      "name": "USER/StatsDisplay/PERKS/ALL/cannibal.json",
-      "url": "StatsDisplay/PERKS/ALL/cannibal.json"
+      "name": "USER/perk_actiongirl.json",
+      "url": "StatsDisplay/PERKS/actiongirl.json"
     },
     {
-      "name": "USER/StatsDisplay/PERKS/ALL/cherchez.json",
-      "url": "StatsDisplay/PERKS/ALL/cherchez.json"
+      "name": "USER/perk_blackwidow.json",
+      "url": "StatsDisplay/PERKS/blackwidow.json"
     },
     {
-      "name": "USER/StatsDisplay/PERKS/ALL/childatheart.json",
-      "url": "StatsDisplay/PERKS/ALL/childatheart.json"
+      "name": "USER/perk_cannibal.json",
+      "url": "StatsDisplay/PERKS/cannibal.json"
     },
     {
-      "name": "USER/StatsDisplay/PERKS/ALL/comprehension.json",
-      "url": "StatsDisplay/PERKS/ALL/comprehension.json"
+      "name": "USER/perk_cherchez.json",
+      "url": "StatsDisplay/PERKS/cherchez.json"
     },
     {
-      "name": "USER/StatsDisplay/PERKS/ALL/computerwhiz.json",
-      "url": "StatsDisplay/PERKS/ALL/computerwhiz.json"
+      "name": "USER/perk_childatheart.json",
+      "url": "StatsDisplay/PERKS/childatheart.json"
     },
     {
-      "name": "USER/StatsDisplay/PERKS/ALL/confirmedbachelor.json",
-      "url": "StatsDisplay/PERKS/ALL/confirmedbachelor.json"
+      "name": "USER/perk_comprehension.json",
+      "url": "StatsDisplay/PERKS/comprehension.json"
     },
     {
-      "name": "USER/StatsDisplay/PERKS/ALL/educated.json",
-      "url": "StatsDisplay/PERKS/ALL/educated.json"
+      "name": "USER/perk_computerwhiz.json",
+      "url": "StatsDisplay/PERKS/computerwhiz.json"
     },
     {
-      "name": "USER/StatsDisplay/PERKS/ALL/entomologist.json",
-      "url": "StatsDisplay/PERKS/ALL/entomologist.json"
+      "name": "USER/perk_confirmedbachelor.json",
+      "url": "StatsDisplay/PERKS/confirmedbachelor.json"
     },
     {
-      "name": "USER/StatsDisplay/PERKS/ALL/fortunefinder.json",
-      "url": "StatsDisplay/PERKS/ALL/fortunefinder.json"
+      "name": "USER/perk_educated.json",
+      "url": "StatsDisplay/PERKS/educated.json"
     },
     {
-      "name": "USER/StatsDisplay/PERKS/ALL/foureyes.json",
-      "url": "StatsDisplay/PERKS/ALL/foureyes.json"
+      "name": "USER/perk_entomologist.json",
+      "url": "StatsDisplay/PERKS/entomologist.json"
     },
     {
-      "name": "USER/StatsDisplay/PERKS/ALL/friendofthenight.json",
-      "url": "StatsDisplay/PERKS/ALL/friendofthenight.json"
+      "name": "USER/perk_fortunefinder.json",
+      "url": "StatsDisplay/PERKS/fortunefinder.json"
     },
     {
-      "name": "USER/StatsDisplay/PERKS/ALL/heaveho.json",
-      "url": "StatsDisplay/PERKS/ALL/heaveho.json"
+      "name": "USER/perk_foureyes.json",
+      "url": "StatsDisplay/PERKS/foureyes.json"
     },
     {
-      "name": "USER/StatsDisplay/PERKS/ALL/hunter.json",
-      "url": "StatsDisplay/PERKS/ALL/hunter.json"
+      "name": "USER/perk_friendofthenight.json",
+      "url": "StatsDisplay/PERKS/friendofthenight.json"
     },
     {
-      "name": "USER/StatsDisplay/PERKS/ALL/intensetraining.json",
-      "url": "StatsDisplay/PERKS/ALL/intensetraining.json"
+      "name": "USER/perk_heaveho.json",
+      "url": "StatsDisplay/PERKS/heaveho.json"
     },
     {
-      "name": "USER/StatsDisplay/PERKS/ALL/ladykiller.json",
-      "url": "StatsDisplay/PERKS/ALL/ladykiller.json"
+      "name": "USER/perk_hunter.json",
+      "url": "StatsDisplay/PERKS/hunter.json"
     },
     {
-      "name": "USER/StatsDisplay/PERKS/ALL/missfortune.json",
-      "url": "StatsDisplay/PERKS/ALL/missfortune.json"
+      "name": "USER/perk_intensetraining.json",
+      "url": "StatsDisplay/PERKS/intensetraining.json"
     },
     {
-      "name": "USER/StatsDisplay/PERKS/ALL/mysteriousstranger.json",
-      "url": "StatsDisplay/PERKS/ALL/mysteriousstranger.json"
+      "name": "USER/perk_ladykiller.json",
+      "url": "StatsDisplay/PERKS/ladykiller.json"
     },
     {
-      "name": "USER/StatsDisplay/PERKS/ALL/radchild.json",
-      "url": "StatsDisplay/PERKS/ALL/radchild.json"
+      "name": "USER/perk_missfortune.json",
+      "url": "StatsDisplay/PERKS/missfortune.json"
     },
     {
-      "name": "USER/StatsDisplay/PERKS/ALL/rapidreload.json",
-      "url": "StatsDisplay/PERKS/ALL/rapidreload.json"
+      "name": "USER/perk_mysteriousstranger.json",
+      "url": "StatsDisplay/PERKS/mysteriousstranger.json"
     },
     {
-      "name": "USER/StatsDisplay/PERKS/ALL/retention.json",
-      "url": "StatsDisplay/PERKS/ALL/retention.json"
+      "name": "USER/perk_radchild.json",
+      "url": "StatsDisplay/PERKS/radchild.json"
     },
     {
-      "name": "USER/StatsDisplay/PERKS/ALL/runngun.json",
-      "url": "StatsDisplay/PERKS/ALL/runngun.json"
+      "name": "USER/perk_rapidreload.json",
+      "url": "StatsDisplay/PERKS/rapidreload.json"
     },
     {
-      "name": "USER/StatsDisplay/PERKS/ALL/stealthgirl.json",
-      "url": "StatsDisplay/PERKS/ALL/stealthgirl.json"
+      "name": "USER/perk_retention.json",
+      "url": "StatsDisplay/PERKS/retention.json"
     },
     {
-      "name": "USER/StatsDisplay/PERKS/ALL/swiftlearner.json",
-      "url": "StatsDisplay/PERKS/ALL/swiftlearner.json"
+      "name": "USER/perk_runngun.json",
+      "url": "StatsDisplay/PERKS/runngun.json"
     },
     {
-      "name": "USER/StatsDisplay/PERKS/ALL/weaponhandling.json",
-      "url": "StatsDisplay/PERKS/ALL/weaponhandling.json"
+      "name": "USER/perk_stealthgirl.json",
+      "url": "StatsDisplay/PERKS/stealthgirl.json"
     },
     {
-      "name": "USER/StatsDisplay/SKILLS/barter.json",
+      "name": "USER/perk_swiftlearner.json",
+      "url": "StatsDisplay/PERKS/swiftlearner.json"
+    },
+    {
+      "name": "USER/perk_weaponhandling.json",
+      "url": "StatsDisplay/PERKS/weaponhandling.json"
+    },
+    {
+      "name": "USER/skill_barter.json",
       "url": "StatsDisplay/SKILLS/barter.json"
     },
     {
-      "name": "USER/StatsDisplay/SKILLS/energyweapons.json",
+      "name": "USER/skill_energyweapons.json",
       "url": "StatsDisplay/SKILLS/energyweapons.json"
     },
     {
-      "name": "USER/StatsDisplay/SKILLS/explosives.json",
+      "name": "USER/skill_explosives.json",
       "url": "StatsDisplay/SKILLS/explosives.json"
     },
     {
-      "name": "USER/StatsDisplay/SKILLS/guns.json",
+      "name": "USER/skill_guns.json",
       "url": "StatsDisplay/SKILLS/guns.json"
     },
     {
-      "name": "USER/StatsDisplay/SKILLS/lockpicks.json",
+      "name": "USER/skill_lockpicks.json",
       "url": "StatsDisplay/SKILLS/lockpicks.json"
     },
     {
-      "name": "USER/StatsDisplay/SKILLS/medicine.json",
+      "name": "USER/skill_medicine.json",
       "url": "StatsDisplay/SKILLS/medicine.json"
     },
     {
-      "name": "USER/StatsDisplay/SKILLS/meleeweapons.json",
+      "name": "USER/skill_meleeweapons.json",
       "url": "StatsDisplay/SKILLS/meleeweapons.json"
     },
     {
-      "name": "USER/StatsDisplay/SKILLS/repair.json",
+      "name": "USER/skill_repair.json",
       "url": "StatsDisplay/SKILLS/repair.json"
     },
     {
-      "name": "USER/StatsDisplay/SKILLS/science.json",
+      "name": "USER/skill_science.json",
       "url": "StatsDisplay/SKILLS/science.json"
     },
     {
-      "name": "USER/StatsDisplay/SKILLS/sneak.json",
+      "name": "USER/skill_sneak.json",
       "url": "StatsDisplay/SKILLS/sneak.json"
     },
     {
-      "name": "USER/StatsDisplay/SKILLS/speech.json",
+      "name": "USER/skill_speech.json",
       "url": "StatsDisplay/SKILLS/speech.json"
     },
     {
-      "name": "USER/StatsDisplay/SKILLS/survival.json",
+      "name": "USER/skill_survival.json",
       "url": "StatsDisplay/SKILLS/survival.json"
     },
     {
-      "name": "USER/StatsDisplay/SKILLS/unarmed.json",
+      "name": "USER/skill_unarmed.json",
       "url": "StatsDisplay/SKILLS/unarmed.json"
     },
     {
-      "name": "USER/StatsDisplay/SPECIAL/aStrength.json",
-      "url": "StatsDisplay/SPECIAL/aStrength.json"
+      "name": "USER/special_strength.json",
+      "url": "StatsDisplay/SPECIAL/strength.json"
     },
     {
-      "name": "USER/StatsDisplay/SPECIAL/bPerception.json",
-      "url": "StatsDisplay/SPECIAL/bPerception.json"
+      "name": "USER/special_perception.json",
+      "url": "StatsDisplay/SPECIAL/perception.json"
     },
     {
-      "name": "USER/StatsDisplay/SPECIAL/cEndurance.json",
-      "url": "StatsDisplay/SPECIAL/cEndurance.json"
+      "name": "USER/special_endurance.json",
+      "url": "StatsDisplay/SPECIAL/endurance.json"
     },
     {
-      "name": "USER/StatsDisplay/SPECIAL/dCharisma.json",
-      "url": "StatsDisplay/SPECIAL/dCharisma.json"
+      "name": "USER/special_charisma.json",
+      "url": "StatsDisplay/SPECIAL/charisma.json"
     },
     {
-      "name": "USER/StatsDisplay/SPECIAL/eIntelligence.json",
-      "url": "StatsDisplay/SPECIAL/eIntelligence.json"
+      "name": "USER/special_intelligence.json",
+      "url": "StatsDisplay/SPECIAL/intelligence.json"
     },
     {
-      "name": "USER/StatsDisplay/SPECIAL/fAgility.json",
-      "url": "StatsDisplay/SPECIAL/fAgility.json"
+      "name": "USER/special_agility.json",
+      "url": "StatsDisplay/SPECIAL/agility.json"
     },
     {
-      "name": "USER/StatsDisplay/SPECIAL/gLuck.json",
-      "url": "StatsDisplay/SPECIAL/gLuck.json"
+      "name": "USER/special_luck.json",
+      "url": "StatsDisplay/SPECIAL/luck.json"
     }
   ]
 }

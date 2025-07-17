@@ -1,3 +1,59 @@
+const perkFiles = [
+  'perk_actionboy.json',
+  'perk_actiongirl.json',
+  'perk_blackwidow.json',
+  'perk_cannibal.json',
+  'perk_cherchez.json',
+  'perk_childatheart.json',
+  'perk_comprehension.json',
+  'perk_computerwhiz.json',
+  'perk_confirmedbachelor.json',
+  'perk_educated.json',
+  'perk_entomologist.json',
+  'perk_fortunefinder.json',
+  'perk_foureyes.json',
+  'perk_friendofthenight.json',
+  'perk_heaveho.json',
+  'perk_hunter.json',
+  'perk_intensetraining.json',
+  'perk_ladykiller.json',
+  'perk_missfortune.json',
+  'perk_mysteriousstranger.json',
+  'perk_radchild.json',
+  'perk_rapidreload.json',
+  'perk_retention.json',
+  'perk_runngun.json',
+  'perk_stealthgirl.json',
+  'perk_swiftlearner.json',
+  'perk_weaponhandling.json',
+];
+
+const skillFiles = [
+  'skill_barter.json',
+  'skill_energyweapons.json',
+  'skill_explosives.json',
+  'skill_guns.json',
+  'skill_lockpicks.json',
+  'skill_medicine.json',
+  'skill_meleeweapons.json',
+  'skill_repair.json',
+  'skill_science.json',
+  'skill_sneak.json',
+  'skill_speech.json',
+  'skill_survival.json',
+  'skill_unarmed.json',
+];
+
+const specialFiles = [
+  'special_strength.json',
+  'special_perception.json',
+  'special_endurance.json',
+  'special_charisma.json',
+  'special_intelligence.json',
+  'special_agility.json',
+  'special_luck.json',
+];
+
 //SECTION: consts
 const eldm = 6;
 const cldm = 18;
@@ -13,10 +69,7 @@ const ps = 2;
 const ss = 1;
 const sps = 0;
 const pss = 3;
-const epf = 'USER/StatsDisplay/PERKS/ENABLED/';
-const apf = 'USER/StatsDisplay/PERKS/ALL/';
-const sf = 'USER/StatsDisplay/SKILLS/';
-const spf = 'USER/StatsDisplay/SPECIAL/';
+const statsDisplayFile = 'USER/stats_display.json';
 
 function nD(d) {
   if (imv && d.endsWith('/')) {
@@ -53,50 +106,32 @@ function draw() {
   if (dr) return;
   dr = true;
   bC.clear();
-  if (scs == ps) {
-    bS(epf);
-  } else if (scs == ss) {
-    bS(sf);
-  } else if (scs == sps) {
-    bS(spf);
+  if (scs == ps || scs == ss || scs == sps) {
+    bS();
   } else if (scs == pss) {
     bPSS();
   }
-  /*bH.flip();
-  bF.flip();
-  bC.flip();*/
   dr = false;
 }
 
-function bS(d) {
-  //directory will only be used when we need to go to SD, which will be when perk changes or we scroll to the next page.
+function bS() {
   if (lr == null) {
     dp = [];
-    //time to populate the displayedPerks array and currentPerk
-    var fi;
-    try {
-      fi = fs.readdirSync(nD(d));
-    } catch {
-      fs.mkdir(nD(d));
-      fi = fs.readdirSync(nD(d));
-    }
 
-    fi = fi.filter((f) => f !== '.' && f !== '..');
-
-    if (imv) {
-      fi = fi.filter((file) => {
-        try {
-          let stat = fs.statSync(nD(d) + '/' + file);
-          return !stat.isDirectory;
-        } catch (e) {
-          console.log('Skipping bad file or folder:', file);
-          return false;
-        }
-      });
+    let fi = [];
+    if (scs == ps) {
+      fi = ep;
+    } else if (scs == ss) {
+      fi = skillFiles;
+    } else if (scs == sps) {
+      fi = specialFiles;
+    } else {
+      console.log('Unknown section in bS, skipping');
+      return;
     }
 
     llm = fi.length;
-    if (fi.length == 0) {
+    if (llm == 0) {
       dES();
       return;
     }
@@ -105,14 +140,12 @@ function bS(d) {
     let a = 0;
     while (es >= elm) {
       a++;
-      //We're beyond the number of entries we can see on one page.
-      //We need to get the next set of files and display them
       elm = Math.min(eldm * (a + 1), llm);
     }
 
     for (let i = a * eldm; i < elm; i++) {
       let f = fi[i];
-      const fullPath = nD(d) + '/' + f;
+      let fullPath = 'USER/' + f;
       let fis;
       try {
         fis = fs.readFileSync(fullPath);
@@ -124,30 +157,27 @@ function bS(d) {
       try {
         fo = JSON.parse(fis);
       } catch (e) {
-        console.log('Invalid JSON in file:', fullPath);
+        console.log('Invalid JSON in file:', fullPath, e);
         continue;
       }
-      if (scs != ps) {
-        dp.push({
-          t: fo.t,
-          fn: f,
-          en: i,
-          p: fo.p,
-        });
-      } else {
-        dp.push({
-          t: fo.t,
-          fn: f,
-          en: i,
-        });
-      }
+      dp.push({
+        t: fo.t,
+        fn: f,
+        en: i,
+        p: fo.p || 0,
+      });
     }
     lr = es;
   }
-  if (cp == null) {
+
+  if (cp == null && dp.length > 0) {
     let cpi = es % 6;
+    if (!dp[cpi]) {
+      console.log('Invalid dp index in bS:', cpi);
+      return;
+    }
     let f = dp[cpi].fn;
-    const fp = nD(d) + '/' + f;
+    let fp = 'USER/' + f;
     try {
       let fis = fs.readFileSync(fp);
       cp = JSON.parse(fis);
@@ -156,6 +186,7 @@ function bS(d) {
       cp = null;
     }
   }
+
   for (let i = 0; i < dp.length; i++) {
     let po = dp[i];
     if (po.en == es) {
@@ -201,32 +232,12 @@ function bPSS() {
 }
 
 function gPCL() {
-  //first load of screen, build the full list.
-  var fi;
-  try {
-    fi = fs.readdirSync(nD(epf));
-  } catch {
-    fs.mkdir(epf);
-    fi = fs.readdirSync(nD(epf));
-  }
-
-  fi = fi.filter((f) => f !== '.' && f !== '..');
-
-  for (let f of fi) {
-    ep.push(f);
-  }
-
-  try {
-    fi = fs.readdirSync(nD(apf));
-    fi = fi.filter((f) => f !== '.' && f !== '..');
-  } catch {
-    console.log('ERROR: Missing ALL perk folder!');
-    fi = [];
-  }
+  ap = [];
+  let fi = perkFiles;
   llm = fi.length;
 
   for (let f of fi) {
-    let fp = nD(apf) + '/' + f;
+    let fp = 'USER/' + f;
     let fis;
     try {
       fis = fs.readFileSync(fp);
@@ -349,13 +360,13 @@ function dSEOC(i, c) {
 
 //SECTION: config saving
 
-function sF(d) {
+function sF() {
   if (es % eldm >= dp.length) {
     console.log('Invalid entrySelected index');
     return;
   }
   let f = dp[es % eldm].fn;
-  let fts = nD(d) + '/' + f;
+  let fts = 'USER/' + f;
 
   let fis;
   try {
@@ -388,56 +399,29 @@ function sF(d) {
 }
 
 function sNV() {
-  if (scs == sps) {
-    sF(spf);
-  } else if (scs == ss) {
-    sF(sf);
+  if (scs == sps || scs == ss) {
+    sF();
   }
-}
-
-function sEP(fn) {
-  //"USER/PERKS/ALL"
-  let fis = fs.readFileSync(nD(apf) + '/' + fn);
-  fs.writeFile(nD(epf) + '/' + fn, fis);
 }
 
 function sNPS() {
-  let ef;
   try {
-    ef = fs.readdirSync(nD(epf));
+    let json = JSON.stringify({ enabled: ep });
+    fs.writeFile(statsDisplayFile, json);
   } catch (e) {
-    console.log('Enabled folder missing, creating...');
-    fs.mkdir(nD(epf));
-    ef = [];
+    console.log('Failed to save stats_display.json:', e);
   }
-
-  ef = ef.filter((f) => f !== '.' && f !== '..');
-
-  for (let i = 0; i < ap.length; i++) {
-    let p = ap[i];
-    if (ep.includes(p.fn) && ef.includes(p.fn)) {
-      continue; //was enabled, still enabled, nothing to do.
-    } else if (ep.includes(p.fn) && !ef.includes(p.fn)) {
-      //wasn't enabled, is enabled now, copy the file to enabled folder.
-      sEP(p.fn);
-    } else if (!ep.includes(p.fn) && ef.includes(p.fn)) {
-      //was enabled, no longer is, delete the file from ENABLED
-      fs.unlink(nD(epf) + '/' + p.fn);
-    }
-  }
-  //everything done, wipe out the in-memory enabled/disabled lists.
-  ep = [];
-  ap = [];
 }
 
 function tPE() {
   let po = ap[es];
-  if (ep.includes(po.fn)) {
-    let index = ep.indexOf(po.fn);
-    ep.splice(index, 1);
+  let idx = ep.indexOf(po.fn);
+  if (idx >= 0) {
+    ep.splice(idx, 1);
   } else {
     ep.push(po.fn);
   }
+  sNPS();
 }
 
 //SECTION: Button handlers
@@ -517,11 +501,13 @@ function hK2(d) {
     //if scrolling away from perk selection screen, save changes and reset to perk screen.
     sNPS();
     scs = ps;
+    ap = [];
   } else {
     scs += d;
   }
   es = 0; //reset to top of list
   cp = null;
+  dp = [];
   lr = null;
   if (scs > ms) {
     scs = 0;
@@ -559,7 +545,13 @@ let pos = 0;
 let dr = false;
 let cm = false;
 let ap = [];
-let ep = [];
+try {
+  let sd = fs.readFileSync(statsDisplayFile);
+  ep = JSON.parse(sd).enabled || [];
+} catch (e) {
+  console.log('No stats_display.json or invalid JSON. Starting fresh.');
+  ep = [];
+}
 let dp = []; //contains t and filename.
 let cp = null; //contains all data
 let lr = null;

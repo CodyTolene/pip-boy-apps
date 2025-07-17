@@ -1,1 +1,8 @@
-2.4.0 - initial official modloader release.
+2.5.0
+https://github.com/CodyTolene/pip-boy-apps/pull/24
+- Update app structure to use the new Pip-Boy Mod Tool workflow.
+
+
+2.4.0 
+https://github.com/thewandcompany/pip-boy/pull/11
+- Initial official modloader release.
