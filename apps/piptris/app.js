@@ -104,7 +104,6 @@ function Piptris() {
     if (score > highScore) {
       highScore = score;
       saveConfig();
-      console.log('🎉 New High Score:', highScore);
     }
   }
 
