@@ -7,9 +7,11 @@
 function Piptris() {
   const self = {};
 
+  // Core
   const GAME_NAME = 'PIPTRIS';
   const GAME_VERSION = '2.4.0';
-  const DEBUG = true;
+  const DEBUG = false;
+  const CONFIG_PATH = 'USER/piptris.json';
 
   // Game State
   const BLOCK_START_SPEED = 800;
@@ -23,6 +25,7 @@ function Piptris() {
   let linesCleared = 0;
   let mainLoopInterval = null;
   let score = 0;
+  let highScore = 0;
   let useHollowBlocks = false;
 
   // Ghost Piece
@@ -96,6 +99,14 @@ function Piptris() {
     T_SHAPE,
     [[1, 1],[1, 1]],        // O
   ];
+
+  function checkHighScore() {
+    if (score > highScore) {
+      highScore = score;
+      saveConfig();
+      console.log('🎉 New High Score:', highScore);
+    }
+  }
 
   function clearGameArea() {
     g.setColor(COLOR_BLACK);
@@ -257,7 +268,7 @@ function Piptris() {
 
     drawImageFromJSON(ICON_GEAR, centerX - 45, centerY - 75);
 
-    const statsYStart = centerY;
+    const statsYStart = centerY - 20;
     const statsLineHeight = 18;
 
     g.setColor(COLOR_THEME);
@@ -272,6 +283,13 @@ function Piptris() {
       'Lines: ' + linesCleared,
       centerX,
       statsYStart + statsLineHeight * 2,
+    );
+
+    g.setColor(COLOR_THEME_DARK);
+    g.drawString(
+      'High Score: ' + highScore,
+      centerX,
+      statsYStart + statsLineHeight * 3 + 10,
     );
 
     drawPreviewBlockToggle();
@@ -543,42 +561,6 @@ function Piptris() {
     }
   }
 
-  function dropPiece() {
-    if (!blockCurrent || isGameOver) {
-      return;
-    }
-
-    drawCurrentPiece(true);
-    blockCurrent.y++;
-
-    if (collides(blockCurrent)) {
-      blockCurrent.y--;
-      drawCurrentPiece(false);
-      merge(blockCurrent);
-      clearLines();
-      spawnPiece();
-
-      // Game over sanity check
-      if (collides(blockCurrent)) {
-        isGameOver = true;
-        clearInterval(mainLoopInterval);
-        setTimeout(drawGameOverScreen, 50);
-        return;
-      }
-    }
-
-    drawCurrentPiece(false);
-    drawBoundaries(PLAY_AREA);
-
-    const fastDrop = BTN_PLAY.read();
-    const desiredInterval = fastDrop ? 100 : blockDropSpeed;
-    if (currentInterval !== desiredInterval) {
-      clearInterval(mainLoopInterval);
-      mainLoopInterval = setInterval(dropPiece, desiredInterval);
-      currentInterval = desiredInterval;
-    }
-  }
-
   function drawPreviewBlockToggle() {
     const posY = SCREEN_AREA.y2 - 40;
     const posX = 300;
@@ -701,17 +683,58 @@ function Piptris() {
 
     g.setColor(COLOR_THEME);
     g.setFontMonofonto36();
-    g.drawString(GAME_NAME, centerX + 10, centerY - 50);
+    g.drawString(GAME_NAME, centerX, centerY - 50);
 
     g.setColor(COLOR_THEME_DARK);
     g.setFont('6x8', 2);
-    g.drawString('Press    to START', centerX + 10, centerY - 15);
+    g.drawString('Press    to START', centerX, centerY - 15);
+    drawImageFromJSON(ICON_GEAR, centerX - 34, centerY - 29);
 
-    drawImageFromJSON(ICON_GEAR, centerX - 24, centerY - 29);
+    if (highScore > 0) {
+      g.setColor(COLOR_THEME_DARK);
+      g.setFont('6x8', 2);
+      g.drawString('High Score: ' + highScore, centerX, centerY + 35);
+    }
 
     drawPreviewBlockToggle();
     drawGhostPieceToggle();
     setupOptions();
+  }
+
+  function dropPiece() {
+    if (!blockCurrent || isGameOver) {
+      return;
+    }
+
+    drawCurrentPiece(true);
+    blockCurrent.y++;
+
+    if (collides(blockCurrent)) {
+      blockCurrent.y--;
+      drawCurrentPiece(false);
+      merge(blockCurrent);
+      clearLines();
+      spawnPiece();
+
+      // Game over sanity check
+      if (collides(blockCurrent)) {
+        isGameOver = true;
+        clearInterval(mainLoopInterval);
+        setTimeout(drawGameOverScreen, 50);
+        return;
+      }
+    }
+
+    drawCurrentPiece(false);
+    drawBoundaries(PLAY_AREA);
+
+    const fastDrop = BTN_PLAY.read();
+    const desiredInterval = fastDrop ? 100 : blockDropSpeed;
+    if (currentInterval !== desiredInterval) {
+      clearInterval(mainLoopInterval);
+      mainLoopInterval = setInterval(dropPiece, desiredInterval);
+      currentInterval = desiredInterval;
+    }
   }
 
   function dropToBottom() {
@@ -791,6 +814,18 @@ function Piptris() {
     const nextIndex = (currentIndex + 1) % brightnessLevels.length;
     Pip.brightness = brightnessLevels[nextIndex];
     Pip.updateBrightness();
+  }
+
+  function loadConfig() {
+    try {
+      let json = fs.readFileSync(CONFIG_PATH);
+      let data = JSON.parse(json);
+      highScore = data.highScore || 0;
+    } catch (e) {
+      console.log('No piptris.json, using default high score.');
+      highScore = 0;
+      saveConfig();
+    }
   }
 
   function merge(piece) {
@@ -890,6 +925,15 @@ function Piptris() {
     Pip.removeAllListeners(MUSIC_STOPPED);
   }
 
+  function saveConfig() {
+    let data = { highScore: highScore };
+    try {
+      fs.writeFile(CONFIG_PATH, JSON.stringify(data));
+    } catch (e) {
+      console.log('Error saving high score:', e);
+    }
+  }
+
   function setListeners() {
     Pip.on(KNOB_LEFT, handleLeftKnob);
     Pip.on(KNOB_RIGHT, handleRightKnob);
@@ -915,6 +959,7 @@ function Piptris() {
 
     if (collides(blockCurrent)) {
       isGameOver = true;
+      checkHighScore();
       clearInterval(mainLoopInterval);
       setTimeout(() => {
         drawGameOverScreen();
@@ -985,6 +1030,8 @@ function Piptris() {
 
   self.run = function () {
     bC.clear(); // Clear any previous screen
+
+    loadConfig();
 
     drawStartScreen();
 
