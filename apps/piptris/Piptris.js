@@ -225,6 +225,20 @@ function Piptris() {
     drawNextPiece();
   }
 
+  function drawGameName() {
+    const fontHeight = 20;
+    const startX = PLAY_AREA.x1 - 60;
+    const startY = PLAY_AREA.y1 + 35;
+
+    g.setColor(COLOR_THEME);
+    g.setFontMonofonto28();
+    g.drawString(GAME_NAME, startX, startY);
+
+    g.setColor(COLOR_THEME);
+    g.setFont('6x8', 1);
+    g.drawString('v' + GAME_VERSION, startX, startY + fontHeight);
+  }
+
   function drawGameOverScreen() {
     clearGameArea();
 
@@ -235,15 +249,15 @@ function Piptris() {
 
     g.setColor(COLOR_THEME);
     g.setFont('6x8', 4);
-    g.drawString('GAME OVER', centerX, centerY - 20);
+    g.drawString('GAME OVER', centerX, centerY - 100);
 
     g.setColor(COLOR_THEME_DARK);
     g.setFont('6x8', 2);
-    g.drawString('Press    to RESTART', centerX, centerY + 15);
+    g.drawString('Press    to RESTART', centerX, centerY - 60);
 
-    drawImageFromJSON(ICON_GEAR, centerX - 45, centerY + 1);
+    drawImageFromJSON(ICON_GEAR, centerX - 45, centerY - 75);
 
-    const statsYStart = centerY + 80;
+    const statsYStart = centerY;
     const statsLineHeight = 18;
 
     g.setColor(COLOR_THEME);
@@ -259,6 +273,10 @@ function Piptris() {
       centerX,
       statsYStart + statsLineHeight * 2,
     );
+
+    drawPreviewBlockToggle();
+    drawGhostPieceToggle();
+    setupOptions();
 
     inputInterval = setInterval(() => {
       if (BTN_PLAY.read()) {
@@ -309,6 +327,71 @@ function Piptris() {
         }
       }
     }
+  }
+
+  function drawGhostPieceToggle() {
+    g.setFont('6x8', 1);
+
+    const posY = SCREEN_AREA.y2 - 40;
+    const posX = 180;
+
+    const stateY = posY - 22;
+    const state = { ON: 'ON', OFF: 'OFF' };
+    const ghostState = showGhostPiece ? state.ON : state.OFF;
+
+    const fontHeight = 8;
+    const fontScale = 2;
+    g.setFont('6x' + fontHeight, fontScale);
+    const textWidth = g.stringWidth(state.OFF); // Widest state
+    const textHeight = fontHeight * fontScale;
+
+    // Clear previous area
+    const clearXY = {
+      x1: posX - textWidth / 2,
+      y1: stateY - textHeight / 2,
+      x2: posX + textWidth / 2,
+      y2: stateY + textHeight,
+    };
+    g.setColor(COLOR_BLACK);
+    g.fillRect(clearXY);
+    if (DEBUG) drawBoundaries(clearXY);
+
+    g.setColor(COLOR_THEME);
+    g.drawString(ghostState, posX, stateY + 4);
+
+    g.setFont('6x8', 1);
+    g.setColor(COLOR_THEME_DARK);
+    const labelText = 'GHOST';
+    const labelWidth = g.stringWidth(labelText);
+    g.drawString(labelText, posX, posY);
+
+    const arrowSize = 5;
+    const arrowSpacing = 8;
+
+    // UP arrow (left of label)
+    const upArrowX = posX - labelWidth / 2 - arrowSpacing - 1;
+    const upArrowY = posY;
+    g.fillPoly([
+      upArrowX,
+      upArrowY - arrowSize,
+      upArrowX - arrowSize,
+      upArrowY + arrowSize,
+      upArrowX + arrowSize,
+      upArrowY + arrowSize,
+    ]);
+
+    // DOWN arrow (right of label)
+    const downArrowX = posX + labelWidth / 2 + arrowSpacing;
+    const downArrowY = posY;
+    const downArrowSize = arrowSize - 1;
+    g.fillPoly([
+      downArrowX,
+      downArrowY + downArrowSize,
+      downArrowX - downArrowSize,
+      downArrowY - downArrowSize,
+      downArrowX + downArrowSize,
+      downArrowY - downArrowSize,
+    ]);
   }
 
   function drawImageFromJSON(path, x, y) {
@@ -365,20 +448,6 @@ function Piptris() {
 
     g.setColor(COLOR_THEME);
     g.drawString(text, linesX, linesY + fontHeight);
-  }
-
-  function drawGameName() {
-    const fontHeight = 20;
-    const startX = PLAY_AREA.x1 - 60;
-    const startY = PLAY_AREA.y1 + 35;
-
-    g.setColor(COLOR_THEME);
-    g.setFontMonofonto28();
-    g.drawString(GAME_NAME, startX, startY);
-
-    g.setColor(COLOR_THEME);
-    g.setFont('6x8', 1);
-    g.drawString('v' + GAME_VERSION, startX, startY + fontHeight);
   }
 
   function drawLevel() {
@@ -510,6 +579,81 @@ function Piptris() {
     }
   }
 
+  function drawPreviewBlockToggle() {
+    const posY = SCREEN_AREA.y2 - 40;
+    const posX = 300;
+
+    const blockSize = 10;
+    const blockHeight = T_SHAPE.length * blockSize;
+    const blockWidth = T_SHAPE[0].length * blockSize;
+
+    const startY = posY - blockHeight - 10;
+    const startX = posX - blockWidth / 2;
+
+    g.setFont('6x8', 1);
+    g.setColor(COLOR_THEME_DARK);
+
+    const labelText = 'TYPE';
+    const labelWidth = g.stringWidth(labelText);
+    g.drawString(labelText, posX, posY);
+
+    const arrowSize = 6;
+    const arrowSpacing = 10;
+
+    // LEFT arrow (left of label)
+    const leftArrowX = posX - labelWidth / 2 - arrowSpacing;
+    const leftArrowY = posY;
+    g.fillPoly([
+      leftArrowX,
+      leftArrowY,
+      leftArrowX + arrowSize,
+      leftArrowY - arrowSize,
+      leftArrowX + arrowSize,
+      leftArrowY + arrowSize,
+    ]);
+
+    // RIGHT arrow (right of label)
+    const rightArrowX = posX + labelWidth / 2 + arrowSpacing;
+    const rightArrowY = posY;
+    g.fillPoly([
+      rightArrowX,
+      rightArrowY,
+      rightArrowX - arrowSize,
+      rightArrowY - arrowSize,
+      rightArrowX - arrowSize,
+      rightArrowY + arrowSize,
+    ]);
+
+    // Clear previous area
+    const clearXY = {
+      x1: startX - 2,
+      y1: startY - 2,
+      x2: startX + blockWidth + 2,
+      y2: startY + blockHeight + 2,
+    };
+    g.setColor(COLOR_BLACK);
+    g.fillRect(clearXY);
+    if (DEBUG) drawBoundaries(clearXY);
+
+    // Draw the T-shape preview block
+    g.setColor(COLOR_THEME);
+    for (let y = 0; y < T_SHAPE.length; y++) {
+      for (let x = 0; x < T_SHAPE[y].length; x++) {
+        if (T_SHAPE[y][x]) {
+          const x1 = startX + x * blockSize;
+          const y1 = startY + y * blockSize;
+          const x2 = x1 + blockSize - 1;
+          const y2 = y1 + blockSize - 1;
+          if (useHollowBlocks) {
+            g.drawRect(x1, y1, x2, y2);
+          } else {
+            g.fillRect(x1, y1, x2, y2);
+          }
+        }
+      }
+    }
+  }
+
   function drawScore() {
     const scoreX = PLAY_AREA.x2 + 65;
     const scoreY = PLAY_AREA.y2 - 60;
@@ -565,152 +709,9 @@ function Piptris() {
 
     drawImageFromJSON(ICON_GEAR, centerX - 24, centerY - 29);
 
-    drawStartScreenPreviewBlock();
-    drawStartScreenGhostPieceToggle();
-  }
-
-  function drawStartScreenGhostPieceToggle() {
-    g.setFont('6x8', 1);
-
-    const posY = SCREEN_AREA.y2 - 40;
-    const posX = 180;
-
-    const stateY = posY - 22;
-    const state = { ON: 'ON', OFF: 'OFF' };
-    const ghostState = showGhostPiece ? state.ON : state.OFF;
-
-    const fontHeight = 8;
-    const fontScale = 2;
-    g.setFont('6x' + fontHeight, fontScale);
-    const textWidth = g.stringWidth(state.OFF); // Widest state
-    const textHeight = fontHeight * fontScale;
-
-    // Clear previous area
-    const clearXY = {
-      x1: posX - textWidth / 2,
-      y1: stateY - textHeight / 2,
-      x2: posX + textWidth / 2,
-      y2: stateY + textHeight,
-    };
-    g.setColor(COLOR_BLACK);
-    g.fillRect(clearXY);
-    if (DEBUG) {
-      drawBoundaries(clearXY);
-    }
-
-    g.setColor(COLOR_THEME);
-    g.drawString(ghostState, posX, stateY + 4);
-
-    g.setFont('6x8', 1);
-    g.setColor(COLOR_THEME_DARK);
-    const labelText = 'GHOST';
-    const labelWidth = g.stringWidth(labelText);
-    g.drawString(labelText, posX, posY);
-
-    const arrowSize = 5;
-    const arrowSpacing = 8;
-
-    // Draw UP arrow (left of label)
-    const upArrowX = posX - labelWidth / 2 - arrowSpacing - 1;
-    const upArrowY = posY;
-    g.fillPoly([
-      upArrowX,
-      upArrowY - arrowSize,
-      upArrowX - arrowSize,
-      upArrowY + arrowSize,
-      upArrowX + arrowSize,
-      upArrowY + arrowSize,
-    ]);
-
-    // Draw DOWN arrow (right of label)
-    const downArrowX = posX + labelWidth / 2 + arrowSpacing;
-    const downArrowY = posY;
-    const downArrowSize = arrowSize - 1;
-    g.fillPoly([
-      downArrowX,
-      downArrowY + downArrowSize,
-      downArrowX - downArrowSize,
-      downArrowY - downArrowSize,
-      downArrowX + downArrowSize,
-      downArrowY - downArrowSize,
-    ]);
-  }
-
-  function drawStartScreenPreviewBlock() {
-    const posY = SCREEN_AREA.y2 - 40;
-    const posX = 300;
-
-    const blockSize = 10;
-    const blockHeight = T_SHAPE.length * blockSize;
-    const blockWidth = T_SHAPE[0].length * blockSize;
-
-    const startY = posY - blockHeight - 10;
-    const startX = posX - blockWidth / 2;
-
-    g.setFont('6x8', 1);
-    g.setColor(COLOR_THEME_DARK);
-
-    const labelText = 'TYPE';
-    const labelWidth = g.stringWidth(labelText);
-    g.drawString(labelText, posX, posY);
-
-    const arrowSize = 6;
-    const arrowSpacing = 10;
-
-    // Draw LEFT arrow (left of label)
-    const leftArrowX = posX - labelWidth / 2 - arrowSpacing;
-    const leftArrowY = posY;
-    g.fillPoly([
-      leftArrowX,
-      leftArrowY,
-      leftArrowX + arrowSize,
-      leftArrowY - arrowSize,
-      leftArrowX + arrowSize,
-      leftArrowY + arrowSize,
-    ]);
-
-    // Draw RIGHT arrow (right of label)
-    const rightArrowX = posX + labelWidth / 2 + arrowSpacing;
-    const rightArrowY = posY;
-    g.fillPoly([
-      rightArrowX,
-      rightArrowY,
-      rightArrowX - arrowSize,
-      rightArrowY - arrowSize,
-      rightArrowX - arrowSize,
-      rightArrowY + arrowSize,
-    ]);
-
-    // Clear previous area
-    const clearXY = {
-      x1: startX - 2,
-      y1: startY - 2,
-      x2: startX + blockWidth + 2,
-      y2: startY + blockHeight + 2,
-    };
-    g.setColor(COLOR_BLACK);
-    g.fillRect(clearXY);
-    if (DEBUG) {
-      drawBoundaries(clearXY);
-    }
-
-    // Draw the T-shape preview block
-    g.setColor(COLOR_THEME);
-    for (let y = 0; y < T_SHAPE.length; y++) {
-      for (let x = 0; x < T_SHAPE[y].length; x++) {
-        if (T_SHAPE[y][x]) {
-          const x1 = startX + x * blockSize;
-          const y1 = startY + y * blockSize;
-          const x2 = x1 + blockSize - 1;
-          const y2 = y1 + blockSize - 1;
-          if (useHollowBlocks) {
-            g.drawRect(x1, y1, x2, y2);
-          } else {
-            g.fillRect(x1, y1, x2, y2);
-          }
-        }
-      }
-    }
+    drawPreviewBlockToggle();
+    drawGhostPieceToggle();
+    setupOptions();
   }
 
   function dropToBottom() {
@@ -896,6 +897,13 @@ function Piptris() {
     Pip.on(MUSIC_STOPPED, handleMusicStopped);
   }
 
+  function setupOptions() {
+    Pip.removeAllListeners(KNOB_LEFT);
+    Pip.removeAllListeners(KNOB_RIGHT);
+    Pip.on(KNOB_LEFT, toggleGhostPiece);
+    Pip.on(KNOB_RIGHT, togglePreviewStyle);
+  }
+
   function spawnPiece() {
     if (!blockNext) {
       blockNext = getRandomPiece();
@@ -953,6 +961,16 @@ function Piptris() {
     mainLoopInterval = setInterval(dropPiece, blockDropSpeed);
   }
 
+  function toggleGhostPiece() {
+    showGhostPiece = !showGhostPiece;
+    drawGhostPieceToggle();
+  }
+
+  function togglePreviewStyle() {
+    useHollowBlocks = !useHollowBlocks;
+    drawPreviewBlockToggle();
+  }
+
   function updateDifficulty() {
     let newLevel = Math.floor(linesCleared / LINES_PER_LEVEL);
     if (newLevel > difficultyLevel) {
@@ -970,18 +988,7 @@ function Piptris() {
 
     drawStartScreen();
 
-    function toggleGhostPiece() {
-      showGhostPiece = !showGhostPiece;
-      drawStartScreenGhostPieceToggle();
-    }
-
-    function togglePreviewStyle() {
-      useHollowBlocks = !useHollowBlocks;
-      drawStartScreenPreviewBlock();
-    }
-
-    Pip.on(KNOB_LEFT, toggleGhostPiece);
-    Pip.on(KNOB_RIGHT, togglePreviewStyle);
+    setupOptions();
     Pip.on(BTN_TOP, handleTopButton);
 
     inputInterval = setInterval(() => {
