@@ -7,9 +7,11 @@
 function Piptris() {
   const self = {};
 
+  // Core
   const GAME_NAME = 'PIPTRIS';
-  const GAME_VERSION = '2.3.1';
+  const GAME_VERSION = '2.4.0';
   const DEBUG = false;
+  const CONFIG_PATH = 'USER/piptris.json';
 
   // Game State
   const BLOCK_START_SPEED = 800;
@@ -23,7 +25,12 @@ function Piptris() {
   let linesCleared = 0;
   let mainLoopInterval = null;
   let score = 0;
+  let highScore = 0;
   let useHollowBlocks = false;
+
+  // Ghost Piece
+  let showGhostPiece = false;
+  let lastGhost = null;
 
   // Game Difficulty
   let difficultyLevel = 0;
@@ -32,8 +39,8 @@ function Piptris() {
   const LINES_PER_LEVEL = 10;
 
   // Screen
-  const SCREEN_WIDTH = g.getWidth();
-  const SCREEN_HEIGHT = g.getHeight();
+  const SCREEN_WIDTH = g.getWidth(); // Width (480px)
+  const SCREEN_HEIGHT = g.getHeight(); // Height (320px)
   const SCREEN_AREA = {
     x1: 60,
     x2: SCREEN_WIDTH - 60,
@@ -92,6 +99,14 @@ function Piptris() {
     T_SHAPE,
     [[1, 1],[1, 1]],        // O
   ];
+
+  function checkHighScore() {
+    if (score > highScore) {
+      highScore = score;
+      saveConfig();
+      console.log('🎉 New High Score:', highScore);
+    }
+  }
 
   function clearGameArea() {
     g.setColor(COLOR_BLACK);
@@ -214,10 +229,25 @@ function Piptris() {
         }
       }
     }
+    drawGhostPiece();
     drawScore();
     drawLevel();
     drawLinesCleared();
     drawNextPiece();
+  }
+
+  function drawGameName() {
+    const fontHeight = 20;
+    const startX = PLAY_AREA.x1 - 60;
+    const startY = PLAY_AREA.y1 + 35;
+
+    g.setColor(COLOR_THEME);
+    g.setFontMonofonto28();
+    g.drawString(GAME_NAME, startX, startY);
+
+    g.setColor(COLOR_THEME);
+    g.setFont('6x8', 1);
+    g.drawString('v' + GAME_VERSION, startX, startY + fontHeight);
   }
 
   function drawGameOverScreen() {
@@ -230,15 +260,15 @@ function Piptris() {
 
     g.setColor(COLOR_THEME);
     g.setFont('6x8', 4);
-    g.drawString('GAME OVER', centerX, centerY - 20);
+    g.drawString('GAME OVER', centerX, centerY - 100);
 
     g.setColor(COLOR_THEME_DARK);
     g.setFont('6x8', 2);
-    g.drawString('Press    to RESTART', centerX, centerY + 15);
+    g.drawString('Press    to RESTART', centerX, centerY - 60);
 
-    drawImageFromJSON(ICON_GEAR, centerX - 45, centerY + 1);
+    drawImageFromJSON(ICON_GEAR, centerX - 45, centerY - 75);
 
-    const statsYStart = centerY + 80;
+    const statsYStart = centerY - 20;
     const statsLineHeight = 18;
 
     g.setColor(COLOR_THEME);
@@ -255,12 +285,131 @@ function Piptris() {
       statsYStart + statsLineHeight * 2,
     );
 
+    g.setColor(COLOR_THEME_DARK);
+    g.drawString(
+      'High Score: ' + highScore,
+      centerX,
+      statsYStart + statsLineHeight * 3 + 10,
+    );
+
+    drawPreviewBlockToggle();
+    drawGhostPieceToggle();
+    setupOptions();
+
     inputInterval = setInterval(() => {
       if (BTN_PLAY.read()) {
         clearInterval(inputInterval);
         startGame();
       }
     }, 100);
+  }
+
+  function drawGhostPiece(erase) {
+    if (!showGhostPiece || !blockCurrent || isGameOver) {
+      return;
+    }
+
+    let ghost =
+      erase && lastGhost
+        ? lastGhost
+        : {
+            x: blockCurrent.x,
+            y: blockCurrent.y,
+            shape: blockCurrent.shape,
+          };
+
+    if (!erase) {
+      while (!collides({ x: ghost.x, y: ghost.y + 1, shape: ghost.shape })) {
+        ghost.y++;
+      }
+      lastGhost = { x: ghost.x, y: ghost.y, shape: ghost.shape };
+    }
+
+    let color = erase ? COLOR_BLACK : COLOR_THEME_DARK;
+    g.setColor(color);
+
+    for (let y = 0; y < ghost.shape.length; y++) {
+      for (let x = 0; x < ghost.shape[y].length; x++) {
+        if (ghost.shape[y][x]) {
+          const block = [
+            PLAY_AREA_X + (ghost.x + x) * blockSize,
+            PLAY_AREA_Y + (ghost.y + y) * blockSize,
+            PLAY_AREA_X + (ghost.x + x + 1) * blockSize - 1,
+            PLAY_AREA_Y + (ghost.y + y + 1) * blockSize - 1,
+          ];
+          if (useHollowBlocks) {
+            g.drawRect(block[0], block[1], block[2], block[3]);
+          } else {
+            g.fillRect(block[0], block[1], block[2], block[3]);
+          }
+        }
+      }
+    }
+  }
+
+  function drawGhostPieceToggle() {
+    g.setFont('6x8', 1);
+
+    const posY = SCREEN_AREA.y2 - 40;
+    const posX = 180;
+
+    const stateY = posY - 22;
+    const state = { ON: 'ON', OFF: 'OFF' };
+    const ghostState = showGhostPiece ? state.ON : state.OFF;
+
+    const fontHeight = 8;
+    const fontScale = 2;
+    g.setFont('6x' + fontHeight, fontScale);
+    const textWidth = g.stringWidth(state.OFF); // Widest state
+    const textHeight = fontHeight * fontScale;
+
+    // Clear previous area
+    const clearXY = {
+      x1: posX - textWidth / 2,
+      y1: stateY - textHeight / 2,
+      x2: posX + textWidth / 2,
+      y2: stateY + textHeight,
+    };
+    g.setColor(COLOR_BLACK);
+    g.fillRect(clearXY);
+    if (DEBUG) drawBoundaries(clearXY);
+
+    g.setColor(COLOR_THEME);
+    g.drawString(ghostState, posX, stateY + 4);
+
+    g.setFont('6x8', 1);
+    g.setColor(COLOR_THEME_DARK);
+    const labelText = 'GHOST';
+    const labelWidth = g.stringWidth(labelText);
+    g.drawString(labelText, posX, posY);
+
+    const arrowSize = 5;
+    const arrowSpacing = 8;
+
+    // UP arrow (left of label)
+    const upArrowX = posX - labelWidth / 2 - arrowSpacing - 1;
+    const upArrowY = posY;
+    g.fillPoly([
+      upArrowX,
+      upArrowY - arrowSize,
+      upArrowX - arrowSize,
+      upArrowY + arrowSize,
+      upArrowX + arrowSize,
+      upArrowY + arrowSize,
+    ]);
+
+    // DOWN arrow (right of label)
+    const downArrowX = posX + labelWidth / 2 + arrowSpacing;
+    const downArrowY = posY;
+    const downArrowSize = arrowSize - 1;
+    g.fillPoly([
+      downArrowX,
+      downArrowY + downArrowSize,
+      downArrowX - downArrowSize,
+      downArrowY - downArrowSize,
+      downArrowX + downArrowSize,
+      downArrowY - downArrowSize,
+    ]);
   }
 
   function drawImageFromJSON(path, x, y) {
@@ -317,20 +466,6 @@ function Piptris() {
 
     g.setColor(COLOR_THEME);
     g.drawString(text, linesX, linesY + fontHeight);
-  }
-
-  function drawGameName() {
-    const fontHeight = 20;
-    const startX = PLAY_AREA.x1 - 60;
-    const startY = PLAY_AREA.y1 + 35;
-
-    g.setColor(COLOR_THEME);
-    g.setFontMonofonto28();
-    g.drawString(GAME_NAME, startX, startY);
-
-    g.setColor(COLOR_THEME);
-    g.setFont('6x8', 1);
-    g.drawString('v' + GAME_VERSION, startX, startY + fontHeight);
   }
 
   function drawLevel() {
@@ -426,39 +561,78 @@ function Piptris() {
     }
   }
 
-  function dropPiece() {
-    if (!blockCurrent || isGameOver) {
-      return;
-    }
+  function drawPreviewBlockToggle() {
+    const posY = SCREEN_AREA.y2 - 40;
+    const posX = 300;
 
-    drawCurrentPiece(true);
-    blockCurrent.y++;
+    const blockSize = 10;
+    const blockHeight = T_SHAPE.length * blockSize;
+    const blockWidth = T_SHAPE[0].length * blockSize;
 
-    if (collides(blockCurrent)) {
-      blockCurrent.y--;
-      drawCurrentPiece(false);
-      merge(blockCurrent);
-      clearLines();
-      spawnPiece();
+    const startY = posY - blockHeight - 10;
+    const startX = posX - blockWidth / 2;
 
-      // Game over sanity check
-      if (collides(blockCurrent)) {
-        isGameOver = true;
-        clearInterval(mainLoopInterval);
-        setTimeout(drawGameOverScreen, 50);
-        return;
+    g.setFont('6x8', 1);
+    g.setColor(COLOR_THEME_DARK);
+
+    const labelText = 'TYPE';
+    const labelWidth = g.stringWidth(labelText);
+    g.drawString(labelText, posX, posY);
+
+    const arrowSize = 6;
+    const arrowSpacing = 10;
+
+    // LEFT arrow (left of label)
+    const leftArrowX = posX - labelWidth / 2 - arrowSpacing;
+    const leftArrowY = posY;
+    g.fillPoly([
+      leftArrowX,
+      leftArrowY,
+      leftArrowX + arrowSize,
+      leftArrowY - arrowSize,
+      leftArrowX + arrowSize,
+      leftArrowY + arrowSize,
+    ]);
+
+    // RIGHT arrow (right of label)
+    const rightArrowX = posX + labelWidth / 2 + arrowSpacing;
+    const rightArrowY = posY;
+    g.fillPoly([
+      rightArrowX,
+      rightArrowY,
+      rightArrowX - arrowSize,
+      rightArrowY - arrowSize,
+      rightArrowX - arrowSize,
+      rightArrowY + arrowSize,
+    ]);
+
+    // Clear previous area
+    const clearXY = {
+      x1: startX - 2,
+      y1: startY - 2,
+      x2: startX + blockWidth + 2,
+      y2: startY + blockHeight + 2,
+    };
+    g.setColor(COLOR_BLACK);
+    g.fillRect(clearXY);
+    if (DEBUG) drawBoundaries(clearXY);
+
+    // Draw the T-shape preview block
+    g.setColor(COLOR_THEME);
+    for (let y = 0; y < T_SHAPE.length; y++) {
+      for (let x = 0; x < T_SHAPE[y].length; x++) {
+        if (T_SHAPE[y][x]) {
+          const x1 = startX + x * blockSize;
+          const y1 = startY + y * blockSize;
+          const x2 = x1 + blockSize - 1;
+          const y2 = y1 + blockSize - 1;
+          if (useHollowBlocks) {
+            g.drawRect(x1, y1, x2, y2);
+          } else {
+            g.fillRect(x1, y1, x2, y2);
+          }
+        }
       }
-    }
-
-    drawCurrentPiece(false);
-    drawBoundaries(PLAY_AREA);
-
-    const fastDrop = BTN_PLAY.read();
-    const desiredInterval = fastDrop ? 100 : blockDropSpeed;
-    if (currentInterval !== desiredInterval) {
-      clearInterval(mainLoopInterval);
-      mainLoopInterval = setInterval(dropPiece, desiredInterval);
-      currentInterval = desiredInterval;
     }
   }
 
@@ -509,54 +683,57 @@ function Piptris() {
 
     g.setColor(COLOR_THEME);
     g.setFontMonofonto36();
-    g.drawString(GAME_NAME, centerX + 10, centerY - 50);
+    g.drawString(GAME_NAME, centerX, centerY - 50);
 
     g.setColor(COLOR_THEME_DARK);
     g.setFont('6x8', 2);
-    g.drawString('Press    to START', centerX + 10, centerY - 15);
+    g.drawString('Press    to START', centerX, centerY - 15);
+    drawImageFromJSON(ICON_GEAR, centerX - 34, centerY - 29);
 
-    drawImageFromJSON(ICON_GEAR, centerX - 24, centerY - 29);
+    if (highScore > 0) {
+      g.setColor(COLOR_THEME_DARK);
+      g.setFont('6x8', 2);
+      g.drawString('High Score: ' + highScore, centerX, centerY + 35);
+    }
 
-    drawStartScreenPreviewBlock();
+    drawPreviewBlockToggle();
+    drawGhostPieceToggle();
+    setupOptions();
   }
 
-  function drawStartScreenPreviewBlock() {
-    const centerX = SCREEN_WIDTH / 2;
-    const blockSize = 10;
+  function dropPiece() {
+    if (!blockCurrent || isGameOver) {
+      return;
+    }
 
-    const labelY = SCREEN_AREA.y2 - 15;
-    const blockHeight = T_SHAPE.length * blockSize;
-    const blockWidth = T_SHAPE[0].length * blockSize;
-    const startY = labelY - blockHeight - 10;
-    const startX = centerX - blockWidth / 2;
+    drawCurrentPiece(true);
+    blockCurrent.y++;
 
-    g.setFont('6x8', 1);
-    g.setColor(COLOR_THEME_DARK);
-    g.drawString('<- BLOCK TYPE ->', centerX, labelY);
+    if (collides(blockCurrent)) {
+      blockCurrent.y--;
+      drawCurrentPiece(false);
+      merge(blockCurrent);
+      clearLines();
+      spawnPiece();
 
-    g.setColor(COLOR_BLACK);
-    g.fillRect(
-      startX - 2,
-      startY - 2,
-      startX + blockWidth + 2,
-      startY + blockHeight + 2,
-    );
-
-    g.setColor(COLOR_THEME);
-    for (let y = 0; y < T_SHAPE.length; y++) {
-      for (let x = 0; x < T_SHAPE[y].length; x++) {
-        if (T_SHAPE[y][x]) {
-          const x1 = startX + x * blockSize;
-          const y1 = startY + y * blockSize;
-          const x2 = x1 + blockSize - 1;
-          const y2 = y1 + blockSize - 1;
-          if (useHollowBlocks) {
-            g.drawRect(x1, y1, x2, y2);
-          } else {
-            g.fillRect(x1, y1, x2, y2);
-          }
-        }
+      // Game over sanity check
+      if (collides(blockCurrent)) {
+        isGameOver = true;
+        clearInterval(mainLoopInterval);
+        setTimeout(drawGameOverScreen, 50);
+        return;
       }
+    }
+
+    drawCurrentPiece(false);
+    drawBoundaries(PLAY_AREA);
+
+    const fastDrop = BTN_PLAY.read();
+    const desiredInterval = fastDrop ? 100 : blockDropSpeed;
+    if (currentInterval !== desiredInterval) {
+      clearInterval(mainLoopInterval);
+      mainLoopInterval = setInterval(dropPiece, desiredInterval);
+      currentInterval = desiredInterval;
     }
   }
 
@@ -639,6 +816,18 @@ function Piptris() {
     Pip.updateBrightness();
   }
 
+  function loadConfig() {
+    try {
+      let json = fs.readFileSync(CONFIG_PATH);
+      let data = JSON.parse(json);
+      highScore = data.highScore || 0;
+    } catch (e) {
+      console.log('No piptris.json, using default high score.');
+      highScore = 0;
+      saveConfig();
+    }
+  }
+
   function merge(piece) {
     for (let y = 0; y < piece.shape.length; y++) {
       for (let x = 0; x < piece.shape[y].length; x++) {
@@ -650,14 +839,16 @@ function Piptris() {
   }
 
   function move(dir) {
-    if (isGameOver || !blockCurrent) {
-      return;
-    }
+    if (isGameOver || !blockCurrent) return;
+
+    drawGhostPiece(true);
 
     let oldX = blockCurrent.x;
     blockCurrent.x += dir;
+
     if (collides(blockCurrent)) {
       blockCurrent.x = oldX;
+      drawGhostPiece();
       return;
     }
 
@@ -669,6 +860,7 @@ function Piptris() {
       }
     }
 
+    drawGhostPiece();
     drawCurrentPiece(false);
     drawBoundaries(PLAY_AREA);
   }
@@ -694,9 +886,9 @@ function Piptris() {
   }
 
   function rotate(dir) {
-    if (isGameOver || !blockCurrent) {
-      return;
-    }
+    if (isGameOver || !blockCurrent) return;
+
+    drawGhostPiece(true);
 
     const shape = blockCurrent.shape;
     const newShape =
@@ -709,6 +901,7 @@ function Piptris() {
 
     if (collides(blockCurrent)) {
       blockCurrent.shape = oldShape;
+      drawGhostPiece();
       return;
     }
 
@@ -721,6 +914,7 @@ function Piptris() {
     }
 
     drawCurrentPiece(false);
+    drawGhostPiece();
     drawBoundaries(PLAY_AREA);
   }
 
@@ -731,11 +925,27 @@ function Piptris() {
     Pip.removeAllListeners(MUSIC_STOPPED);
   }
 
+  function saveConfig() {
+    let data = { highScore: highScore };
+    try {
+      fs.writeFile(CONFIG_PATH, JSON.stringify(data));
+    } catch (e) {
+      console.log('Error saving high score:', e);
+    }
+  }
+
   function setListeners() {
     Pip.on(KNOB_LEFT, handleLeftKnob);
     Pip.on(KNOB_RIGHT, handleRightKnob);
     Pip.on(BTN_TOP, handleTopButton);
     Pip.on(MUSIC_STOPPED, handleMusicStopped);
+  }
+
+  function setupOptions() {
+    Pip.removeAllListeners(KNOB_LEFT);
+    Pip.removeAllListeners(KNOB_RIGHT);
+    Pip.on(KNOB_LEFT, toggleGhostPiece);
+    Pip.on(KNOB_RIGHT, togglePreviewStyle);
   }
 
   function spawnPiece() {
@@ -749,6 +959,7 @@ function Piptris() {
 
     if (collides(blockCurrent)) {
       isGameOver = true;
+      checkHighScore();
       clearInterval(mainLoopInterval);
       setTimeout(() => {
         drawGameOverScreen();
@@ -795,6 +1006,16 @@ function Piptris() {
     mainLoopInterval = setInterval(dropPiece, blockDropSpeed);
   }
 
+  function toggleGhostPiece() {
+    showGhostPiece = !showGhostPiece;
+    drawGhostPieceToggle();
+  }
+
+  function togglePreviewStyle() {
+    useHollowBlocks = !useHollowBlocks;
+    drawPreviewBlockToggle();
+  }
+
   function updateDifficulty() {
     let newLevel = Math.floor(linesCleared / LINES_PER_LEVEL);
     if (newLevel > difficultyLevel) {
@@ -810,15 +1031,11 @@ function Piptris() {
   self.run = function () {
     bC.clear(); // Clear any previous screen
 
+    loadConfig();
+
     drawStartScreen();
 
-    function togglePreviewStyle() {
-      useHollowBlocks = !useHollowBlocks;
-      drawStartScreenPreviewBlock();
-    }
-
-    Pip.on(KNOB_LEFT, togglePreviewStyle);
-    Pip.on(KNOB_RIGHT, togglePreviewStyle);
+    setupOptions();
     Pip.on(BTN_TOP, handleTopButton);
 
     inputInterval = setInterval(() => {
