@@ -8,8 +8,8 @@ function Piptris() {
   const self = {};
 
   const GAME_NAME = 'PIPTRIS';
-  const GAME_VERSION = '2.3.1';
-  const DEBUG = false;
+  const GAME_VERSION = '2.4.0';
+  const DEBUG = true;
 
   // Game State
   const BLOCK_START_SPEED = 800;
@@ -25,6 +25,10 @@ function Piptris() {
   let score = 0;
   let useHollowBlocks = false;
 
+  // Ghost Piece
+  let showGhostPiece = false;
+  let lastGhost = null;
+
   // Game Difficulty
   let difficultyLevel = 0;
   const MIN_DROP_SPEED = 100;
@@ -32,8 +36,8 @@ function Piptris() {
   const LINES_PER_LEVEL = 10;
 
   // Screen
-  const SCREEN_WIDTH = g.getWidth();
-  const SCREEN_HEIGHT = g.getHeight();
+  const SCREEN_WIDTH = g.getWidth(); // Width (480px)
+  const SCREEN_HEIGHT = g.getHeight(); // Height (320px)
   const SCREEN_AREA = {
     x1: 60,
     x2: SCREEN_WIDTH - 60,
@@ -214,6 +218,7 @@ function Piptris() {
         }
       }
     }
+    drawGhostPiece();
     drawScore();
     drawLevel();
     drawLinesCleared();
@@ -261,6 +266,49 @@ function Piptris() {
         startGame();
       }
     }, 100);
+  }
+
+  function drawGhostPiece(erase) {
+    if (!showGhostPiece || !blockCurrent || isGameOver) {
+      return;
+    }
+
+    let ghost =
+      erase && lastGhost
+        ? lastGhost
+        : {
+            x: blockCurrent.x,
+            y: blockCurrent.y,
+            shape: blockCurrent.shape,
+          };
+
+    if (!erase) {
+      while (!collides({ x: ghost.x, y: ghost.y + 1, shape: ghost.shape })) {
+        ghost.y++;
+      }
+      lastGhost = { x: ghost.x, y: ghost.y, shape: ghost.shape };
+    }
+
+    let color = erase ? COLOR_BLACK : COLOR_THEME_DARK;
+    g.setColor(color);
+
+    for (let y = 0; y < ghost.shape.length; y++) {
+      for (let x = 0; x < ghost.shape[y].length; x++) {
+        if (ghost.shape[y][x]) {
+          const block = [
+            PLAY_AREA_X + (ghost.x + x) * blockSize,
+            PLAY_AREA_Y + (ghost.y + y) * blockSize,
+            PLAY_AREA_X + (ghost.x + x + 1) * blockSize - 1,
+            PLAY_AREA_Y + (ghost.y + y + 1) * blockSize - 1,
+          ];
+          if (useHollowBlocks) {
+            g.drawRect(block[0], block[1], block[2], block[3]);
+          } else {
+            g.fillRect(block[0], block[1], block[2], block[3]);
+          }
+        }
+      }
+    }
   }
 
   function drawImageFromJSON(path, x, y) {
@@ -518,30 +566,135 @@ function Piptris() {
     drawImageFromJSON(ICON_GEAR, centerX - 24, centerY - 29);
 
     drawStartScreenPreviewBlock();
+    drawStartScreenGhostPieceToggle();
   }
 
-  function drawStartScreenPreviewBlock() {
-    const centerX = SCREEN_WIDTH / 2;
-    const blockSize = 10;
+  function drawStartScreenGhostPieceToggle() {
+    g.setFont('6x8', 1);
 
-    const labelY = SCREEN_AREA.y2 - 15;
-    const blockHeight = T_SHAPE.length * blockSize;
-    const blockWidth = T_SHAPE[0].length * blockSize;
-    const startY = labelY - blockHeight - 10;
-    const startX = centerX - blockWidth / 2;
+    const posY = SCREEN_AREA.y2 - 40;
+    const posX = 180;
+
+    const stateY = posY - 22;
+    const state = { ON: 'ON', OFF: 'OFF' };
+    const ghostState = showGhostPiece ? state.ON : state.OFF;
+
+    const fontHeight = 8;
+    const fontScale = 2;
+    g.setFont('6x' + fontHeight, fontScale);
+    const textWidth = g.stringWidth(state.OFF); // Widest state
+    const textHeight = fontHeight * fontScale;
+
+    // Clear previous area
+    const clearXY = {
+      x1: posX - textWidth / 2,
+      y1: stateY - textHeight / 2,
+      x2: posX + textWidth / 2,
+      y2: stateY + textHeight,
+    };
+    g.setColor(COLOR_BLACK);
+    g.fillRect(clearXY);
+    if (DEBUG) {
+      drawBoundaries(clearXY);
+    }
+
+    g.setColor(COLOR_THEME);
+    g.drawString(ghostState, posX, stateY + 4);
 
     g.setFont('6x8', 1);
     g.setColor(COLOR_THEME_DARK);
-    g.drawString('<- BLOCK TYPE ->', centerX, labelY);
+    const labelText = 'GHOST';
+    const labelWidth = g.stringWidth(labelText);
+    g.drawString(labelText, posX, posY);
 
+    const arrowSize = 5;
+    const arrowSpacing = 8;
+
+    // Draw UP arrow (left of label)
+    const upArrowX = posX - labelWidth / 2 - arrowSpacing - 1;
+    const upArrowY = posY;
+    g.fillPoly([
+      upArrowX,
+      upArrowY - arrowSize,
+      upArrowX - arrowSize,
+      upArrowY + arrowSize,
+      upArrowX + arrowSize,
+      upArrowY + arrowSize,
+    ]);
+
+    // Draw DOWN arrow (right of label)
+    const downArrowX = posX + labelWidth / 2 + arrowSpacing;
+    const downArrowY = posY;
+    const downArrowSize = arrowSize - 1;
+    g.fillPoly([
+      downArrowX,
+      downArrowY + downArrowSize,
+      downArrowX - downArrowSize,
+      downArrowY - downArrowSize,
+      downArrowX + downArrowSize,
+      downArrowY - downArrowSize,
+    ]);
+  }
+
+  function drawStartScreenPreviewBlock() {
+    const posY = SCREEN_AREA.y2 - 40;
+    const posX = 300;
+
+    const blockSize = 10;
+    const blockHeight = T_SHAPE.length * blockSize;
+    const blockWidth = T_SHAPE[0].length * blockSize;
+
+    const startY = posY - blockHeight - 10;
+    const startX = posX - blockWidth / 2;
+
+    g.setFont('6x8', 1);
+    g.setColor(COLOR_THEME_DARK);
+
+    const labelText = 'TYPE';
+    const labelWidth = g.stringWidth(labelText);
+    g.drawString(labelText, posX, posY);
+
+    const arrowSize = 6;
+    const arrowSpacing = 10;
+
+    // Draw LEFT arrow (left of label)
+    const leftArrowX = posX - labelWidth / 2 - arrowSpacing;
+    const leftArrowY = posY;
+    g.fillPoly([
+      leftArrowX,
+      leftArrowY,
+      leftArrowX + arrowSize,
+      leftArrowY - arrowSize,
+      leftArrowX + arrowSize,
+      leftArrowY + arrowSize,
+    ]);
+
+    // Draw RIGHT arrow (right of label)
+    const rightArrowX = posX + labelWidth / 2 + arrowSpacing;
+    const rightArrowY = posY;
+    g.fillPoly([
+      rightArrowX,
+      rightArrowY,
+      rightArrowX - arrowSize,
+      rightArrowY - arrowSize,
+      rightArrowX - arrowSize,
+      rightArrowY + arrowSize,
+    ]);
+
+    // Clear previous area
+    const clearXY = {
+      x1: startX - 2,
+      y1: startY - 2,
+      x2: startX + blockWidth + 2,
+      y2: startY + blockHeight + 2,
+    };
     g.setColor(COLOR_BLACK);
-    g.fillRect(
-      startX - 2,
-      startY - 2,
-      startX + blockWidth + 2,
-      startY + blockHeight + 2,
-    );
+    g.fillRect(clearXY);
+    if (DEBUG) {
+      drawBoundaries(clearXY);
+    }
 
+    // Draw the T-shape preview block
     g.setColor(COLOR_THEME);
     for (let y = 0; y < T_SHAPE.length; y++) {
       for (let x = 0; x < T_SHAPE[y].length; x++) {
@@ -650,14 +803,16 @@ function Piptris() {
   }
 
   function move(dir) {
-    if (isGameOver || !blockCurrent) {
-      return;
-    }
+    if (isGameOver || !blockCurrent) return;
+
+    drawGhostPiece(true);
 
     let oldX = blockCurrent.x;
     blockCurrent.x += dir;
+
     if (collides(blockCurrent)) {
       blockCurrent.x = oldX;
+      drawGhostPiece();
       return;
     }
 
@@ -669,6 +824,7 @@ function Piptris() {
       }
     }
 
+    drawGhostPiece();
     drawCurrentPiece(false);
     drawBoundaries(PLAY_AREA);
   }
@@ -694,9 +850,9 @@ function Piptris() {
   }
 
   function rotate(dir) {
-    if (isGameOver || !blockCurrent) {
-      return;
-    }
+    if (isGameOver || !blockCurrent) return;
+
+    drawGhostPiece(true);
 
     const shape = blockCurrent.shape;
     const newShape =
@@ -709,6 +865,7 @@ function Piptris() {
 
     if (collides(blockCurrent)) {
       blockCurrent.shape = oldShape;
+      drawGhostPiece();
       return;
     }
 
@@ -721,6 +878,7 @@ function Piptris() {
     }
 
     drawCurrentPiece(false);
+    drawGhostPiece();
     drawBoundaries(PLAY_AREA);
   }
 
@@ -812,12 +970,17 @@ function Piptris() {
 
     drawStartScreen();
 
+    function toggleGhostPiece() {
+      showGhostPiece = !showGhostPiece;
+      drawStartScreenGhostPieceToggle();
+    }
+
     function togglePreviewStyle() {
       useHollowBlocks = !useHollowBlocks;
       drawStartScreenPreviewBlock();
     }
 
-    Pip.on(KNOB_LEFT, togglePreviewStyle);
+    Pip.on(KNOB_LEFT, toggleGhostPiece);
     Pip.on(KNOB_RIGHT, togglePreviewStyle);
     Pip.on(BTN_TOP, handleTopButton);
 
