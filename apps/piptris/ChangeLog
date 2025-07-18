@@ -1,3 +1,11 @@
+2.4.0
+https://github.com/CodyTolene/pip-boy-apps/pull/27
+- Add ghost block, drop preview.
+- Add ghost block toggle to start screen & game over screen.
+- Add block type selector to game over screen (previously only on start screen).
+- Add high score tracking.
+- Add high score display to start (when high score > 0) and game over screen.
+
 2.3.1
 - Quick patch to "Level" number display clearing.
 
