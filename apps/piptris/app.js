@@ -9,7 +9,7 @@ function Piptris() {
 
   // Core
   const GAME_NAME = 'PIPTRIS';
-  const GAME_VERSION = '2.4.0';
+  const GAME_VERSION = '2.6.0';
   const DEBUG = false;
   const CONFIG_PATH = 'USER/piptris.json';
 
@@ -27,6 +27,7 @@ function Piptris() {
   let score = 0;
   let highScore = 0;
   let useHollowBlocks = false;
+  let nukeInProgress = false;
 
   // Ghost Piece
   let showGhostPiece = false;
@@ -49,7 +50,8 @@ function Piptris() {
   };
 
   // Colors
-  const COLOR_BLACK = '#000';
+  const COLOR_BLACK = '#000000';
+  const COLOR_RED = '#FF0000';
   const COLOR_THEME = g.theme.fg;
   const COLOR_THEME_DARK = g.blendColor(COLOR_BLACK, COLOR_THEME, 0.5);
 
@@ -98,6 +100,7 @@ function Piptris() {
     [[0, 0, 1],[1, 1, 1]],  // L
     T_SHAPE,
     [[1, 1],[1, 1]],        // O
+    [[2]],                  // TODO: NUKE piece
   ];
 
   function checkHighScore() {
@@ -114,38 +117,61 @@ function Piptris() {
 
   function clearLines() {
     let linesRemoved = 0;
-    for (let y = PLAY_AREA_HEIGHT - 1; y >= 0; y--) {
-      let full = true;
-      for (let x = 0; x < PLAY_AREA_WIDTH; x++) {
-        if (!PLAY_AREA_BLOCKS[y * PLAY_AREA_WIDTH + x]) {
-          full = false;
-          break;
-        }
-      }
+    let passes = 0;
+    const MAX_PASSES = PLAY_AREA_HEIGHT;
 
-      if (full) {
+    // Scan repeatedly for rows shifting
+    while (passes++ < MAX_PASSES) {
+      let anyCleared = false;
+
+      for (let y = PLAY_AREA_HEIGHT - 1; y >= 0; y--) {
+        let full = true;
         for (let x = 0; x < PLAY_AREA_WIDTH; x++) {
-          eraseBlock(x, y);
-        }
-
-        for (let ty = y; ty > 0; ty--) {
-          for (let x = 0; x < PLAY_AREA_WIDTH; x++) {
-            PLAY_AREA_BLOCKS[ty * PLAY_AREA_WIDTH + x] =
-              PLAY_AREA_BLOCKS[(ty - 1) * PLAY_AREA_WIDTH + x];
+          if (!PLAY_AREA_BLOCKS[y * PLAY_AREA_WIDTH + x]) {
+            full = false;
+            break;
           }
         }
 
-        for (let x = 0; x < PLAY_AREA_WIDTH; x++) {
-          PLAY_AREA_BLOCKS[x] = 0;
-        }
+        if (full) {
+          // Clear block row
+          for (let x = 0; x < PLAY_AREA_WIDTH; x++) {
+            eraseBlock(x, y);
+          }
 
-        linesRemoved++;
-        linesCleared++;
-        y++;
-        updateDifficulty();
+          // Shift all rows above down by one
+          for (let ty = y; ty > 0; ty--) {
+            for (let x = 0; x < PLAY_AREA_WIDTH; x++) {
+              PLAY_AREA_BLOCKS[ty * PLAY_AREA_WIDTH + x] =
+                PLAY_AREA_BLOCKS[(ty - 1) * PLAY_AREA_WIDTH + x];
+            }
+          }
+
+          // Clear top row
+          for (let x = 0; x < PLAY_AREA_WIDTH; x++) {
+            PLAY_AREA_BLOCKS[x] = 0;
+          }
+
+          linesRemoved++;
+          linesCleared++;
+          updateDifficulty();
+
+          anyCleared = true;
+          break; // Start scanning from bottom again
+        }
+      }
+
+      if (!anyCleared) {
+        // All rows to cleared
+        break;
       }
     }
 
+    if (passes >= MAX_PASSES) {
+      console.log('Clear line safeguard triggered!');
+    }
+
+    // Scoring based on number of lines removed in this pass
     switch (linesRemoved) {
       case 1:
         score += 100;
@@ -184,13 +210,21 @@ function Piptris() {
   }
 
   function drawBlock(x, y) {
-    g.setColor(COLOR_THEME);
+    const blockValue = PLAY_AREA_BLOCKS[y * PLAY_AREA_WIDTH + x];
+
+    if (blockValue === 2) {
+      g.setColor(COLOR_RED);
+    } else {
+      g.setColor(COLOR_THEME);
+    }
+
     const block = [
       PLAY_AREA_X + x * blockSize,
       PLAY_AREA_Y + y * blockSize,
       PLAY_AREA_X + (x + 1) * blockSize - 1,
       PLAY_AREA_Y + (y + 1) * blockSize - 1,
     ];
+
     if (useHollowBlocks) {
       g.drawRect(block[0], block[1], block[2], block[3]);
     } else {
@@ -304,9 +338,7 @@ function Piptris() {
   }
 
   function drawGhostPiece(erase) {
-    if (!showGhostPiece || !blockCurrent || isGameOver) {
-      return;
-    }
+    if (!showGhostPiece || !blockCurrent || isGameOver) return;
 
     let ghost =
       erase && lastGhost
@@ -322,6 +354,8 @@ function Piptris() {
         ghost.y++;
       }
       lastGhost = { x: ghost.x, y: ghost.y, shape: ghost.shape };
+    } else if (!lastGhost) {
+      return; // Nothing to erase
     }
 
     let color = erase ? COLOR_BLACK : COLOR_THEME_DARK;
@@ -701,9 +735,7 @@ function Piptris() {
   }
 
   function dropPiece() {
-    if (!blockCurrent || isGameOver) {
-      return;
-    }
+    if (!blockCurrent || isGameOver) return;
 
     drawCurrentPiece(true);
     blockCurrent.y++;
@@ -712,19 +744,22 @@ function Piptris() {
       blockCurrent.y--;
       drawCurrentPiece(false);
       merge(blockCurrent);
-      clearLines();
-      spawnPiece();
 
-      // Game over sanity check
-      if (collides(blockCurrent)) {
-        isGameOver = true;
-        clearInterval(mainLoopInterval);
-        setTimeout(drawGameOverScreen, 50);
-        return;
-      }
+      setTimeout(() => {
+        // Delay spawnPiece to allow field to stabilize visually
+        spawnPiece();
+
+        if (collides(blockCurrent)) {
+          isGameOver = true;
+          clearInterval(mainLoopInterval);
+          setTimeout(drawGameOverScreen, 50);
+          return;
+        }
+      }, 50); // 50ms debounce for NUKE clear
+    } else {
+      drawCurrentPiece(false);
     }
 
-    drawCurrentPiece(false);
     drawBoundaries(PLAY_AREA);
 
     const fastDrop = BTN_PLAY.read();
@@ -828,12 +863,42 @@ function Piptris() {
   }
 
   function merge(piece) {
+    let nuked = false;
     for (let y = 0; y < piece.shape.length; y++) {
       for (let x = 0; x < piece.shape[y].length; x++) {
         if (piece.shape[y][x]) {
-          PLAY_AREA_BLOCKS[(piece.y + y) * PLAY_AREA_WIDTH + piece.x + x] = 1;
+          const fx = piece.x + x;
+          const fy = piece.y + y;
+
+          if (!isFinite(fx) || !isFinite(fy)) {
+            console.log('Invalid fx/fy', fx, fy);
+            continue;
+          }
+
+          if (piece.shape[y][x] === 2) {
+            if (DEBUG) console.log('Nuking coords: ', fx, fy);
+            if (
+              fx >= 0 &&
+              fx < PLAY_AREA_WIDTH &&
+              fy >= 0 &&
+              fy < PLAY_AREA_HEIGHT
+            ) {
+              PLAY_AREA_BLOCKS[fy * PLAY_AREA_WIDTH + fx] = 0;
+              nuke(fx, fy);
+              nuked = true;
+            } else {
+              if (DEBUG) console.log('Nuke is out of bounds!', fx, fy);
+            }
+          } else {
+            PLAY_AREA_BLOCKS[fy * PLAY_AREA_WIDTH + fx] = 1;
+          }
         }
       }
+    }
+
+    if (nuked) {
+      // Clear lines after nuke
+      clearLines();
     }
   }
 
@@ -862,6 +927,48 @@ function Piptris() {
     drawGhostPiece();
     drawCurrentPiece(false);
     drawBoundaries(PLAY_AREA);
+  }
+
+  function nuke(centerX, centerY, radius) {
+    if (typeof radius !== 'number' || isNaN(radius) || radius < 1) {
+      radius = 2;
+    }
+
+    if (nukeInProgress) {
+      console.log('Nuke is still nuking...');
+      return;
+    }
+    nukeInProgress = true;
+
+    if (!isFinite(centerX) || !isFinite(centerY)) {
+      console.log('We were sent incorrect nuke coordinates!');
+      nukeInProgress = false;
+      return;
+    }
+
+    // Keep radius between 1–3
+    radius = Math.min(Math.max(1, radius), 3);
+
+    centerX = Math.max(0, Math.min(centerX, PLAY_AREA_WIDTH - 1));
+    centerY = Math.max(0, Math.min(centerY, PLAY_AREA_HEIGHT - 1));
+
+    for (let y = -radius; y <= radius; y++) {
+      for (let x = -radius; x <= radius; x++) {
+        let fx = centerX + x;
+        let fy = centerY + y;
+
+        if (
+          fx >= 0 &&
+          fx < PLAY_AREA_WIDTH &&
+          fy >= 0 &&
+          fy < PLAY_AREA_HEIGHT
+        ) {
+          PLAY_AREA_BLOCKS[fy * PLAY_AREA_WIDTH + fx] = 0;
+          eraseBlock(fx, fy);
+        }
+      }
+    }
+    nukeInProgress = false;
   }
 
   function playMusic() {
