@@ -1,16 +1,18 @@
+
 // =============================================================================
 //  Name: Porta Hack
 //  License: CC-BY-NC-4.0
 //  Repository(s):
 //     https://github.com/CodyTolene/pip-boy-apps
 //     https://github.com/pip-4111/Porta-Hack
+//     https://github.com/beaverboy-12
 // =============================================================================
 
 function PortaHack() {
   const self = {};
 
   const GAME_NAME = 'Porta Hack';
-  const GAME_VERSION = '1.0.0';
+  const GAME_VERSION = '1.1.0';
   const DEBUG = false;
 
   // Game
@@ -25,6 +27,7 @@ function PortaHack() {
   let junkLinesLeft = [];
   let junkLinesRight = [];
   let selectedWord = null;
+  let foundSnippets = [];
 
   // Intervals
   let playButtonInterval = null;
@@ -121,7 +124,7 @@ function PortaHack() {
 
   // Video
   const VIDEO_STOPPED = 'videoStopped';
-  const VIDEO_BOOT = 'BOOT/BOOT.avi';
+  const VIDEO_BOOT = 'USER/STARTHACK.avi';
 
   // All available passwords to select from
   // prettier-ignore
@@ -143,13 +146,35 @@ function PortaHack() {
     'EXILED', 'ORDERED', 'MOURNING', 'EXPIRED', 'DECEASED', 'ALERTED', 
     'MISTER', 'ROBCO', 'RADIO', 'DINER', 'NUKA', 'PIPBOY', 'ATOMIC',
     'BLISSFUL', 'OPTIMISM', 'PRESET', 'GENERATOR', 'TRIAGE', 'HYGIENE',
-    'ELEVATOR', 'HYDROGEN', 'VAULTDOOR', 'BYTE', 'INDEX', 'LOGIN', 'CACHE',
-    'ERROR', 'BUNKER', 'REACTOR', 'SHELTER', 'CONTROL', 'FISSION', 'CANTEEN'
+    'ELEVATOR', 'HYDROGEN', 'OVERSEER', 'BYTE', 'INDEX', 'LOGIN', 'CACHE',
+    'ERROR', 'BUNKER', 'REACTOR', 'SHELTER', 'CONTROL', 'FISSION', 'CANTEEN',
+    'HIKING', 'HAIR', 'BARK', 'PINE', 'VINES', 'BAKER', 'HACKER',
+    'DULL', 'DATASET', 'INPUT', 'OUTPUT', 'FLAG', 'FILE', 'FIELD',
+    'SCRIPTED', 'STATIC', 'STACKED', 'OBJECTIFY', 'STAGING', 'MUDDLED',
+    'MODULES', 'EXPORTS', 'REACTED', 'REACTOR', 'BACKED', 'PACKED',
+    'PIKED', 'LIKED', 'BAKED', 'BINDER', 'VILELY', 'SOILED', 'MAILED',
+    'PAINTER', 'GAINED', 'REGAIN', 'CLEANUP', 'ARROWS', 'PROJECT',
+    'SUBTEXT', 'EJECTED', 'OBSESSED', 'SUBMITTER', 'CLEARLY',
+    'FREED', 'FRENZY', 'FLEEING', 'VAULTS', 'TARGETED', 'BUFFERED',
+    'NETWORKED', 'DISARMED', 'DISPOSABLE', 'EXILED', 'CITATION',
+    'ISOLATE', 'ORDERLY', 'ALERTS', 'NUCLEAR', 'ROBOTIC', 'PIPWIRE',
+    'PASSWORD', 'CACHE', 'CANTEENS', 'CONFORMED',
+    'SKOOMA', 'BETHESDA', 'VEGAS', 'OBLIVION', 'CASINO',
+    'FALLOUT', 'WASTELAND', 'PIP', 'DOOM', 'DOOMGUY',
+    'DOVAHKIIN', 'KHAJIIT', 'TAMRIEL', 'NERAVAR', 'SIERRA',
+    'STEALTHBOY', 'BOBBLEHEAD', 'ENCLAVE', 'BROTHERHOOD', 'VAULTTEC',
+    'RADAWAY', 'STIMPAK', 'GHOULED', 'SANCTUARY', 'LIBERTY',
+    'MEGATON', 'SHELTERED', 'ATOMCAT', 'PRESTON', 'NCR', 'CAESAR',
+    'NEWRENO', 'MIRELURK', 'SUPERDUPER', 'FISSION', 'GHOULSRULE'
   ];
   const MAX_ROWS_PER_COLUMN = 25;
   const TOTAL_ROWS = MAX_ROWS_PER_COLUMN * 2;
-  const LEFT_PASSWORDS = PASSWORDS.slice(0, MAX_ROWS_PER_COLUMN);
-  const RIGHT_PASSWORDS = PASSWORDS.slice(MAX_ROWS_PER_COLUMN, TOTAL_ROWS);
+  const PASSWORDS_SHUFFLED = PASSWORDS.slice();
+  shuffle(PASSWORDS_SHUFFLED);
+
+  const LEFT_PASSWORDS  = PASSWORDS_SHUFFLED.slice(0, MAX_ROWS_PER_COLUMN);
+  const RIGHT_PASSWORDS = PASSWORDS_SHUFFLED.slice(MAX_ROWS_PER_COLUMN, TOTAL_ROWS);
+
 
   // Knobs and Buttons
   const KNOB_LEFT = 'knob1';
@@ -202,72 +227,134 @@ function PortaHack() {
     }
     gb.setColor(WHITE).drawRect(area);
   }
+  function scanSnippets() {
+    foundSnippets = [];
+    const pairs = { "(": ")", "{": "}", "[": "]", "<": ">" };
+
+  // helper to scan one side
+  function scanSide(junkLines, offset) {
+    junkLines.forEach((junk, rowIdx) => {
+      const line = junk.line;
+      for (let i = 0; i < line.length; i++) {
+        const open = line[i];
+        const close = pairs[open];
+        if (!close) continue;
+        // look ahead up to 6 chars
+        for (let j = i+1; j < Math.min(i + 7, line.length); j++) {
+          if (line[j] === close) {
+            foundSnippets.push({
+              row:        rowIdx + offset,
+              startCol:   i,
+              endCol:     j
+            });
+            break;
+          }
+        }
+      }
+    });
+  }
+
+  scanSide(junkLinesLeft, 0);
+  scanSide(junkLinesRight, MAX_ROWS_PER_COLUMN);
+}
 
   function drawCursor() {
-    const addrLen = 7;
-    const isLeft = cursorRow < MAX_ROWS_PER_COLUMN;
-    const area = isLeft ? PASSWORD_GRID_LEFT_XY : PASSWORD_GRID_RIGHT_XY;
-    const offset = isLeft ? 0 : MAX_ROWS_PER_COLUMN;
-    const junk = isLeft
-      ? junkLinesLeft[cursorRow]
-      : junkLinesRight[cursorRow - offset];
-    const line = junk.line;
-    const y = area.y1 + (cursorRow - offset) * 10;
-    const xStart = area.x1 + 2 + (addrLen + cursorCol) * 6;
+  const addrLen = 7;
+  const isLeft  = cursorRow < MAX_ROWS_PER_COLUMN;
+  const area    = isLeft
+    ? PASSWORD_GRID_LEFT_XY
+    : PASSWORD_GRID_RIGHT_XY;
+  const offset  = isLeft ? 0 : MAX_ROWS_PER_COLUMN;
+  const junk    = isLeft
+    ? junkLinesLeft[cursorRow]
+    : junkLinesRight[cursorRow - offset];
+  const line    = junk.line;
+  const y       = area.y1 + (cursorRow - offset) * 10;
 
-    // Clear previous
-    if (
-      typeof drawCursor.prevRow !== 'undefined' &&
-      typeof drawCursor.prevCol !== 'undefined'
-    ) {
-      const prevIsLeft = drawCursor.prevRow < MAX_ROWS_PER_COLUMN;
-      const prevArea = prevIsLeft
-        ? PASSWORD_GRID_LEFT_XY
-        : PASSWORD_GRID_RIGHT_XY;
-      const prevOffset = prevIsLeft ? 0 : MAX_ROWS_PER_COLUMN;
-      const prevJunk = prevIsLeft
-        ? junkLinesLeft[drawCursor.prevRow]
-        : junkLinesRight[drawCursor.prevRow - prevOffset];
-      const prevY = prevArea.y1 + (drawCursor.prevRow - prevOffset) * 10;
-      const prevAddr =
-        '0xF' + (0x964 + drawCursor.prevRow).toString(16).padStart(3, '0');
-      gb.setColor(BLACK).fillRect(prevArea.x1, prevY, prevArea.x2, prevY + 10);
-      gb.setColor(GREEN).setFont('6x8').setFontAlign(-1, -1);
-      gb.drawString(prevAddr + ' ' + prevJunk.line, prevArea.x1 + 2, prevY);
-    }
+  // 1) Clear previous highlight
+  if (drawCursor.prevRow !== undefined && drawCursor.prevCol !== undefined) {
+    const prevIsLeft = drawCursor.prevRow < MAX_ROWS_PER_COLUMN;
+    const prevArea   = prevIsLeft
+      ? PASSWORD_GRID_LEFT_XY
+      : PASSWORD_GRID_RIGHT_XY;
+    const prevOff    = prevIsLeft ? 0 : MAX_ROWS_PER_COLUMN;
+    const prevJunk   = prevIsLeft
+      ? junkLinesLeft[drawCursor.prevRow]
+      : junkLinesRight[drawCursor.prevRow - prevOff];
+    const prevY      = prevArea.y1 + (drawCursor.prevRow - prevOff) * 10;
+    const prevAddr   =
+      '0xF' + (0x964 + drawCursor.prevRow).toString(16).padStart(3, '0');
 
-    drawCursor.prevRow = cursorRow;
-    drawCursor.prevCol = cursorCol;
+    gb.setColor(BLACK)
+      .fillRect(prevArea.x1, prevY, prevArea.x2, prevY + 10)
+      .setColor(GREEN)
+      .setFont(FONT)
+      .setFontAlign(-1, -1)
+      .drawString(prevAddr + ' ' + prevJunk.line, prevArea.x1 + 2, prevY);
+  }
 
-    const addr = '0xF' + (0x964 + cursorRow).toString(16).padStart(3, '0');
-    gb.setFont('6x8').setFontAlign(-1, -1);
-    gb.setColor(GREEN).drawString(addr + ' ' + line, area.x1 + 2, y);
+  // 2) Remember for next frame
+  drawCursor.prevRow = cursorRow;
+  drawCursor.prevCol = cursorCol;
 
-    if (
-      cursorCol >= junk.embedAt &&
-      cursorCol <
-        junk.embedAt +
-          (isLeft
-            ? LEFT_PASSWORDS[cursorRow].length
-            : RIGHT_PASSWORDS[cursorRow - offset].length)
-    ) {
-      // Highlight word
-      const word = isLeft
-        ? LEFT_PASSWORDS[cursorRow]
-        : RIGHT_PASSWORDS[cursorRow - offset];
-      const xWord = area.x1 + 2 + (addrLen + junk.embedAt) * 6;
-      gb.setColor(GREEN).fillRect(xWord, y, xWord + word.length * 6, y + 10);
-      gb.setColor(BLACK).drawString(
-        line.substr(junk.embedAt, word.length),
-        xWord,
-        y,
+  // 3) Draw this full line
+  const addr = '0xF' + (0x964 + cursorRow).toString(16).padStart(3, '0');
+  gb.setColor(GREEN)
+    .setFont(FONT)
+    .setFontAlign(-1, -1)
+    .drawString(addr + ' ' + line, area.x1 + 2, y);
+
+  // 4) Bracket-snippet highlight?
+  const snippet = foundSnippets.find(s =>
+    s.row === cursorRow &&
+    cursorCol >= s.startCol &&
+    cursorCol <= s.endCol
+  );
+  if (snippet) {
+    const xSnip = area.x1 + 2 + (addrLen + snippet.startCol) * 6;
+    const width = (snippet.endCol - snippet.startCol + 1) * 6;
+    gb.setColor(GREEN)
+      .fillRect(xSnip, y, xSnip + width, y + 10)
+      .setColor(BLACK)
+      .drawString(
+        line.substring(snippet.startCol, snippet.endCol + 1),
+        xSnip, y
       );
-    } else {
-      // Highlight single character
-      const xChar = area.x1 + 2 + (addrLen + cursorCol) * 6;
-      gb.setColor(GREEN).fillRect(xChar, y, xChar + 6, y + 10);
-      gb.setColor(BLACK).drawString(line[cursorCol], xChar, y);
-    }
+    return;
+  }
+
+  // 5) Whole-word highlight only if it's not all dots
+  const word    = isLeft
+    ? LEFT_PASSWORDS[cursorRow]
+    : RIGHT_PASSWORDS[cursorRow - offset];
+  const start   = junk.embedAt;
+  const length  = word.length;
+  const segment = line.substr(start, length);
+  const isDots  = /^\.+$/.test(segment);
+
+  if (
+    start >= 0 &&
+    cursorCol >= start &&
+    cursorCol < start + length &&
+    !isDots
+  ) {
+    const xWord = area.x1 + 2 + (addrLen + start) * 6;
+    gb.setColor(GREEN)
+      .fillRect(xWord, y, xWord + length * 6, y + 10)
+      .setColor(BLACK)
+      .drawString(segment, xWord, y);
+  } else {
+    // 6) Fallback: highlight just the one character under the cursor
+    const xChar = area.x1 + 2 + (addrLen + cursorCol) * 6;
+    gb.setColor(GREEN)
+      .fillRect(xChar, y, xChar + 6, y + 10)
+      .setColor(BLACK)
+      .drawString(line[cursorCol], xChar, y);
+  }
+}
+
+  function goToGameOverScreen() {
+    drawGameOverScreen();
   }
 
   function drawGameOverScreen() {
@@ -276,7 +363,7 @@ function PortaHack() {
     clearScreen();
     removeListeners();
 
-    const gameOverText = 'GAME OVER';
+    const gameOverText = 'LOCKOUT INITIATED';
     gb.setColor(GREEN)
       .setFontMonofonto18()
       .setFontAlign(-1, -1)
@@ -286,7 +373,7 @@ function PortaHack() {
         SCREEN_HEIGHT / 3,
       );
 
-    const replayText = 'Press play to restart';
+    const replayText = 'Press radio button to retry or power to exit';
     gb.setColor(GREEN_DARK)
       .setFontMonofonto16()
       .setFontAlign(-1, -1)
@@ -370,17 +457,23 @@ function PortaHack() {
   }
 
   function drawPasswordMessage() {
-    // Clear previous.
-    gb.setColor(BLACK).fillRect(PASSWORD_MESSAGE_XY);
+  // Clear previous.
+  gb.setColor(BLACK).fillRect(PASSWORD_MESSAGE_XY);
 
-    let text = '';
-    if (attemptsRemaining <= 0) {
-      text = '!!! ACCESS DENIED !!! Select again to restart.';
-    } else if (attemptsRemaining === 1) {
-      text = '!!! WARNING: LOCKOUT IMMINENT !!!';
-    } else {
-      text = 'ENTER PASSWORD NOW';
-    }
+  let text = '';
+  if (attemptsRemaining <= 0) {
+    text = '!!! ACCESS DENIED !!!    REBOOTING...';
+    
+    // Delay before switching to game over screen
+    setTimeout(function() {
+      goToGameOverScreen();
+    }, 3500);
+
+  } else if (attemptsRemaining === 1) {
+    text = '!!! WARNING: LOCKOUT IMMINENT !!!';
+  } else {
+    text = 'ENTER PASSWORD NOW';
+  }
 
     gb.setColor(GREEN)
       .setFont(FONT)
@@ -408,7 +501,7 @@ function PortaHack() {
         SCREEN_HEIGHT / 3,
       );
 
-    const replayText = 'Press play to restart';
+    const replayText = 'Press radio to restart or power to exit';
     gb.setColor(GREEN_DARK)
       .setFontMonofonto16()
       .setFontAlign(-1, -1)
@@ -439,20 +532,6 @@ function PortaHack() {
     }, FPS);
   }
 
-  function getJunkLine(len, embedWord) {
-    const JUNK = '{}[]<>?/\\|!@#$%^&*()-_=+;:"\',.`~ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    let result = '';
-    const embedAt = (Math.random() * (len - embedWord.length)) | 0;
-    for (let i = 0; i < len; i++) {
-      if (i === embedAt) {
-        result += embedWord;
-        i += embedWord.length - 1;
-      } else {
-        result += JUNK[(Math.random() * JUNK.length) | 0];
-      }
-    }
-    return { line: result, embedAt: embedAt };
-  }
 
   function handleLeftKnob(dir) {
     let now = Date.now();
@@ -516,38 +595,60 @@ function PortaHack() {
   }
 
   function handleRightKnob(dir) {
-    if (dir === 0) {
-      select();
+  if (dir === 0) {
+    select();
+    return;
+  }
+
+  // Find which line & word we’re on
+  const isLeft = cursorRow < MAX_ROWS_PER_COLUMN;
+  const rowIdx = isLeft
+    ? cursorRow
+    : cursorRow - MAX_ROWS_PER_COLUMN;
+  const junk   = isLeft
+    ? junkLinesLeft[rowIdx]
+    : junkLinesRight[rowIdx];
+  const word   = isLeft
+    ? LEFT_PASSWORDS[rowIdx]
+    : RIGHT_PASSWORDS[rowIdx];
+  const lineLen = junk.line.length;
+  const start   = junk.embedAt;
+
+  // 1) Compute a minimum step of 1, or jump to word‐edge if inside it
+  let step = 1;
+  if (cursorCol >= start && cursorCol < start + word.length) {
+    if (dir > 0) {
+      // step right to end of word
+      step = Math.max(1, start + word.length - cursorCol);
     } else {
-      const isLeft = cursorRow < MAX_ROWS_PER_COLUMN;
-      const offset = isLeft ? 0 : MAX_ROWS_PER_COLUMN;
-      const junk = isLeft
-        ? junkLinesLeft[cursorRow]
-        : junkLinesRight[cursorRow - offset];
-      const word = isLeft
-        ? LEFT_PASSWORDS[cursorRow]
-        : RIGHT_PASSWORDS[cursorRow - offset];
-
-      const lineLength = junk.line.length;
-      const inWord =
-        cursorCol >= junk.embedAt && cursorCol < junk.embedAt + word.length;
-
-      let step = 1;
-      if (inWord) {
-        if (dir > 0) {
-          // Scroll right to end of word
-          step = Math.max(1, junk.embedAt + word.length - cursorCol);
-        } else {
-          // Scroll left to start of word
-          step = Math.max(1, cursorCol - junk.embedAt);
-        }
-      }
-
-      cursorCol =
-        (cursorCol + (dir > 0 ? step : -step) + lineLength) % lineLength;
-      drawCursor();
+      // step left to start of word
+      step = Math.max(1, cursorCol - start);
     }
   }
+
+  // 2) Calculate tentative newCol
+  let newCol = cursorCol + (dir > 0 ? step : -step);
+
+  // 3) Seamless cross‐grid wrap
+  if (dir > 0 && isLeft && newCol >= lineLen) {
+    cursorRow = rowIdx + MAX_ROWS_PER_COLUMN;
+    cursorCol = 0;
+    drawCursor();
+    return;
+  }
+  if (dir < 0 && !isLeft && newCol < 0) {
+    cursorRow = rowIdx;
+    // land at the far right of left‐grid line
+    cursorCol = junkLinesLeft[rowIdx].line.length - 1;
+    drawCursor();
+    return;
+  }
+
+  // 4) Otherwise just wrap within the same line
+  cursorCol = ((newCol % lineLen) + lineLen) % lineLen;
+  drawCursor();
+}
+
 
   function handleTopButton() {
     // Adjust brightness
@@ -559,6 +660,57 @@ function PortaHack() {
     Pip.brightness = brightnessLevels[nextIndex];
     Pip.updateBrightness();
   }
+
+  function removeDudWord() {
+  // 1) Build a list of on-screen, non-correct words not already dotted out
+  const candidates = [];
+
+  LEFT_PASSWORDS.forEach((w, i) => {
+    if (w === correctPassword) return;
+    const obj = junkLinesLeft[i];
+    if (!obj || typeof obj.line !== 'string') return;
+
+    const start = obj.embedAt;
+    // SKIP pure-junk or out-of-bounds
+    if (start < 0 || start + w.length > obj.line.length) return;
+
+    // only if it's not already dots
+    if (!/^\.+$/.test(obj.line.substr(start, w.length))) {
+      candidates.push({ side: 'L', row: i, word: w });
+    }
+  });
+
+  RIGHT_PASSWORDS.forEach((w, i) => {
+    if (w === correctPassword) return;
+    const obj = junkLinesRight[i];
+    if (!obj || typeof obj.line !== 'string') return;
+
+    const start = obj.embedAt;
+    if (start < 0 || start + w.length > obj.line.length) return;
+
+    if (!/^\.+$/.test(obj.line.substr(start, w.length))) {
+      candidates.push({ side: 'R', row: i, word: w });
+    }
+  });
+
+  // 2) Nothing left?
+  if (candidates.length === 0) return null;
+
+  // 3) Pick one and dot it out in place
+  const pick = candidates[(Math.random() * candidates.length) | 0];
+  const arr  = pick.side === 'L' ? junkLinesLeft : junkLinesRight;
+  const obj  = arr[pick.row];
+  const start = obj.embedAt;
+  const len   = pick.word.length;
+  const text  = obj.line;
+
+  // splice in the dots exactly at `start`
+  obj.line = text.slice(0, start)
+           + '.'.repeat(len)
+           + text.slice(start + len);
+
+  return pick;
+}
 
   function removeListeners() {
     Pip.removeAllListeners(KNOB_LEFT);
@@ -594,82 +746,171 @@ function PortaHack() {
     self.run();
   }
 
+function handleSnippet(snippet) {
+  let pick;
+
+  if (Math.random() < 0.5) {
+    attemptsRemaining = MAX_ATTEMPTS;
+    logEntries.push('> TRIES RESET');
+    drawAttemptCounter();
+    drawPasswordMessage();
+  } else {
+    pick = removeDudWord();
+    logEntries.push('> DUD REMOVED');
+  }
+
+  // redraw the log
+  drawLog();
+
+  // repaint only the changed line
+  if (pick) {
+    const isLeft      = pick.side === 'L';
+    const area        = isLeft ? PASSWORD_GRID_LEFT_XY : PASSWORD_GRID_RIGHT_XY;
+    const rowIndex    = pick.row;                             // no offset!
+    const baseAddress = isLeft ? 0x964 : 0xA30;
+    const addr        = '0xF' + (baseAddress + rowIndex)
+                             .toString(16)
+                             .padStart(3, '0');
+    const lineHeight  = 10;
+    const y           = area.y1 + rowIndex * lineHeight;
+
+    // clear the old text
+    gb.setColor(BLACK)
+      .fillRect(area.x1, y, area.x2, y + lineHeight);
+
+    // draw the new dotted‐out line
+    const newLine = (isLeft
+      ? junkLinesLeft[rowIndex].line
+      : junkLinesRight[rowIndex].line
+    );
+    gb.setColor(GREEN)
+      .setFont('6x8')
+      .setFontAlign(-1, -1)
+      .drawString(addr + ' ' + newLine, area.x1 + 2, y);
+  }
+
+  // redraw cursor highlight and grid borders
+  drawCursor();
+  drawBoundaries(PASSWORD_GRID_LEFT_XY);
+  drawBoundaries(PASSWORD_GRID_RIGHT_XY);
+
+  // remove that snippet so it can't be reused
+  foundSnippets = foundSnippets.filter(s => s !== snippet);
+}
+
+ 
   function select() {
-    const isLeft = cursorRow < MAX_ROWS_PER_COLUMN;
-    const offset = isLeft ? 0 : MAX_ROWS_PER_COLUMN;
+  // 1) Snippet check
+  const snippet = foundSnippets.find(s =>
+    s.row === cursorRow &&
+    cursorCol >= s.startCol &&
+    cursorCol <= s.endCol
+  );
+  if (snippet) {
+    handleSnippet(snippet);
+    return;
+  }
 
-    const junk = isLeft
-      ? junkLinesLeft[cursorRow]
-      : junkLinesRight[cursorRow - offset];
-    const word = isLeft
-      ? LEFT_PASSWORDS[cursorRow]
-      : RIGHT_PASSWORDS[cursorRow - offset];
+  // 2) Pick the right column and row
+  const isLeft = cursorRow < MAX_ROWS_PER_COLUMN;
+  const rowIdx = isLeft ? cursorRow : cursorRow - MAX_ROWS_PER_COLUMN;
+  const junk   = isLeft
+    ? junkLinesLeft[rowIdx]
+    : junkLinesRight[rowIdx];
+  const wordList = isLeft ? LEFT_PASSWORDS : RIGHT_PASSWORDS;
+  const word      = wordList[rowIdx];
 
-    const inWord =
-      cursorCol >= junk.embedAt && cursorCol < junk.embedAt + word.length;
+  // 3) Sanity-check our junk object
+  if (
+    !junk ||
+    typeof junk.line !== 'string' ||
+    typeof junk.embedAt !== 'number'
+  ) {
+    console.error('select(): invalid junk at row', cursorRow, junk);
+    return;
+  }
 
-    const lineHeight = 10;
-    const maxLines = Math.floor((LOG_XY.y2 - LOG_XY.y1) / lineHeight);
+  // 4) Grab embedAt and the text segment
+  const embedAt      = junk.embedAt;
+  const fullLineText = junk.line;
+  const segment      = fullLineText.slice(embedAt, embedAt + word.length);
 
-    // Remove initial prompt if it's the only thing there
-    if (logEntries.length === 1 && logEntries[0] === '> . ') {
-      logEntries.pop();
-    }
+  // 5) See if it’s been dotted out already
+  const isDottedOut = /^\.+$/.test(segment);
+  const inWord = !isDottedOut &&
+    cursorCol >= embedAt &&
+    cursorCol < embedAt + word.length;
 
-    if (attemptsRemaining <= 0) {
-      // Go to game over sreen
-      drawGameOverScreen();
-      return;
-    }
+  // 6) Drop the initial “> . ” prompt
+  if (logEntries.length === 1 && logEntries[0] === '> . ') {
+    logEntries.pop();
+  }
 
-    if (inWord) {
-      selectedWord = junk.line.substr(junk.embedAt, word.length);
-      const existing = logEntries.findIndex((e) => e === '> ' + selectedWord);
-      if (existing !== -1) {
-        const likenessLine = logEntries[existing + 1];
-        logEntries.push('> ' + selectedWord);
-        if (likenessLine && likenessLine.startsWith('>')) {
-          logEntries.push(likenessLine);
-        }
-      } else {
-        if (selectedWord === correctPassword) {
-          logEntries.push('> ' + selectedWord);
-          logEntries.push('> ACCESS GRANTED');
-          drawLog();
-          drawSuccessScreen();
-          return;
-        } else {
-          let likeness = 0;
-          if (selectedWord.length === correctPassword.length) {
-            for (let i = 0; i < selectedWord.length; i++) {
-              if (selectedWord[i] === correctPassword[i]) likeness++;
-            }
-          }
-          while (logEntries.length >= maxLines - 1) {
-            logEntries.shift();
-          }
-          logEntries.push('> ' + selectedWord);
-          logEntries.push(
-            '> ' + likeness + '/' + correctPassword.length + ' correct.',
-          );
-          attemptsRemaining--;
-          drawAttemptCounter();
-          drawPasswordMessage();
-          if (attemptsRemaining === 0) {
-            logEntries.push('> Entry denied');
-          }
-        }
+  // 7) Game-over guard
+  if (attemptsRemaining <= 0) {
+    drawGameOverScreen();
+    return;
+  }
+
+  // 8) Handle a full-word selection
+  if (inWord) {
+    selectedWord = segment;
+    const existing = logEntries.findIndex(e => e === '> ' + selectedWord);
+
+    if (existing !== -1) {
+      // Re-show likeness
+      const likenessLine = logEntries[existing + 1];
+      logEntries.push('> ' + selectedWord);
+      if (likenessLine && likenessLine.startsWith('>')) {
+        logEntries.push(likenessLine);
       }
     } else {
-      selectedWord = junk.line[cursorCol];
-      if (logEntries.length >= maxLines) {
-        logEntries.shift();
+      // New guess
+      if (selectedWord === correctPassword) {
+        logEntries.push('> ' + selectedWord);
+        logEntries.push('> ACCESS GRANTED');
+        drawLog();
+        drawSuccessScreen();
+        return;
       }
-      logEntries.push('> [' + selectedWord + ']');
+      // Wrong guess: compute likeness
+      let likeness = 0;
+      if (segment.length === correctPassword.length) {
+        for (let i = 0; i < segment.length; i++) {
+          if (segment[i] === correctPassword[i]) likeness++;
+        }
+      }
+      // Keep log from overflowing
+      const maxLines = Math.floor((LOG_XY.y2 - LOG_XY.y1) / 10) - 1;
+      while (logEntries.length > maxLines) logEntries.shift();
+      logEntries.push('> ' + selectedWord);
+      logEntries.push(`> [${likeness}]`);
+      attemptsRemaining--;
+      drawAttemptCounter();
+      drawPasswordMessage();
+      if (attemptsRemaining === 0) logEntries.push('> Entry denied');
     }
 
-    drawLog();
+  } else {
+    // 9) Single junk-char selection
+    selectedWord = fullLineText[cursorCol];
+    const maxLines = Math.floor((LOG_XY.y2 - LOG_XY.y1) / 10);
+    if (logEntries.length >= maxLines) logEntries.shift();
+    logEntries.push('> [' + selectedWord + ']');
   }
+
+  // 10) Final redraw
+  drawLog();
+}
+
+function shuffle(arr) {
+  for (var i = arr.length - 1; i > 0; i--) {
+    var j   = (Math.random() * (i + 1)) | 0;
+    var tmp = arr[i];
+    arr[i]  = arr[j];
+    arr[j]  = tmp;
+  }
+}
 
   function setListeners() {
     Pip.on(KNOB_LEFT, handleLeftKnob);
@@ -677,28 +918,49 @@ function PortaHack() {
     Pip.on(BTN_TOP, handleTopButton);
   }
 
-  function setupJunkLines() {
-    const leftLength = LEFT_PASSWORDS.length;
-    const rightLength = RIGHT_PASSWORDS.length;
+  function getJunkLine(len, embedWord) {
+  const JUNK = '{}[]<>?/\\|!@#$%^&*()-_=+;:"\',.`~';
 
-    if (leftLength === 0 || rightLength === 0) {
-      throw new Error('Password lists cannot be empty');
+  // if no word, generate pure junk and set embedAt to len (never used as a valid index)
+  if (!embedWord) {
+    let junkOnly = '';
+    for (let i = 0; i < len; i++) {
+      junkOnly += JUNK[(Math.random() * JUNK.length) | 0];
     }
-
-    junkLinesLeft = LEFT_PASSWORDS.map((p) => getJunkLine(12, p));
-    junkLinesRight = RIGHT_PASSWORDS.map((p) => getJunkLine(12, p));
-
-    if (
-      junkLinesLeft.length !== leftLength ||
-      junkLinesRight.length !== rightLength
-    ) {
-      throw new Error('Mismatch between password lists and junk lines');
-    }
-
-    const allPasswords = LEFT_PASSWORDS.concat(RIGHT_PASSWORDS);
-    correctPassword = allPasswords[(Math.random() * allPasswords.length) | 0];
-    console.log('Password: ', correctPassword);
+    return { line: junkOnly, embedAt: len };
   }
+
+  let result = '';
+  const embedAt = (Math.random() * (len - embedWord.length)) | 0;
+  for (let i = 0; i < len; i++) {
+    if (i === embedAt) {
+      result += embedWord;
+      i += embedWord.length - 1;
+    } else {
+      result += JUNK[(Math.random() * JUNK.length) | 0];
+    }
+  }
+  return { line: result, embedAt };
+}
+
+  function setupJunkLines() {
+  // 1) Shuffle the passwords
+  LEFT_PASSWORDS.sort(() => Math.random() - 0.5);
+  RIGHT_PASSWORDS.sort(() => Math.random() - 0.5);
+
+  // 2) Build junk lines as before
+  const PURE_JUNK_CHANCE = 0.4;
+  junkLinesLeft = LEFT_PASSWORDS.map(p =>
+    Math.random() < PURE_JUNK_CHANCE ? getJunkLine(12, '') : getJunkLine(12, p)
+  );
+  junkLinesRight = RIGHT_PASSWORDS.map(p =>
+    Math.random() < PURE_JUNK_CHANCE ? getJunkLine(12, '') : getJunkLine(12, p)
+  );
+
+  // 3) Pick correct password
+  const all = LEFT_PASSWORDS.concat(RIGHT_PASSWORDS);
+  correctPassword = all[(Math.random() * all.length) | 0];
+}
 
   function startGame() {
     Pip.removeAllListeners(VIDEO_STOPPED);
@@ -706,8 +968,8 @@ function PortaHack() {
     drawHeader();
     drawPasswordMessage();
     drawAttemptCounter();
-
     setupJunkLines();
+    scanSnippets(); 
     drawPasswordGrid(
       LEFT_PASSWORDS,
       PASSWORD_GRID_LEFT_XY,
@@ -720,7 +982,6 @@ function PortaHack() {
       0xa30,
       junkLinesRight,
     );
-
     drawBoundaries(SCREEN_XY);
     drawBoundaries(HEADER_XY);
     drawBoundaries(PASSWORD_MESSAGE_XY);
@@ -760,7 +1021,7 @@ function PortaHack() {
     });
 
     if (!DEBUG) {
-      Pip.videoStart('BOOT/BOOT.avi', { x: 40 });
+      Pip.videoStart('USER/STARTHACK.avi', { x: 40 });
       Pip.on(VIDEO_STOPPED, startGame);
     } else {
       startGame();
