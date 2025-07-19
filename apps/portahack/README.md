@@ -6,6 +6,7 @@
 
 - [@pip-4111](https://github.com/pip-4111)
 - [@CodyTolene](https://github.com/CodyTolene)
+- [@beaverboy-12](https://github.com/beaverboy-12)
 
 ### Description
 
