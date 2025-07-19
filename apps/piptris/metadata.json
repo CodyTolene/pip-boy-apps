@@ -12,6 +12,7 @@
     { "name": "USER/piptris.js", "url": "app.min.js" },
     { "name": "USER/piptris.json", "url": "piptris.json" },
     { "name": "USER/gear.json", "url": "gear.json" },
+    { "name": "USER/nuke.json", "url": "nuke.json" },
     { "name": "USER/piptris.wav", "url": "piptris.wav" }
   ]
 }
