@@ -1331,7 +1331,9 @@ function Piptris() {
         BLOCK_START_SPEED - difficultyLevel * SPEED_STEP,
         MIN_DROP_SPEED,
       );
-      console.log('Level up! New speed:', blockDropSpeed, 'ms');
+      if (DEBUG) {
+        console.log('Level up! New speed:', blockDropSpeed, 'ms');
+      }
     }
   }
 

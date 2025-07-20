@@ -1,6 +1,9 @@
 2.5.0
 https://github.com/CodyTolene/pip-boy-apps/pull/
-- Add a new block type: "NUKE" that clears a 5x5 area when dropped.
+- Add a new block type, "NUKE":
+  - Clears a 5x5 area in the playfield where dropped.
+  - Each block cleared by the nuke gives the player 10 points.
+  - Gravity is applied to the entire playfield, all blocks fall down.
 - Reduce the size of the score displays on the start and game over screens.
 
 2.4.0
