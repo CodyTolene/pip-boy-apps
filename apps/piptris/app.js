@@ -38,7 +38,8 @@ function Piptris() {
   let score = 0;
   let useHollowBlocks = false;
 
-  // Nuke piece
+  // Nuke
+  const NUKE_POINTS_PER_BLOCK = 10;
   const NUKE_RADIUS = 2; // 5x5 area
   let nukeInProgress = false;
   let nukeWarningActive = false;
@@ -345,7 +346,7 @@ function Piptris() {
     const statsLineHeight = 18;
 
     g.setColor(COLOR_THEME);
-    g.setFont('6x8', 2);
+    g.setFont('6x8');
     g.drawString('Score: ' + score, centerX, statsYStart);
     g.drawString(
       'Level: ' + difficultyLevel,
@@ -372,6 +373,7 @@ function Piptris() {
     inputInterval = setInterval(() => {
       if (BTN_PLAY.read()) {
         clearInterval(inputInterval);
+        inputInterval = null;
         startGame();
       }
     }, 100);
@@ -511,7 +513,7 @@ function Piptris() {
 
   function drawIncomingNuke() {
     const startX = PLAY_AREA.x2 + 65;
-    const startY = PLAY_AREA.y1 + 130;
+    const startY = PLAY_AREA.y1 + 100;
     const textLineHeight = 18;
 
     if (!nukeWarningActive) {
@@ -842,7 +844,7 @@ function Piptris() {
 
     if (highScore > 0) {
       g.setColor(COLOR_THEME_DARK);
-      g.setFont('6x8', 2);
+      g.setFont('6x8');
       g.drawString('High Score: ' + highScore, centerX, centerY + 35);
     }
 
@@ -917,9 +919,17 @@ function Piptris() {
     );
   }
 
-  function getRandomPiece() {
-    let picked = Math.floor(Math.random() * SHAPES.length);
-    let shapeData = SHAPES[picked];
+  function getRandomPiece(allowNuke) {
+    if (typeof allowNuke === 'undefined') {
+      allowNuke = true;
+    }
+
+    let shapeData;
+    while (true) {
+      let picked = Math.floor(Math.random() * SHAPES.length);
+      shapeData = SHAPES[picked];
+      if (!(!allowNuke && shapeData[0][0] === 2)) break;
+    }
     let offset = Math.floor((PLAY_AREA_WIDTH - shapeData[0].length) / 2);
     return { shape: shapeData, x: offset, y: 0 };
   }
@@ -1092,6 +1102,25 @@ function Piptris() {
     centerX = Math.max(0, Math.min(centerX, PLAY_AREA_WIDTH - 1));
     centerY = Math.max(0, Math.min(centerY, PLAY_AREA_HEIGHT - 1));
 
+    // Blast area
+    let blastArea = {
+      x1: PLAY_AREA_X + (centerX - NUKE_RADIUS) * blockSize + 1,
+      y1: PLAY_AREA_Y + (centerY - NUKE_RADIUS) * blockSize + 1,
+      x2: PLAY_AREA_X + (centerX + NUKE_RADIUS + 1) * blockSize - 2,
+      y2: PLAY_AREA_Y + (centerY + NUKE_RADIUS + 1) * blockSize - 2,
+    };
+    // Keep within play area
+    blastArea.x1 = Math.max(blastArea.x1, PLAY_AREA.x1 + 1);
+    blastArea.y1 = Math.max(blastArea.y1, PLAY_AREA.y1 + 1);
+    blastArea.x2 = Math.min(blastArea.x2, PLAY_AREA.x2 - 1);
+    blastArea.y2 = Math.min(blastArea.y2, PLAY_AREA.y2 - 1);
+
+    // Draw blast radius
+    g.setColor(COLOR_RED);
+    g.drawRect(blastArea);
+
+    let blocksDestroyed = 0;
+
     for (let y = -NUKE_RADIUS; y <= NUKE_RADIUS; y++) {
       for (let x = -NUKE_RADIUS; x <= NUKE_RADIUS; x++) {
         let fx = centerX + x;
@@ -1101,13 +1130,33 @@ function Piptris() {
           fx >= 0 &&
           fx < PLAY_AREA_WIDTH &&
           fy >= 0 &&
-          fy < PLAY_AREA_HEIGHT
+          fy < PLAY_AREA_HEIGHT &&
+          PLAY_AREA_BLOCKS[fy * PLAY_AREA_WIDTH + fx]
         ) {
           PLAY_AREA_BLOCKS[fy * PLAY_AREA_WIDTH + fx] = 0;
           eraseBlock(fx, fy);
+          blocksDestroyed++;
         }
       }
     }
+
+    let nukePoints = blocksDestroyed * NUKE_POINTS_PER_BLOCK;
+    score += nukePoints;
+    drawScore();
+
+    if (DEBUG) {
+      console.log(
+        'Nuke destroyed ' +
+          blocksDestroyed +
+          ' blocks for ' +
+          nukePoints +
+          ' pts',
+      );
+    }
+
+    // Clear blast radius
+    g.setColor(COLOR_BLACK);
+    g.fillRect(blastArea);
 
     applyGravity();
     nukeInProgress = false;
@@ -1219,8 +1268,14 @@ function Piptris() {
   }
 
   function startGame() {
-    clearInterval(inputInterval);
-    clearInterval(mainLoopInterval);
+    if (inputInterval) {
+      clearInterval(inputInterval);
+      inputInterval = null;
+    }
+    if (mainLoopInterval) {
+      clearInterval(mainLoopInterval);
+      mainLoopInterval = null;
+    }
     removeListeners();
     playMusic();
 
@@ -1241,7 +1296,7 @@ function Piptris() {
       MIN_DROP_SPEED,
     );
     currentInterval = blockDropSpeed;
-    blockNext = getRandomPiece();
+    blockNext = getRandomPiece(false);
 
     clearGameArea();
     resetField();
@@ -1294,6 +1349,7 @@ function Piptris() {
     inputInterval = setInterval(() => {
       if (BTN_PLAY.read()) {
         clearInterval(inputInterval);
+        inputInterval = null;
         Pip.removeListener(KNOB_LEFT, togglePreviewStyle);
         Pip.removeListener(KNOB_RIGHT, togglePreviewStyle);
         Pip.removeAllListeners(BTN_TOP);
@@ -1305,7 +1361,7 @@ function Piptris() {
     setWatch(() => handlePowerButton(), BTN_POWER, {
       debounce: 50,
       edge: 'rising',
-      repeat: !0,
+      repeat: true,
     });
   };
 
