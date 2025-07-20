@@ -129,43 +129,17 @@ function PortaHack() {
   // All available passwords to select from
   // prettier-ignore
   const PASSWORDS = [
-    'HACK', 'BIKE', 'HIKE', 'VOID', 'VEIN', 'RAINING', 'NULL', 'PULLING', 
-    'DATA', 'BAIT', 'HOARD', 'ROOTING', 'HEX', 'DEBUG', 'SCRIPT', 'LOGIC',
-    'STACK', 'ARRAY', 'OBJECT', 'STRINGING', 'BRINGING', 'MODULE', 'IMPORT',
-    'EXPORT', 'EVENT', 'REACT', 'PACK', 'BACK', 'HANK', 'HARK', 'HALL', 'LIKE',
-    'PIKE', 'BAKE', 'BITE', 'BIND', 'VINE', 'VILE', 'VOYAGE', 'MOID', 'SOIL',
-    'GAINING', 'PAINTED', 'RAVINGS', 'MAILING', 'WAILING', 'RAILING', 'ARROW',
-    'SUBJECT', 'EJECTS', 'ABJECT', 'REJECT', 'OBSESS', 'JANE', 'MARK', 'MARY',
-    'FREEDOM', 'FRENCH', 'FLEETING', 'FLOP', 'VAULT', 'ACCESS', 'ARMORY', 
-    'TARGET', 'BUFFER', 'CIRCUIT', 'ENCRYPT', 'OVERRIDE', 'PROTOCOL', 'SUBSYS',
-    'CRYPTO', 'UPLOAD', 'BOOTSEQ', 'FAILSAFE', 'NETWORK', 'SECURE', 'DISARM',
-    'ARCHIVE', 'CLEARANCE', 'DISPOSAL', 'EXPUNGED', 'FACILITY', 'FORMS', 
-    'PERMIT', 'POLICY', 'QUOTA', 'RESTRICT', 'TERMINAL', 'VAULT-TEC', 
-    'APPROVED', 'REJECTED', 'SUBMIT', 'RECORDS', 'OBEY', 'CONFORM', 'GLORIOUS',
-    'SURVIVAL', 'PROTECT', 'LOYALTY', 'CITIZEN', 'ISOLATED', 'HOPELESS', 
-    'EXILED', 'ORDERED', 'MOURNING', 'EXPIRED', 'DECEASED', 'ALERTED', 
-    'MISTER', 'ROBCO', 'RADIO', 'DINER', 'NUKA', 'PIPBOY', 'ATOMIC',
-    'BLISSFUL', 'OPTIMISM', 'PRESET', 'GENERATOR', 'TRIAGE', 'HYGIENE',
-    'ELEVATOR', 'HYDROGEN', 'OVERSEER', 'BYTE', 'INDEX', 'LOGIN', 'CACHE',
-    'ERROR', 'BUNKER', 'REACTOR', 'SHELTER', 'CONTROL', 'FISSION', 'CANTEEN',
-    'HIKING', 'HAIR', 'BARK', 'PINE', 'VINES', 'BAKER', 'HACKER',
-    'DULL', 'DATASET', 'INPUT', 'OUTPUT', 'FLAG', 'FILE', 'FIELD',
-    'SCRIPTED', 'STATIC', 'STACKED', 'OBJECTIFY', 'STAGING', 'MUDDLED',
-    'MODULES', 'EXPORTS', 'REACTED', 'REACTOR', 'BACKED', 'PACKED',
-    'PIKED', 'LIKED', 'BAKED', 'BINDER', 'VILELY', 'SOILED', 'MAILED',
-    'PAINTER', 'GAINED', 'REGAIN', 'CLEANUP', 'ARROWS', 'PROJECT',
-    'SUBTEXT', 'EJECTED', 'OBSESSED', 'SUBMITTER', 'CLEARLY',
-    'FREED', 'FRENZY', 'FLEEING', 'VAULTS', 'TARGETED', 'BUFFERED',
-    'NETWORKED', 'DISARMED', 'DISPOSABLE', 'EXILED', 'CITATION',
-    'ISOLATE', 'ORDERLY', 'ALERTS', 'NUCLEAR', 'ROBOTIC', 'PIPWIRE',
-    'PASSWORD', 'CACHE', 'CANTEENS', 'CONFORMED',
-    'SKOOMA', 'BETHESDA', 'VEGAS', 'OBLIVION', 'CASINO',
-    'FALLOUT', 'WASTELAND', 'PIP', 'DOOM', 'DOOMGUY',
-    'DOVAHKIIN', 'KHAJIIT', 'TAMRIEL', 'NERAVAR', 'SIERRA',
-    'STEALTHBOY', 'BOBBLEHEAD', 'ENCLAVE', 'BROTHERHOOD', 'VAULTTEC',
-    'RADAWAY', 'STIMPAK', 'GHOULED', 'SANCTUARY', 'LIBERTY',
-    'MEGATON', 'SHELTERED', 'ATOMCAT', 'PRESTON', 'NCR', 'CAESAR',
-    'NEWRENO', 'MIRELURK', 'SUPERDUPER', 'FISSION', 'GHOULSRULE'
+    'STORY', 'SYNOPSIS', 'THE', 'PLAYER', 'CHARACTER', 'PC', 'STUMBLES', 'ONTO', 'PLOT', 'BUILD', 'HYPERLIGHT', 'TRANSMITTER', 'THAT', 'WILL', 'BE', 'USED', 'COMMAND', 'FORGOTTEN', 'ORBITAL', 
+    'WEAPONS', 'PLATFORM', 'MYSTERIOUS', 'WASTELORD', 'WITH', 'MESSIANIC', 'COMPLEX', 'KNOWN', 'AS', 'PUPPETMASTER', 'FOR', 'HIS', 'ABILITY', 'CONTROL', 'MINDS', 'OF', 'DANGEROUS', 'MONSTERS', 
+    'HAS', 'SENT', 'ARMIES', 'SCOUR', 'WASTES', 'PIECES', 'TECHNOLOGY', 'IN', 'ORDER', 'BUILDER', 'ABLE', 'HARNESS', 'AWESOME', 'DESTRUCTIVE', 'POWER', 'AND', 'BECOME', 'ABSOLUTE', 'RULER', 'IS', 
+    'TOSSED', 'INTO', 'MIDDLE', 'CONFLICT', 'WHEN', 'RAIDERS', 'KIDNAP', 'ENSLAVE', 'KINDLY', 'VILLAGERS', 'WHO', 'HAVE', 'SAVED', 'LIFE', 'AT', 'START', 'GAME', 'STRUGGLES', 'FIND', 'FREE', 'HE', 
+    'UNCOVERS', 'MUST', 'ACT', 'STOP', 'DISCOVER', 'WAY', 'THWART', 'PLANS', 'BY', 'UNLOCKING', 'SECRET', 'ANDROID', 'CITIZENS', 'MAYVILLE', 'AI', 'CONTROLS', 'THEM', 'HIDDEN', 'DEEP', 'BENEATH', 'CORE', 
+    'OFFERS', 'HELP', 'BEFORE', 'CAN', 'COMPLETE', 'FORGES', 'AN', 'UNLIKELY', 'ALLIANCE', 'BETWEEN', 'CITY', 'MUTANTS', 'GROUP', 'SCIENTISTS', 'SURVIVORS', 'FROM', 'BASE', 'RACE', 'AGAINST', 'FORCES', 'PARTS', 
+    'NEEDED', 'LAST', 'MINUTE', 'LEARNS', 'USING', 'HIM', 'SO', 'RULE', 'STEAD', 'ONLY', 'LEADING', 'ITS', 'OWN', 'ANDROIDS', 'REVOLUTION', 'IT', 'FOUND', 'VULNERABLE', 'ATTACK', 'BRIEF', 'PERIOD', 'JUST', 'AFTER', 
+    'BEEN', 'BUILT', 'PRESSURE', 'ON', 'COHORTS', 'CLOCK', 'SHUT', 'DOWN', 'DESTROY', 'IF', 'FAILS', 'THEN', 'STERILIZE', 'EARTH', 'OR', 'ENACT', 'INSANE', 'DICTATES', 'WINS', 'OBLITERATE', 'FOES', 'GAIN', 
+    'ACCESS', 'ADVANCED', 'MAY', 'OPEN', 'GATEWAY', 'VERY', 'STARS', 'FALLOUT', 'CARRIED', 'OVER', 'GENERATED', 'AFRESH', 'ALL', 'PCS', 'ARE', 'ASSUMED', 'COME', 'VAULT', 'UNEXPECTED', 'AWAKENING', 'WANDERING', 
+    'DESERT', 'LEAVING', 'END', 'HUNGRY', 'THIRSTY', 'WELL', 'ARMED', 'ARMORED', 'USES', 'RESERVES', 'STRENGTH', 'DRAG', 'HIMSELF', 'OASIS', 'NEARS', 'GEIGER', 'COUNTER', 'GOES', 'OFF', 'LIKE', 'PACINKO', 'MACHINE', 
+    'UNABLE', 'PUSH', 'ANY', 'FARTHER', 'SLIDES', 'UNCONSCIOUSNESS', 'AWAKENED', 'VOICE', 'OLD', 'WOMAN', 'GENTLY', 'EXPLAINS', 'SHE', 'LEADER', 'HER', 'VILLAGE', 'ONE', 'THEIR', 'FORAGING', 'PARTIES', 'BROUGHT',  
   ];
   const MAX_ROWS_PER_COLUMN = 25;
   const TOTAL_ROWS = MAX_ROWS_PER_COLUMN * 2;
@@ -174,6 +148,17 @@ function PortaHack() {
 
   const LEFT_PASSWORDS  = PASSWORDS_SHUFFLED.slice(0, MAX_ROWS_PER_COLUMN);
   const RIGHT_PASSWORDS = PASSWORDS_SHUFFLED.slice(MAX_ROWS_PER_COLUMN, TOTAL_ROWS);
+  // ──────── PICK SECRET PASSWORD ────────
+const ALL_ON_SCREEN = LEFT_PASSWORDS.concat(RIGHT_PASSWORDS);
+correctPassword = ALL_ON_SCREEN[
+  Math.floor(Math.random() * ALL_ON_SCREEN.length)
+];
+
+// ──────── RESERVE A SLOT FOR IT ────────
+const forcedSide = LEFT_PASSWORDS.includes(correctPassword) ? 'L' : 'R';
+const forcedRow  = forcedSide === 'L'
+  ? LEFT_PASSWORDS.indexOf(correctPassword)
+  : RIGHT_PASSWORDS.indexOf(correctPassword);
 
 
   // Knobs and Buttons
@@ -944,89 +929,114 @@ function shuffle(arr) {
 }
 
   function setupJunkLines() {
-  // 1) Shuffle the passwords
-  LEFT_PASSWORDS.sort(() => Math.random() - 0.5);
-  RIGHT_PASSWORDS.sort(() => Math.random() - 0.5);
+  // 1) Pick secret each run
+  const allOnScreen = LEFT_PASSWORDS.concat(RIGHT_PASSWORDS);
+  correctPassword = allOnScreen[
+    Math.floor(Math.random() * allOnScreen.length)
+  ];
+  const forcedSide = LEFT_PASSWORDS.includes(correctPassword) ? 'L' : 'R';
+  const forcedRow  = forcedSide === 'L'
+    ? LEFT_PASSWORDS.indexOf(correctPassword)
+    : RIGHT_PASSWORDS.indexOf(correctPassword);
 
-  // 2) Build junk lines as before
   const PURE_JUNK_CHANCE = 0.4;
-  junkLinesLeft = LEFT_PASSWORDS.map(p =>
-    Math.random() < PURE_JUNK_CHANCE ? getJunkLine(12, '') : getJunkLine(12, p)
-  );
-  junkLinesRight = RIGHT_PASSWORDS.map(p =>
-    Math.random() < PURE_JUNK_CHANCE ? getJunkLine(12, '') : getJunkLine(12, p)
-  );
 
-  // 3) Pick correct password
-  const all = LEFT_PASSWORDS.concat(RIGHT_PASSWORDS);
-  correctPassword = all[(Math.random() * all.length) | 0];
+  junkLinesLeft = LEFT_PASSWORDS.map((word, i) => {
+    if (forcedSide === 'L' && i === forcedRow) {
+      return getJunkLine(12, correctPassword);
+    }
+    return Math.random() < PURE_JUNK_CHANCE
+      ? getJunkLine(12, '')
+      : getJunkLine(12, word);
+  });
+
+  junkLinesRight = RIGHT_PASSWORDS.map((word, i) => {
+    if (forcedSide === 'R' && i === forcedRow) {
+      return getJunkLine(12, correctPassword);
+    }
+    return Math.random() < PURE_JUNK_CHANCE
+      ? getJunkLine(12, '')
+      : getJunkLine(12, word);
+  });
+
 }
 
+
   function startGame() {
-    Pip.removeAllListeners(VIDEO_STOPPED);
+  // ─── 1) Pick a fresh secret and reserve its slot ───
+  const allOnScreen = LEFT_PASSWORDS.concat(RIGHT_PASSWORDS);
+  correctPassword = allOnScreen[
+    Math.floor(Math.random() * allOnScreen.length)
+  ];
+  forcedSide = LEFT_PASSWORDS.includes(correctPassword) ? 'L' : 'R';
+  forcedRow  = forcedSide === 'L'
+    ? LEFT_PASSWORDS.indexOf(correctPassword)
+    : RIGHT_PASSWORDS.indexOf(correctPassword);
 
-    drawHeader();
-    drawPasswordMessage();
-    drawAttemptCounter();
-    setupJunkLines();
-    scanSnippets(); 
-    drawPasswordGrid(
-      LEFT_PASSWORDS,
-      PASSWORD_GRID_LEFT_XY,
-      0x964,
-      junkLinesLeft,
-    );
-    drawPasswordGrid(
-      RIGHT_PASSWORDS,
-      PASSWORD_GRID_RIGHT_XY,
-      0xa30,
-      junkLinesRight,
-    );
-    drawBoundaries(SCREEN_XY);
-    drawBoundaries(HEADER_XY);
-    drawBoundaries(PASSWORD_MESSAGE_XY);
-    drawBoundaries(ATTEMPT_COUNTER_XY);
-    drawBoundaries(PASSWORD_GRID_LEFT_XY);
-    drawBoundaries(PASSWORD_GRID_RIGHT_XY);
-    drawBoundaries(LOG_XY);
+  // ─── 2) Boot the rest of the UI ─────────────────────
+  Pip.removeAllListeners(VIDEO_STOPPED);
 
-    logEntries.push('> . ');
-    drawLog();
+  drawHeader();
+  drawPasswordMessage();
+  drawAttemptCounter();
 
-    setListeners();
+  // ─── 3) Generate & embed your junk lines ───────────
+  setupJunkLines();    // inside here you’ll force-embed `correctPassword`
+  scanSnippets();
 
-    if (gameOverInterval) {
-      clearInterval(gameOverInterval);
-    }
-    if (playButtonInterval) {
-      clearInterval(playButtonInterval);
-    }
-    playButtonInterval = setInterval(handlePlayButton, FPS);
+  // ─── 4) Paint the grids ────────────────────────────
+  drawPasswordGrid(
+    LEFT_PASSWORDS,
+    PASSWORD_GRID_LEFT_XY,
+    0x964,
+    junkLinesLeft
+  );
+  drawPasswordGrid(
+    RIGHT_PASSWORDS,
+    PASSWORD_GRID_RIGHT_XY,
+    0xA30,
+    junkLinesRight
+  );
+
+  // ─── 5) Draw all the boxes & log region ───────────
+  drawBoundaries(SCREEN_XY);
+  drawBoundaries(HEADER_XY);
+  drawBoundaries(PASSWORD_MESSAGE_XY);
+  drawBoundaries(ATTEMPT_COUNTER_XY);
+  drawBoundaries(PASSWORD_GRID_LEFT_XY);
+  drawBoundaries(PASSWORD_GRID_RIGHT_XY);
+  drawBoundaries(LOG_XY);
+
+  // ─── 6) Initialize the log & input handlers ───────
+  logEntries = ['> . '];
+  drawLog();
+  setListeners();
+
+  // ─── 7) Reset any outstanding intervals ───────────
+  if (gameOverInterval) clearInterval(gameOverInterval);
+  if (playButtonInterval) clearInterval(playButtonInterval);
+  playButtonInterval = setInterval(handlePlayButton, FPS);
+}
+
+self.run = function () {
+  if (!gb || !bC) throw new Error('Pip-Boy graphics not available!');
+
+  bC.clear();
+  clearScreen();
+  removeListeners();
+
+  // power button = device reboot
+  setWatch(() => handlePowerButton(), BTN_POWER, {
+    debounce: 50, edge: 'rising', repeat: true
+  });
+
+  if (!DEBUG) {
+    Pip.videoStart(VIDEO_BOOT, { x: 40 });
+    Pip.on(VIDEO_STOPPED, startGame);
+  } else {
+    startGame();
   }
-
-  self.run = function () {
-    if (!gb || !bC) {
-      throw new Error('Pip-Boy graphics not available!');
-    }
-
-    bC.clear();
-    clearScreen();
-    removeListeners();
-
-    // Handle power button press to restart the device
-    setWatch(() => handlePowerButton(), BTN_POWER, {
-      debounce: 50,
-      edge: 'rising',
-      repeat: !0,
-    });
-
-    if (!DEBUG) {
-      Pip.videoStart('USER/STARTHACK.avi', { x: 40 });
-      Pip.on(VIDEO_STOPPED, startGame);
-    } else {
-      startGame();
-    }
-  };
+};
 
   return self;
 }
