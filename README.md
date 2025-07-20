@@ -132,6 +132,10 @@ setFontAlign(x, y, rotation);
 > ![info][img-info] Official Software Reference:
 > https://www.espruino.com/Reference
 
+## Convert an image
+
+Upload a bmp to https://www.espruino.com/Image%20Converter, copy result.
+
 ## Build and run locally
 
 To build and run this application locally using Docker:
