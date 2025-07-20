@@ -1,0 +1,158 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../css/spectre.min.css" />
+    <link rel="stylesheet" href="../../css/main.css" />
+    <script src="../../core/lib/customize.js"></script>
+    <style>
+      #log {
+        border: 1px solid #ccc;
+        padding: 10px;
+        max-height: 300px;
+        overflow-y: auto;
+        font-family: monospace;
+      }
+      #log p {
+        margin: 0;
+        padding: 2px 0;
+      }
+      button {
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="log"></div>
+    <button id="installBtn" class="btn btn-primary" disabled>Install</button>
+
+    <script>
+      const logEl = document.getElementById('log');
+      const installBtn = document.getElementById('installBtn');
+
+      function addLog(msg, isError = false) {
+        const p = document.createElement('p');
+        p.textContent = msg;
+        if (isError) p.style.color = 'red';
+        logEl.appendChild(p);
+        logEl.scrollTop = logEl.scrollHeight;
+        console.log(msg);
+      }
+
+      function arrayBufferToString(buffer) {
+        return String.fromCharCode(...new Uint8Array(buffer));
+      }
+
+      async function createNestedDirs(path) {
+        const parts = path.split('/');
+        let current = '';
+        for (const part of parts.slice(0, -1)) {
+          current += (current ? '/' : '') + part;
+          await new Promise((resolve) => {
+            const js = `
+              (function(){
+                var fs=require("fs");
+                try {
+                  fs.readdir(${JSON.stringify(current)});
+                  return JSON.stringify({ ok:true, created:false });
+                } catch(e) {
+                  fs.mkdir(${JSON.stringify(current)});
+                  return JSON.stringify({ ok:true, created:true });
+                }
+              })()
+            `;
+            Puck.eval(js, (result) => {
+              try {
+                const response = JSON.parse(result);
+                if (response.ok) {
+                  addLog(`Directory ${current}/ ready on SD card.`);
+                } else {
+                  addLog(`Failed to prepare directory ${current}/`, true);
+                }
+              } catch (e) {
+                addLog(
+                  `Error preparing directory ${current}/: ${result}`,
+                  true,
+                );
+              }
+              resolve();
+            });
+          });
+        }
+      }
+
+      installBtn.addEventListener('click', async () => {
+        installBtn.disabled = true;
+        addLog('Starting installation...');
+
+        try {
+          const response = await fetch('metadata.json');
+          if (!response.ok) {
+            throw new Error('Failed to fetch metadata.json');
+          }
+          const metadata = await response.json();
+
+          const appFiles = metadata.storage.map((file) => ({
+            name: file.name,
+            url: file.url,
+          }));
+
+          // Pre-create all nested directories
+          for (const file of appFiles) {
+            await createNestedDirs(file.name);
+          }
+
+          const uploadedFiles = [];
+
+          for (const file of appFiles) {
+            addLog(`Fetching ${file.url}...`);
+            const res = await fetch(file.url);
+            if (!res.ok) {
+              addLog(`Failed to fetch ${file.url}`, true);
+              continue;
+            }
+
+            const buffer = await res.arrayBuffer();
+            let content;
+
+            if (file.name.match(/\.(js|json)$/)) {
+              // Text files
+              content = new TextDecoder('utf-8').decode(buffer);
+            } else {
+              // Binary files (raw binary string)
+              content = arrayBufferToString(buffer);
+            }
+
+            uploadedFiles.push({
+              name: file.name,
+              content: content,
+              evaluate: false,
+              pretokenise: file.name.endsWith('.js'),
+            });
+          }
+
+          addLog('Uploading files to Pip-Boy...');
+          sendCustomizedApp({
+            id: metadata.id,
+            name: metadata.name,
+            version: metadata.version,
+            description: metadata.description,
+            icon: metadata.icon,
+            storage: uploadedFiles,
+          });
+        } catch (err) {
+          console.error('Installation error:', err);
+          addLog('Installation error: ' + err.message, true);
+        }
+      });
+
+      function onInit(device) {
+        if (!device || !device.id) {
+          addLog('No device connected!', true);
+          installBtn.disabled = true;
+          return;
+        }
+        addLog('Connected. Ready to install!');
+        installBtn.disabled = false;
+      }
+    </script>
+  </body>
+</html>
