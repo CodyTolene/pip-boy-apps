@@ -63,6 +63,7 @@ function Piptris() {
   // Colors
   const COLOR_BLACK = '#000000';
   const COLOR_RED = '#FF0000';
+  const COLOR_RED_DARK = g.blendColor(COLOR_BLACK, COLOR_RED, 0.5);
   const COLOR_THEME = g.theme.fg;
   const COLOR_THEME_DARK = g.blendColor(COLOR_BLACK, COLOR_THEME, 0.5);
 
@@ -367,7 +368,9 @@ function Piptris() {
   }
 
   function drawGhostPiece(erase) {
-    if (!showGhostPiece || !blockCurrent || isGameOver) return;
+    if (!showGhostPiece || !blockCurrent || isGameOver) {
+      return;
+    }
 
     let ghost =
       erase && lastGhost
@@ -393,16 +396,34 @@ function Piptris() {
     for (let y = 0; y < ghost.shape.length; y++) {
       for (let x = 0; x < ghost.shape[y].length; x++) {
         if (ghost.shape[y][x]) {
-          const block = [
-            PLAY_AREA_X + (ghost.x + x) * blockSize,
-            PLAY_AREA_Y + (ghost.y + y) * blockSize,
-            PLAY_AREA_X + (ghost.x + x + 1) * blockSize - 1,
-            PLAY_AREA_Y + (ghost.y + y + 1) * blockSize - 1,
-          ];
-          if (useHollowBlocks) {
-            g.drawRect(block[0], block[1], block[2], block[3]);
+          const blockValue = ghost.shape[y][x];
+          const blockX = PLAY_AREA_X + (ghost.x + x) * blockSize;
+          const blockY = PLAY_AREA_Y + (ghost.y + y) * blockSize;
+
+          if (!erase && blockValue === 2 && nukeImage) {
+            // Nuke ghost block
+            g.setColor(COLOR_RED_DARK);
+            g.drawImage(nukeImage, blockX, blockY, {
+              scale: blockSize / nukeImage.width,
+              transparency: 0.5,
+            });
           } else {
-            g.fillRect(block[0], block[1], block[2], block[3]);
+            // Default ghost block
+            if (useHollowBlocks) {
+              g.drawRect(
+                blockX,
+                blockY,
+                blockX + blockSize - 1,
+                blockY + blockSize - 1,
+              );
+            } else {
+              g.fillRect(
+                blockX,
+                blockY,
+                blockX + blockSize - 1,
+                blockY + blockSize - 1,
+              );
+            }
           }
         }
       }
