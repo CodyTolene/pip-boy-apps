@@ -10,7 +10,7 @@ function Piptris() {
   // Core
   const GAME_NAME = 'PIPTRIS';
   const GAME_VERSION = '2.6.0';
-  const DEBUG = false;
+  const DEBUG = true;
 
   // File paths
   const CONFIG_PATH = 'USER/piptris.json';
@@ -37,7 +37,7 @@ function Piptris() {
   let useHollowBlocks = false;
 
   // Nuke piece
-  const NUKE_RADIUS = 2;
+  const NUKE_RADIUS = 2; // 5x5 area
   let nukeInProgress = false;
 
   // Ghost piece
@@ -580,7 +580,6 @@ function Piptris() {
     g.setColor(COLOR_THEME_DARK);
     g.drawString('NEXT', startX, startY);
 
-    g.setColor(COLOR_THEME);
     const piece = blockNext.shape;
     const piecePixelWidth = piece[0].length * blockSize;
     const offsetX = startX - piecePixelWidth / 2 - 2;
@@ -588,16 +587,33 @@ function Piptris() {
     for (let y = 0; y < piece.length; y++) {
       for (let x = 0; x < piece[y].length; x++) {
         if (piece[y][x]) {
-          const block = [
-            offsetX + x * blockSize,
-            startY + 20 + y * blockSize,
-            offsetX + (x + 1) * blockSize - 1,
-            startY + 20 + (y + 1) * blockSize - 1,
-          ];
-          if (useHollowBlocks) {
-            g.drawRect(block[0], block[1], block[2], block[3]);
+          const blockValue = piece[y][x];
+          const blockX = offsetX + x * blockSize;
+          const blockY = startY + 20 + y * blockSize;
+
+          if (blockValue === 2 && nukeImage) {
+            // Nuke
+            g.setColor(COLOR_RED);
+            g.drawImage(nukeImage, blockX, blockY, {
+              scale: blockSize / nukeImage.width,
+            });
           } else {
-            g.fillRect(block[0], block[1], block[2], block[3]);
+            g.setColor(COLOR_THEME);
+            if (useHollowBlocks) {
+              g.drawRect(
+                blockX,
+                blockY,
+                blockX + blockSize - 1,
+                blockY + blockSize - 1,
+              );
+            } else {
+              g.fillRect(
+                blockX,
+                blockY,
+                blockX + blockSize - 1,
+                blockY + blockSize - 1,
+              );
+            }
           }
         }
       }
@@ -752,15 +768,6 @@ function Piptris() {
     if (!blockCurrent || isGameOver) {
       return;
     }
-
-    // if (E.getFreeMem && E.getFreeMem() < 500) {
-    //   if (E.defrag) {
-    //     E.defrag();
-    //   }
-    //   if (global.gc) {
-    //     global.gc();
-    //   }
-    // }
 
     drawCurrentPiece(true);
     blockCurrent.y++;
@@ -1157,7 +1164,12 @@ function Piptris() {
     drawGameName();
 
     setListeners();
-    mainLoopInterval = setInterval(dropPiece, blockDropSpeed);
+    mainLoopInterval = setInterval(function mainLoop() {
+      if (DEBUG) {
+        console.log('Mem: ' + process.memory().usage + '/5000');
+      }
+      dropPiece();
+    }, blockDropSpeed);
   }
 
   function toggleGhostPiece() {

@@ -1,6 +1,6 @@
 2.5.0
 https://github.com/CodyTolene/pip-boy-apps/pull/
-- Add a new block type: "NUKE" piece that clears a 3x3 area when placed.
+- Add a new block type: "NUKE" that clears a 5x5 area when dropped.
 - Reduce the size of the score displays on the start and game over screens.
 
 2.4.0
