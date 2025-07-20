@@ -9,17 +9,19 @@ function Piptris() {
 
   // Core
   const GAME_NAME = 'PIPTRIS';
-  const GAME_VERSION = '2.6.0';
-  const DEBUG = true;
+  const GAME_VERSION = '2.5.0';
+  const DEBUG = false;
 
   // File paths
   const CONFIG_PATH = 'USER/piptris.json';
-  const GEAR_IMAGE_PATH = 'USER/gear.json';
-  const NUKE_IMAGE_PATH = 'USER/nuke.json';
 
   // Images
+  const GEAR_IMAGE_PATH = 'USER/gear.json';
+  const NUKE_IMAGE_PATH = 'USER/nuke.json';
+  const RADIOACTIVE_IMAGE_PATH = 'USER/radioactive.json';
   let gearImage = null;
   let nukeImage = null;
+  let radioactiveImage = null;
 
   // Game State
   const BLOCK_START_SPEED = 800;
@@ -39,6 +41,7 @@ function Piptris() {
   // Nuke piece
   const NUKE_RADIUS = 2; // 5x5 area
   let nukeInProgress = false;
+  let nukeWarningActive = false;
 
   // Ghost piece
   let showGhostPiece = false;
@@ -243,8 +246,12 @@ function Piptris() {
     const y1 = PLAY_AREA_Y + y * blockSize;
 
     if (blockValue === 2) {
-      g.setColor(COLOR_RED);
-      g.drawImage(nukeImage, x1, y1);
+      try {
+        g.setColor(COLOR_RED);
+        g.drawImage(nukeImage, x1, y1);
+      } catch (e) {
+        console.log('Failed to load nuke image:', e);
+      }
     } else {
       g.setColor(COLOR_THEME);
       if (useHollowBlocks) {
@@ -294,6 +301,7 @@ function Piptris() {
     drawLevel();
     drawLinesCleared();
     drawNextPiece();
+    drawIncomingNuke();
   }
 
   function drawGameName() {
@@ -326,9 +334,11 @@ function Piptris() {
     g.setFont('6x8', 2);
     g.drawString('Press    to RESTART', centerX, centerY - 60);
 
-    if (gearImage) {
+    try {
       g.setColor(COLOR_THEME);
       g.drawImage(gearImage, centerX - 45, centerY - 75);
+    } catch (e) {
+      console.log('Failed to load gear image:', e);
     }
 
     const statsYStart = centerY - 20;
@@ -400,13 +410,17 @@ function Piptris() {
           const blockX = PLAY_AREA_X + (ghost.x + x) * blockSize;
           const blockY = PLAY_AREA_Y + (ghost.y + y) * blockSize;
 
-          if (!erase && blockValue === 2 && nukeImage) {
-            // Nuke ghost block
-            g.setColor(COLOR_RED_DARK);
-            g.drawImage(nukeImage, blockX, blockY, {
-              scale: blockSize / nukeImage.width,
-              transparency: 0.5,
-            });
+          if (!erase && blockValue === 2) {
+            try {
+              // Nuke ghost block
+              g.setColor(COLOR_RED_DARK);
+              g.drawImage(nukeImage, blockX, blockY, {
+                scale: blockSize / nukeImage.width,
+                transparency: 0.5,
+              });
+            } catch (e) {
+              console.log('Failed to load nuke ghost image:', e);
+            }
           } else {
             // Default ghost block
             if (useHollowBlocks) {
@@ -493,6 +507,52 @@ function Piptris() {
       downArrowX + downArrowSize,
       downArrowY - downArrowSize,
     ]);
+  }
+
+  function drawIncomingNuke() {
+    const startX = PLAY_AREA.x2 + 65;
+    const startY = PLAY_AREA.y1 + 130;
+    const textLineHeight = 18;
+
+    if (!nukeWarningActive) {
+      // Clear
+      const clearWidth = 100;
+      const clearHeight = textLineHeight * 2 + 50 + 10;
+
+      const clearXY = {
+        x1: startX - clearWidth / 2 - 5,
+        y1: startY - 10,
+        x2: startX + clearWidth / 2,
+        y2: startY + clearHeight,
+      };
+      if (DEBUG) {
+        drawBoundaries({
+          x1: clearXY.x1 - 1,
+          y1: clearXY.y1 - 1,
+          x2: clearXY.x2 + 1,
+          y2: clearXY.y2 + 1,
+        });
+      }
+
+      g.setColor(COLOR_BLACK);
+      g.fillRect(clearXY);
+      return;
+    }
+
+    g.setFont('6x8', 2);
+    g.setColor(COLOR_RED);
+    g.drawString('INCOMING', startX, startY);
+    g.drawString('NUKE!', startX, startY + textLineHeight);
+
+    try {
+      const imgSize = 50;
+      const imgX = startX - imgSize / 2;
+      const imgY = startY + textLineHeight * 2 + 5;
+      g.setColor(COLOR_RED_DARK);
+      g.drawImage(radioactiveImage, imgX, imgY);
+    } catch (e) {
+      console.log('Failed to load radioactive image:', e);
+    }
   }
 
   function drawLinesCleared() {
@@ -614,10 +674,14 @@ function Piptris() {
 
           if (blockValue === 2 && nukeImage) {
             // Nuke
-            g.setColor(COLOR_RED);
-            g.drawImage(nukeImage, blockX, blockY, {
-              scale: blockSize / nukeImage.width,
-            });
+            try {
+              g.setColor(COLOR_RED);
+              g.drawImage(nukeImage, blockX, blockY, {
+                scale: blockSize / nukeImage.width,
+              });
+            } catch (e) {
+              console.log('Failed to load nuke image:', e);
+            }
           } else {
             g.setColor(COLOR_THEME);
             if (useHollowBlocks) {
@@ -769,9 +833,11 @@ function Piptris() {
     g.setFont('6x8', 2);
     g.drawString('Press    to START', centerX, centerY - 15);
 
-    if (gearImage) {
+    try {
       g.setColor(COLOR_THEME);
       g.drawImage(gearImage, centerX - 34, centerY - 29);
+    } catch (e) {
+      console.log('Failed to load gear image:', e);
     }
 
     if (highScore > 0) {
@@ -816,7 +882,7 @@ function Piptris() {
     const desiredInterval = fastDrop ? 100 : blockDropSpeed;
     if (currentInterval !== desiredInterval) {
       clearInterval(mainLoopInterval);
-      mainLoopInterval = setInterval(dropPiece, desiredInterval);
+      mainLoopInterval = setInterval(mainLoop, desiredInterval);
       currentInterval = desiredInterval;
     }
   }
@@ -902,44 +968,45 @@ function Piptris() {
 
   function loadConfig() {
     try {
-      let json = fs.readFileSync(CONFIG_PATH);
-      let data = JSON.parse(json);
+      let file = fs.readFile(CONFIG_PATH);
+      if (!file) throw new Error('Config file missing');
+      let data = JSON.parse(file);
       highScore = data.highScore || 0;
     } catch (e) {
-      console.log('No piptris.json, using default high score.');
+      console.log('Error loading config:', e);
       highScore = 0;
       saveConfig();
     }
   }
 
   function loadGameImages() {
-    try {
-      let nukeStr = fs.readFileSync(NUKE_IMAGE_PATH);
-      let nukeJson = JSON.parse(nukeStr);
-      nukeImage = {
-        bpp: nukeJson.bpp,
-        buffer: atob(nukeJson.buffer),
-        height: nukeJson.height,
-        width: nukeJson.width,
-        transparent: nukeJson.transparent,
-      };
-    } catch (e) {
-      console.log('Failed to load nuke image:', e);
-    }
+    nukeImage = loadImage(NUKE_IMAGE_PATH);
+    gearImage = loadImage(GEAR_IMAGE_PATH);
+    radioactiveImage = loadImage(RADIOACTIVE_IMAGE_PATH);
+  }
 
+  function loadImage(path) {
     try {
-      let gearStr = fs.readFileSync(GEAR_IMAGE_PATH);
-      let gearJson = JSON.parse(gearStr);
-      gearImage = {
-        bpp: gearJson.bpp,
-        buffer: atob(gearJson.buffer),
-        height: gearJson.height,
-        width: gearJson.width,
-        transparent: gearJson.transparent,
+      let file = fs.readFileSync(path);
+      let data = JSON.parse(file);
+      return {
+        bpp: data.bpp,
+        buffer: atob(data.buffer),
+        height: data.height,
+        transparent: data.transparent,
+        width: data.width,
       };
     } catch (e) {
-      console.log('Failed to load gear image:', e);
+      console.log('Failed to load image:', path, e);
+      return null;
     }
+  }
+
+  function mainLoop() {
+    if (DEBUG) {
+      console.log('Mem: ' + process.memory().usage + '/5000');
+    }
+    dropPiece();
   }
 
   function merge(piece) {
@@ -1136,6 +1203,9 @@ function Piptris() {
 
     blockCurrent = blockNext;
     blockNext = getRandomPiece();
+
+    nukeWarningActive = blockNext.shape.some((row) => row.includes(2));
+
     drawField();
 
     if (collides(blockCurrent)) {
@@ -1185,12 +1255,7 @@ function Piptris() {
     drawGameName();
 
     setListeners();
-    mainLoopInterval = setInterval(function mainLoop() {
-      if (DEBUG) {
-        console.log('Mem: ' + process.memory().usage + '/5000');
-      }
-      dropPiece();
-    }, blockDropSpeed);
+    mainLoopInterval = setInterval(mainLoop, blockDropSpeed);
   }
 
   function toggleGhostPiece() {
@@ -1218,11 +1283,10 @@ function Piptris() {
   self.run = function () {
     bC.clear(); // Clear any previous screen
 
-    loadConfig();
     loadGameImages();
+    loadConfig();
 
     drawStartScreen();
-
     setupOptions();
 
     Pip.on(BTN_TOP, handleTopButton);
