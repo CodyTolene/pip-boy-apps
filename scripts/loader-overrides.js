@@ -87,3 +87,25 @@ window.uploadApp = async function (app, options) {
     console.error('Original uploadApp not found!');
   }
 };
+
+// Check if UART and endpoints exist
+if (UART && UART.endpoints) {
+  // Patch Web Serial endpoint globally
+  const wsEndpoint = UART.endpoints.find((ep) => ep.name === 'Web Serial');
+  if (wsEndpoint) {
+    const originalConnect = wsEndpoint.connect;
+
+    wsEndpoint.connect = function (connection, options) {
+      return originalConnect.call(this, connection, options).then((conn) => {
+        const originalWrite = conn.write;
+
+        // Patch the write method to handle retries
+        conn.write = function (data, callback, alreadyRetried) {
+          return originalWrite.call(this, data, callback, false);
+        };
+
+        return conn;
+      });
+    };
+  }
+}
