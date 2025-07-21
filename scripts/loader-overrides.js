@@ -1,37 +1,10 @@
 UART.ports = UART.ports.filter((e) => e.includes('Serial'));
 Const.CONNECTION_DEVICE = 'USB';
-
 const originalUploadApp = window.uploadApp || null;
 
-const connectBtn = document.getElementById('connectmydevice');
-const rebootBtn = document.getElementById('rebootdevice');
-
-// Watch for class changes on the Connect button
-const observer = new MutationObserver((mutations) => {
-  mutations.forEach((mutation) => {
-    if (mutation.attributeName === 'class') {
-      const isConnected = connectBtn.classList.contains('is-connected');
-      if (isConnected) {
-        rebootBtn.classList.remove('hidden'); // Show Reboot
-      } else {
-        rebootBtn.classList.add('hidden'); // Hide Reboot
-      }
-    }
-  });
-});
-
-observer.observe(connectBtn, { attributes: true });
-
-rebootBtn.addEventListener('click', () => {
-  console.log('[index.html] Sending reboot command...');
-  UART.write('\x10E.reboot()\n', (result) => {
-    console.log('[index.html] Reboot response:', result);
-  });
-});
-
-// Function to support app/game nested directories
+// Create all directories (including nested) for app/game files
 async function createNestedDirsForAppFiles(app) {
-  console.log('[index.html] Ensuring nested directories...');
+  console.log('[loader-overrides] Ensuring nested directories...');
   const files = app.storage || [];
   const folders = Array.from(
     new Set(
@@ -71,12 +44,12 @@ async function createNestedDirsForAppFiles(app) {
       });
     });
   }
-  console.log('[index.html] Nested directories ready.');
+  console.log('[loader-overrides] Nested directories ready.');
 }
 
-// Override uploadApp to insert folder creation before upload
+// Make sure nested directories exist on the device before uploading files
 window.uploadApp = async function (app, options) {
-  console.log('[index.html] Hooked `uploadApp`!');
+  console.log('[loader-overrides] Hooked `uploadApp`!');
 
   await createNestedDirsForAppFiles(app);
 
@@ -88,9 +61,8 @@ window.uploadApp = async function (app, options) {
   }
 };
 
-// Check if UART and endpoints exist
+// Patch the UART connection to make sure it handles retries correctly
 if (UART && UART.endpoints) {
-  // Patch Web Serial endpoint globally
   const wsEndpoint = UART.endpoints.find((ep) => ep.name === 'Web Serial');
   if (wsEndpoint) {
     const originalConnect = wsEndpoint.connect;
@@ -98,8 +70,6 @@ if (UART && UART.endpoints) {
     wsEndpoint.connect = function (connection, options) {
       return originalConnect.call(this, connection, options).then((conn) => {
         const originalWrite = conn.write;
-
-        // Patch the write method to handle retries
         conn.write = function (data, callback, alreadyRetried) {
           return originalWrite.call(this, data, callback, false);
         };
