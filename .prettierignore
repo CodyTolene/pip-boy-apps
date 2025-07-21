@@ -7,7 +7,11 @@
 !.vscode/
 !apps/
 !README.md
+!index.html
+!scripts/
+!css/
 
 # Re-ignore
 **/*.min.js
+**/*.min.css
 ChangeLog

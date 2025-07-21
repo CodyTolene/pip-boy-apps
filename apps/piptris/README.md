@@ -46,6 +46,12 @@ This game uses music from pixabay.com. This music uses a special license that
 allows for free use in personal and commercial projects. More information about
 this license can be found here: https://pixabay.com/service/license-summary/
 
-- [`piptris.wav`](https://pixabay.com/music/classical-string-quartet-tetris-theme-korobeiniki-rearranged-arr-for-strings-185592/)
+- [`piptris-symphony.wav`](https://pixabay.com/music/classical-string-quartet-tetris-theme-korobeiniki-rearranged-arr-for-strings-185592/)
+
+- [`piptris-whimsical.wav`](https://pixabay.com/music/lullabies-tetris-theme-korobeiniki-rearranged-arr-for-music-box-184978/)
+
+- [`piptris-electro-swing.wav`](https://pixabay.com/music/acid-jazz-swinging-electro-swing-funny-catchy-151280/)
+
+- [`piptris-big-band-swing.wav`](https://pixabay.com/music/big-band-big-band-swing-instrumental-1123-223354/)
 
 `SPDX-License-Identifiers: CC-BY-NC-4.0, CC0-1.0`

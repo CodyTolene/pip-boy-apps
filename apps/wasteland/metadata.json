@@ -1,7 +1,7 @@
 {
   "id": "wasteland",
   "name": "Wasteland",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "A DOOM inspired RPG engine for the Pip-Boy 3000 Mk V.",
   "icon": "wasteland.png",
   "tags": "game",
@@ -10,8 +10,8 @@
   "custom": "",
   "storage": [
     { "name": "USER/wasteland.js", "url": "Wasteland.min.js" },
-    { "name": "USER/F_STEP.wav", "url": "F_STEP.wav" },
-    { "name": "USER/F_STEP_2.wav", "url": "F_STEP_2.wav" },
-    { "name": "USER/OOF.wav", "url": "OOF.wav" }
+    { "name": "USER/WASTELAND/F_STEP.wav", "url": "F_STEP.wav" },
+    { "name": "USER/WASTELAND/F_STEP_2.wav", "url": "F_STEP_2.wav" },
+    { "name": "USER/WASTELAND/OOF.wav", "url": "OOF.wav" }
   ]
 }

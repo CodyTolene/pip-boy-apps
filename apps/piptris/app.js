@@ -9,19 +9,13 @@ function Piptris() {
 
   // Core
   const GAME_NAME = 'PIPTRIS';
-  const GAME_VERSION = '2.5.0';
-  const DEBUG = false;
+  const GAME_VERSION = '2.5.1';
 
   // File paths
-  const CONFIG_PATH = 'USER/piptris.json';
-
-  // Images
-  const GEAR_IMAGE_PATH = 'USER/gear.json';
-  const NUKE_IMAGE_PATH = 'USER/nuke.json';
-  const RADIOACTIVE_IMAGE_PATH = 'USER/radioactive.json';
-  let gearImage = null;
-  let nukeImage = null;
-  let radioactiveImage = null;
+  const CONFIG_PATH = 'USER/PIPTRIS/piptris.json';
+  const GEAR_IMAGE_PATH = 'USER/PIPTRIS/gear.json';
+  const NUKE_IMAGE_PATH = 'USER/PIPTRIS/nuke.json';
+  const RADIOACTIVE_IMAGE_PATH = 'USER/PIPTRIS/radioactive.json';
 
   // Game State
   const BLOCK_START_SPEED = 800;
@@ -97,7 +91,8 @@ function Piptris() {
 
   // Audio/music
   const MUSIC_STOPPED = 'audioStopped';
-  const MUSIC = ['USER/piptris.wav'];
+  let musicList = [];
+  let currentTrack = null;
 
   // prettier-ignore
   const T_SHAPE = [[0, 1, 0],[1, 1, 1]];
@@ -195,9 +190,9 @@ function Piptris() {
       }
     }
 
-    if (passes >= MAX_PASSES) {
-      console.log('Clear line safeguard triggered!');
-    }
+    // if (passes >= MAX_PASSES) {
+    //   console.log('Clear line safeguard triggered!');
+    // }
 
     // Scoring
     switch (linesRemoved) {
@@ -249,9 +244,10 @@ function Piptris() {
     if (blockValue === 2) {
       try {
         g.setColor(COLOR_RED);
-        g.drawImage(nukeImage, x1, y1);
+        g.drawImage(loadImage(NUKE_IMAGE_PATH), x1, y1);
       } catch (e) {
-        console.log('Failed to load nuke image:', e);
+        // Failed to load nuke image
+        console.log(e);
       }
     } else {
       g.setColor(COLOR_THEME);
@@ -337,9 +333,10 @@ function Piptris() {
 
     try {
       g.setColor(COLOR_THEME);
-      g.drawImage(gearImage, centerX - 45, centerY - 75);
+      g.drawImage(loadImage(GEAR_IMAGE_PATH), centerX - 45, centerY - 75);
     } catch (e) {
-      console.log('Failed to load gear image:', e);
+      // Failed to load gear image
+      console.log(e);
     }
 
     const statsYStart = centerY - 20;
@@ -416,12 +413,13 @@ function Piptris() {
             try {
               // Nuke ghost block
               g.setColor(COLOR_RED_DARK);
-              g.drawImage(nukeImage, blockX, blockY, {
-                scale: blockSize / nukeImage.width,
+              g.drawImage(loadImage(NUKE_IMAGE_PATH), blockX, blockY, {
+                scale: blockSize / 15, // 15 = width of the nuke image
                 transparency: 0.5,
               });
             } catch (e) {
-              console.log('Failed to load nuke ghost image:', e);
+              // Failed to load nuke ghost image
+              console.log(e);
             }
           } else {
             // Default ghost block
@@ -471,7 +469,8 @@ function Piptris() {
     };
     g.setColor(COLOR_BLACK);
     g.fillRect(clearXY);
-    if (DEBUG) drawBoundaries(clearXY);
+
+    // drawBoundaries(clearXY);
 
     g.setColor(COLOR_THEME);
     g.drawString(ghostState, posX, stateY + 4);
@@ -527,14 +526,13 @@ function Piptris() {
         x2: startX + clearWidth / 2,
         y2: startY + clearHeight,
       };
-      if (DEBUG) {
-        drawBoundaries({
-          x1: clearXY.x1 - 1,
-          y1: clearXY.y1 - 1,
-          x2: clearXY.x2 + 1,
-          y2: clearXY.y2 + 1,
-        });
-      }
+
+      // drawBoundaries({
+      //   x1: clearXY.x1 - 1,
+      //   y1: clearXY.y1 - 1,
+      //   x2: clearXY.x2 + 1,
+      //   y2: clearXY.y2 + 1,
+      // });
 
       g.setColor(COLOR_BLACK);
       g.fillRect(clearXY);
@@ -551,9 +549,10 @@ function Piptris() {
       const imgX = startX - imgSize / 2;
       const imgY = startY + textLineHeight * 2 + 5;
       g.setColor(COLOR_RED_DARK);
-      g.drawImage(radioactiveImage, imgX, imgY);
+      g.drawImage(loadImage(RADIOACTIVE_IMAGE_PATH), imgX, imgY);
     } catch (e) {
-      console.log('Failed to load radioactive image:', e);
+      // Failed to load radioactive image
+      console.log(e);
     }
   }
 
@@ -578,14 +577,12 @@ function Piptris() {
     g.setColor(COLOR_BLACK);
     g.fillRect(clearX1, clearY1, clearX2, clearY2);
 
-    if (DEBUG) {
-      drawBoundaries({
-        x1: clearX1 - 1,
-        y1: clearY1 - 1,
-        x2: clearX2 + 1,
-        y2: clearY2 + 1,
-      });
-    }
+    // drawBoundaries({
+    //   x1: clearX1 - 1,
+    //   y1: clearY1 - 1,
+    //   x2: clearX2 + 1,
+    //   y2: clearY2 + 1,
+    // });
 
     g.setColor(COLOR_THEME_DARK);
     g.drawString('LINES', linesX, linesY);
@@ -613,14 +610,12 @@ function Piptris() {
     g.setColor(COLOR_BLACK);
     g.fillRect(clearX1, clearY1, clearX2, clearY2);
 
-    if (DEBUG) {
-      drawBoundaries({
-        x1: clearX1 - 1,
-        y1: clearY1 - 1,
-        x2: clearX2 + 1,
-        y2: clearY2 + 1,
-      });
-    }
+    // drawBoundaries({
+    //   x1: clearX1 - 1,
+    //   y1: clearY1 - 1,
+    //   x2: clearX2 + 1,
+    //   y2: clearY2 + 1,
+    // });
 
     // Draw static label (only once in startGame if you want)
     g.setColor(COLOR_THEME_DARK);
@@ -650,14 +645,12 @@ function Piptris() {
     g.setColor(COLOR_BLACK);
     g.fillRect(clearX1, clearY1, clearX2, clearY2);
 
-    if (DEBUG) {
-      drawBoundaries({
-        x1: clearX1 - 1,
-        y1: clearY1 - 1,
-        x2: clearX2 + 1,
-        y2: clearY2 + 1,
-      });
-    }
+    // drawBoundaries({
+    //   x1: clearX1 - 1,
+    //   y1: clearY1 - 1,
+    //   x2: clearX2 + 1,
+    //   y2: clearY2 + 1,
+    // });
 
     g.setFont('6x8', 2);
     g.setColor(COLOR_THEME_DARK);
@@ -674,15 +667,17 @@ function Piptris() {
           const blockX = offsetX + x * blockSize;
           const blockY = startY + 20 + y * blockSize;
 
-          if (blockValue === 2 && nukeImage) {
+          if (blockValue === 2) {
             // Nuke
             try {
+              const nukeImage = loadImage(NUKE_IMAGE_PATH);
               g.setColor(COLOR_RED);
               g.drawImage(nukeImage, blockX, blockY, {
                 scale: blockSize / nukeImage.width,
               });
             } catch (e) {
-              console.log('Failed to load nuke image:', e);
+              // Failed to load nuke image
+              console.log(e);
             }
           } else {
             g.setColor(COLOR_THEME);
@@ -761,7 +756,8 @@ function Piptris() {
     };
     g.setColor(COLOR_BLACK);
     g.fillRect(clearXY);
-    if (DEBUG) drawBoundaries(clearXY);
+
+    // drawBoundaries(clearXY);
 
     // Draw the T-shape preview block
     g.setColor(COLOR_THEME);
@@ -803,14 +799,12 @@ function Piptris() {
     g.setColor(COLOR_BLACK);
     g.fillRect(clearX1, clearY1, clearX2, clearY2);
 
-    if (DEBUG) {
-      drawBoundaries({
-        x1: clearX1 - 1,
-        y1: clearY1 - 1,
-        x2: clearX2 + 1,
-        y2: clearY2 + 1,
-      });
-    }
+    // drawBoundaries({
+    //   x1: clearX1 - 1,
+    //   y1: clearY1 - 1,
+    //   x2: clearX2 + 1,
+    //   y2: clearY2 + 1,
+    // });
 
     g.setColor(COLOR_THEME_DARK);
     g.drawString('SCORE', scoreX, scoreY);
@@ -837,9 +831,10 @@ function Piptris() {
 
     try {
       g.setColor(COLOR_THEME);
-      g.drawImage(gearImage, centerX - 34, centerY - 29);
+      g.drawImage(loadImage(GEAR_IMAGE_PATH), centerX - 34, centerY - 29);
     } catch (e) {
-      console.log('Failed to load gear image:', e);
+      // Failed to load gear image
+      console.log(e);
     }
 
     if (highScore > 0) {
@@ -982,22 +977,18 @@ function Piptris() {
       if (!file) throw new Error('Config file missing');
       let data = JSON.parse(file);
       highScore = data.highScore || 0;
+      musicList = data.music || [];
     } catch (e) {
-      console.log('Error loading config:', e);
+      // Error loading config
+      console.log(e);
       highScore = 0;
       saveConfig();
     }
   }
 
-  function loadGameImages() {
-    nukeImage = loadImage(NUKE_IMAGE_PATH);
-    gearImage = loadImage(GEAR_IMAGE_PATH);
-    radioactiveImage = loadImage(RADIOACTIVE_IMAGE_PATH);
-  }
-
   function loadImage(path) {
     try {
-      let file = fs.readFileSync(path);
+      let file = fs.readFile(path);
       let data = JSON.parse(file);
       return {
         bpp: data.bpp,
@@ -1007,15 +998,14 @@ function Piptris() {
         width: data.width,
       };
     } catch (e) {
-      console.log('Failed to load image:', path, e);
+      // Failed to load image
+      console.log(path, e);
       return null;
     }
   }
 
   function mainLoop() {
-    if (DEBUG) {
-      console.log('Mem: ' + process.memory().usage + '/5000');
-    }
+    // console.log('Mem: ' + process.memory().usage + '/5000');
     dropPiece();
   }
 
@@ -1028,12 +1018,11 @@ function Piptris() {
           const fy = piece.y + y;
 
           if (!isFinite(fx) || !isFinite(fy)) {
-            console.log('Invalid fx/fy', fx, fy);
             continue;
           }
 
           if (piece.shape[y][x] === 2) {
-            if (DEBUG) console.log('Nuking coords: ', fx, fy);
+            // console.log('Nuking coords: ', fx, fy);
             if (
               fx >= 0 &&
               fx < PLAY_AREA_WIDTH &&
@@ -1044,7 +1033,7 @@ function Piptris() {
               nuke(fx, fy);
               nuked = true;
             } else {
-              if (DEBUG) console.log('Nuke is out of bounds!', fx, fy);
+              // console.log('Nuke is out of bounds!', fx, fy);
             }
           } else {
             PLAY_AREA_BLOCKS[fy * PLAY_AREA_WIDTH + fx] = 1;
@@ -1088,13 +1077,13 @@ function Piptris() {
 
   function nuke(centerX, centerY) {
     if (nukeInProgress) {
-      console.log('Nuke is still nuking...');
+      // Nuke is still nuking...
       return;
     }
     nukeInProgress = true;
 
     if (!isFinite(centerX) || !isFinite(centerY)) {
-      console.log('We were sent incorrect nuke coordinates!');
+      // We were sent incorrect nuke coordinates!
       nukeInProgress = false;
       return;
     }
@@ -1144,15 +1133,13 @@ function Piptris() {
     score += nukePoints;
     drawScore();
 
-    if (DEBUG) {
-      console.log(
-        'Nuke destroyed ' +
-          blocksDestroyed +
-          ' blocks for ' +
-          nukePoints +
-          ' pts',
-      );
-    }
+    // console.log(
+    //   'Nuke destroyed ' +
+    //     blocksDestroyed +
+    //     ' blocks for ' +
+    //     nukePoints +
+    //     ' pts',
+    // );
 
     // Clear blast radius
     g.setColor(COLOR_BLACK);
@@ -1163,12 +1150,17 @@ function Piptris() {
   }
 
   function playMusic() {
-    if (!MUSIC.length) return;
-
-    const track = MUSIC[Math.floor(Math.random() * MUSIC.length)];
+    if (!musicList.length) {
+      console.log('No music tracks available');
+      return;
+    }
+    const track = musicList[Math.floor(Math.random() * musicList.length)];
+    if (track === currentTrack) {
+      return playMusic(); // Restart if same track
+    }
     Pip.audioStop();
     Pip.audioStart(track);
-    rd.setVol(0.5);
+    currentTrack = track;
   }
 
   function resetField() {
@@ -1223,11 +1215,15 @@ function Piptris() {
   }
 
   function saveConfig() {
-    let data = { highScore: highScore };
+    let data = {
+      highScore: highScore,
+      music: musicList,
+    };
     try {
       fs.writeFile(CONFIG_PATH, JSON.stringify(data));
     } catch (e) {
-      console.log('Error saving high score:', e);
+      // Error saving config
+      console.log(e);
     }
   }
 
@@ -1282,8 +1278,8 @@ function Piptris() {
     isGameOver = false;
     blockCurrent = null;
 
-    if (DEBUG) {
-      // Start at leve 10 for testing
+    if (false) {
+      // Set true for testing
       difficultyLevel = 10;
       score = 10000;
     } else {
@@ -1331,16 +1327,13 @@ function Piptris() {
         BLOCK_START_SPEED - difficultyLevel * SPEED_STEP,
         MIN_DROP_SPEED,
       );
-      if (DEBUG) {
-        console.log('Level up! New speed:', blockDropSpeed, 'ms');
-      }
+      // console.log('Level up! New speed:', blockDropSpeed, 'ms');
     }
   }
 
   self.run = function () {
     bC.clear(); // Clear any previous screen
 
-    loadGameImages();
     loadConfig();
 
     drawStartScreen();
