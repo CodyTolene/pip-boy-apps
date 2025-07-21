@@ -9,7 +9,7 @@ function Piptris() {
 
   // Core
   const GAME_NAME = 'PIPTRIS';
-  const GAME_VERSION = '2.5.1';
+  const GAME_VERSION = '2.5.2';
 
   // File paths
   const CONFIG_PATH = 'USER/PIPTRIS/piptris.json';
