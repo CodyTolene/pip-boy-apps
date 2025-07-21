@@ -1,0 +1,50 @@
+body {
+  color: black;
+  background-color: white;
+}
+
+#log {
+  border: 1px solid #ccc;
+  padding: 10px;
+  height: 180px;
+  min-height: 180px;
+  max-height: 180px;
+  overflow-y: auto;
+  font-family: monospace;
+}
+
+#log p {
+  margin: 0;
+  padding: 2px 0;
+}
+
+button {
+  margin: 0;
+}
+
+.form-group {
+  margin-top: 10px;
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 16px;
+}
+
+.checkbox-row label {
+  margin: 0;
+  flex-grow: 1;
+}
+
+.preview-btn {
+  margin-left: 10px;
+  padding: 2px 8px;
+  font-size: 0.85em;
+}
+
+hr {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}

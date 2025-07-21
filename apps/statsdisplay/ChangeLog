@@ -1,3 +1,7 @@
+2.5.1
+- Revert to original code after support for nested directories was added.
+
+
 2.5.0
 https://github.com/CodyTolene/pip-boy-apps/pull/24
 - Update app structure to use the new Pip-Boy Mod Tool workflow.

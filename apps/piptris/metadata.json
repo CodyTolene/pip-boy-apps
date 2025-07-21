@@ -10,11 +10,9 @@
   "custom": "install.html",
   "storage": [
     { "name": "USER/piptris.js", "url": "app.min.js" },
-    { "name": "USER/PIPTRIS/piptris.min.js", "url": "piptris.min.js" },
     { "name": "USER/PIPTRIS/piptris.json", "url": "piptris.json" },
     { "name": "USER/PIPTRIS/gear.json", "url": "gear.json" },
     { "name": "USER/PIPTRIS/nuke.json", "url": "nuke.json" },
-    { "name": "USER/PIPTRIS/radioactive.json", "url": "radioactive.json" },
-    { "name": "USER/PIPTRIS/piptris.wav", "url": "piptris.wav" }
+    { "name": "USER/PIPTRIS/radioactive.json", "url": "radioactive.json" }
   ]
 }

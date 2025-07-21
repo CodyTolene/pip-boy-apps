@@ -1,4 +1,7 @@
-.navbar { background-color: #45852f; padding: 0.5em 1em 0.5em 1em; }
+.navbar {
+  background-color: #45852f;
+  padding: 0.5em 1em 0.5em 1em;
+}
 .navbar .navbar-brand {
   color: #fff;
   font-weight: 400;
@@ -8,14 +11,16 @@
   background: #fff;
 }
 #toastcontainer {
-  position:fixed;
-  bottom:8px;left:0px;right:0px;
+  position: fixed;
+  bottom: 8px;
+  left: 0px;
+  right: 0px;
   z-index: 100;
 }
 .hero {
   padding-bottom: 1rem;
   padding-top: 1rem;
-  text-align:center;
+  text-align: center;
 }
 .chip {
   cursor: pointer;
@@ -26,9 +31,11 @@
 .sort-nav {
   float: right;
 }
-.tile-content { position: relative; }
+.tile-content {
+  position: relative;
+}
 .link-github {
-  position:absolute;
+  position: absolute;
   top: 36px;
   left: -24px;
 }
@@ -40,7 +47,7 @@
 }
 .tile {
   border: 1px solid #ccc;
-  box-shadow: 2px 2px 4px rgba(0.8,0.8,0.8,0.05);
+  box-shadow: 2px 2px 4px rgba(0.8, 0.8, 0.8, 0.05);
   margin: 3px;
   padding: 10px;
   width: 49%;
@@ -50,12 +57,13 @@
     width: 100%;
   }
 }
-.panel-body,.panel {
+.panel-body,
+.panel {
   padding-bottom: 10px;
 }
 body {
   font-family: 'Barlow Condensed', sans-serif;
-  font-size:large;
+  font-size: large;
   font-weight: 300;
 }
 p {
@@ -81,5 +89,5 @@ h2 {
   font-size: 1.3rem;
 }
 #connectmydevice {
-  font-size:0.9rem;
+  font-size: 0.9rem;
 }

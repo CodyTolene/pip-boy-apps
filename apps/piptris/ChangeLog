@@ -1,3 +1,11 @@
+2.6.0
+
+- Add nested directory support for app and game files.
+  - Games can now have their own directories for assets to keep things organized.
+    - This fixes the issue of Piptris not loading (when all apps are updated).
+- Add new songs "Whimsical" and "" to go with the existing "Symphony" song.
+- Songs are now optional and can be toggled on/off before installation.
+
 2.5.0
 https://github.com/CodyTolene/pip-boy-apps/pull/29
 - Add a new block type, "NUKE":
