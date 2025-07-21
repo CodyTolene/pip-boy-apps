@@ -1,5 +1,5 @@
 2.6.0
-
+https://github.com/CodyTolene/pip-boy-apps/pull/30
 - Add nested directory support for app and game files.
   - Games can now have their own directories for assets to keep things organized.
     - This fixes the issue of Piptris not loading (when all apps are updated).

@@ -1,3 +1,10 @@
+1.1.1
+https://github.com/CodyTolene/pip-boy-apps/pull/30
+- Pip-Boy theme color support.
+- Update torch button (top right) to toggle screen brightness when pressed.
+- Update power button (bot right) to restart the device when pressed.
+- Move files into their own directory to avoid conflicts with other apps.
+
 1.1.0
 https://github.com/CodyTolene/pip-boy-apps/pull/9
 - Add coin flip D2 roller.

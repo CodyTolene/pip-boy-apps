@@ -51,15 +51,15 @@ function DiceRoller() {
   let lastLeftKnobTime = 0;
 
   // Colors
-  const BLACK = '#000000';
-  const GREEN = '#00ff00';
-  const GREEN_DARK = '#007f00';
+  const COLOR_BLACK = '#000000';
+  const COLOR_THEME = g.theme.fg;
+  const COLOR_THEME_DARK = g.blendColor(COLOR_BLACK, COLOR_THEME, 0.5);
 
   // Sounds
   const SOUNDS = {
-    coinDrop: 'USER/coin-drop.wav',
-    coinFlip: 'USER/coin-flip.wav',
-    diceThrow: 'USER/dice-throw.wav',
+    coinDrop: 'USER/DICEROLLER/coin-drop.wav',
+    coinFlip: 'USER/DICEROLLER/coin-flip.wav',
+    diceThrow: 'USER/DICEROLLER/dice-throw.wav',
   };
 
   function animateDice() {
@@ -162,16 +162,16 @@ function DiceRoller() {
   }
 
   function clearScreen() {
-    g.setColor(BLACK);
+    g.setColor(COLOR_BLACK);
     g.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
   }
 
   function drawBoundaries(area) {
-    g.setColor(GREEN).drawRect(area.x1, area.y1, area.x2, area.y2);
+    g.setColor(COLOR_THEME).drawRect(area.x1, area.y1, area.x2, area.y2);
   }
 
   function drawDice() {
-    g.setColor(BLACK);
+    g.setColor(COLOR_BLACK);
     g.fillRect(
       lastDraw.x,
       lastDraw.y,
@@ -186,7 +186,7 @@ function DiceRoller() {
     const isCoin = type === 'D2';
     const flipPhase = rollCount % 2;
 
-    g.setColor(GREEN);
+    g.setColor(COLOR_THEME);
 
     if (isCoin) {
       if (isRolling && flipPhase === 0) {
@@ -235,14 +235,14 @@ function DiceRoller() {
   function drawDiceLabel() {
     const name = DICE_TYPES[currentDiceIndex];
 
-    g.setColor(GREEN)
+    g.setColor(COLOR_THEME)
       .setFontMonofonto23()
       .setFontAlign(1, -1, 0) // Align right-top
       .drawString(name, SCREEN_VISIBLE_AREA.x2 - 5, SCREEN_VISIBLE_AREA.y1 + 5);
   }
 
   function drawTitle() {
-    g.setColor(GREEN)
+    g.setColor(COLOR_THEME)
       .setFontMonofonto23()
       .setFontAlign(-1, -1, 0)
       .drawString(
@@ -252,7 +252,7 @@ function DiceRoller() {
       );
 
     const appNameWidth = g.stringWidth(APP_NAME);
-    g.setColor(GREEN_DARK)
+    g.setColor(COLOR_THEME_DARK)
       .setFontMonofonto16()
       .setFontAlign(-1, -1, 0) // Align left-top
       .drawString(
@@ -302,6 +302,15 @@ function DiceRoller() {
     rollDice();
   }
 
+  function handlePowerButton() {
+    clearIntervals();
+    clearScreen();
+    removeListeners();
+
+    bC.clear(1).flip();
+    E.reboot();
+  }
+
   function handleRightKnob(dir) {
     if (isRolling) {
       return;
@@ -328,12 +337,14 @@ function DiceRoller() {
   }
 
   function handleTopButton() {
-    clearIntervals();
-    clearScreen();
-    removeListeners();
-
-    bC.clear(1).flip();
-    E.reboot();
+    // Adjust brightness
+    const brightnessLevels = [1, 5, 10, 15, 20];
+    const currentIndex = brightnessLevels.findIndex(
+      (level) => level === Pip.brightness,
+    );
+    const nextIndex = (currentIndex + 1) % brightnessLevels.length;
+    Pip.brightness = brightnessLevels[nextIndex];
+    Pip.updateBrightness();
   }
 
   function removeListeners() {
@@ -384,6 +395,12 @@ function DiceRoller() {
     drawDiceLabel();
     drawBoundaries(DICE_BOX_XY);
     drawDice();
+
+    setWatch(() => handlePowerButton(), BTN_POWER, {
+      debounce: 50,
+      edge: 'rising',
+      repeat: true,
+    });
   };
 
   return self;

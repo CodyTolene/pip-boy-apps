@@ -1,6 +1,6 @@
 2.5.1
+https://github.com/CodyTolene/pip-boy-apps/pull/30
 - Revert to original code after support for nested directories was added.
-
 
 2.5.0
 https://github.com/CodyTolene/pip-boy-apps/pull/24
