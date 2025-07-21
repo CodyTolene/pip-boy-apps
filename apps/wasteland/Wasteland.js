@@ -8,7 +8,7 @@ function Wasteland() {
   const self = {};
 
   const GAME_NAME = 'Wasteland';
-  const GAME_VERSION = '1.2.1';
+  const GAME_VERSION = '1.2.2';
 
   const SCREEN_WIDTH = g.getWidth();
   const SCREEN_HEIGHT = g.getHeight();
@@ -148,9 +148,9 @@ function Wasteland() {
     if (!isWall(nx, ny)) {
       player.x = nx;
       player.y = ny;
-      Pip.audioStart('USER/F_STEP.wav');
+      Pip.audioStart('USER/WASTELAND/F_STEP.wav');
     } else {
-      Pip.audioStart('USER/OOF.wav');
+      Pip.audioStart('USER/WASTELAND/OOF.wav');
     }
     drawFrame();
   }
@@ -163,9 +163,9 @@ function Wasteland() {
     if (!isWall(nx, ny)) {
       player.x = nx;
       player.y = ny;
-      Pip.audioStart('USER/F_STEP.wav');
+      Pip.audioStart('USER/WASTELAND/F_STEP.wav');
     } else {
-      Pip.audioStart('USER/OOF.wav');
+      Pip.audioStart('USER/WASTELAND/OOF.wav');
     }
     drawFrame();
   }
@@ -174,7 +174,7 @@ function Wasteland() {
     player.angle += (Math.PI / 4) * dir;
     if (player.angle < 0) player.angle += Math.PI * 2;
     else if (player.angle > Math.PI * 2) player.angle -= Math.PI * 2;
-    Pip.audioStart('USER/F_STEP_2.wav');
+    Pip.audioStart('USER/WASTELAND/F_STEP_2.wav');
     drawFrame();
   }
 

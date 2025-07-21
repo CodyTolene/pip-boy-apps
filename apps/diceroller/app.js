@@ -8,7 +8,7 @@ function DiceRoller() {
   const self = {};
 
   const APP_NAME = 'Dice Roller';
-  const APP_VERSION = '1.1.0';
+  const APP_VERSION = '1.1.1';
 
   // General constants
   const DICE_TYPES = ['D2', 'D4', 'D6', 'D8', 'D10', 'D12', 'D20'];
