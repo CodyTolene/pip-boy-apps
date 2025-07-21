@@ -13,4 +13,5 @@
 
 # Re-ignore
 **/*.min.js
+**/*.min.css
 ChangeLog
