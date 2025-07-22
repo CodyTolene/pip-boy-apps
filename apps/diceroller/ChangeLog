@@ -1,3 +1,9 @@
+1.2.0
+https://github.com/CodyTolene/pip-boy-apps/pull/32
+- Add D100.
+- Add Rapid Roll (keep pressing roll to simulate shake).
+- Reorganized asset file structure by moving assets to dedicated directory.
+
 1.1.1
 https://github.com/CodyTolene/pip-boy-apps/pull/30
 - Pip-Boy theme color support.
