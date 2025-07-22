@@ -1,7 +1,7 @@
 {
-  "id": "text",
+  "id": "customtext",
   "name": "Custom Text",
-  "version": "0.01",
+  "version": "1.0.1",
   "description": "Upload some customised text to your Pip-boy",
   "icon": "app.png",
   "tags": "",
@@ -9,7 +9,7 @@
   "readme": "README.md",
   "custom": "custom.html",
   "storage": [
-    { "name": "USER/text.js", "url": "app.js" },
-    { "name": "USER/text.txt" }
+    { "name": "USER/customtext.js", "url": "app.js" },
+    { "name": "USER/customtext.txt" }
   ]
 }

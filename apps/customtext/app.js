@@ -3,7 +3,7 @@ delete Pip.removeSubmenu;
 
 {
   // load start screen
-  let text = require('fs').readFileSync('USER/text.txt').split('\n');
+  let text = require('fs').readFileSync('USER/customtext.txt').split('\n');
   let title = text.shift();
   let font = 'Monofonto18';
 
@@ -55,5 +55,6 @@ delete Pip.removeSubmenu;
     Pip.removeListener('knob2', onKnob);
     if (interval) clearInterval(interval);
     interval = undefined;
+    E.reboot();
   };
 }

@@ -31,6 +31,34 @@ body::before {
   z-index: 0;
 }
 
+.navbar {
+  background-color: #00ff00;
+  display: flex;
+  align-items: center;
+  color: black;
+  min-height: 64px;
+  width: 100%;
+}
+
+.navbar-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  width: 100%;
+}
+
+.navbar span {
+  color: black;
+}
+
+.navbar img {
+  filter: brightness(0) invert(0);
+}
+
 .dropdown-container {
   margin: 1rem 0.8rem 0.5rem 0.8rem;
 }
@@ -41,6 +69,11 @@ body::before {
 
 .tab-item {
   margin: 0;
+}
+
+.tab-item a:focus {
+  box-shadow: none;
+  outline: none;
 }
 
 .tab .tab-item a.active,
@@ -55,8 +88,34 @@ body::before {
   color: #00ff00;
 }
 
+button,
+#connectmydevice {
+  font-size: 16px;
+}
+
 button i {
   color: white;
+}
+
+button.btn,
+button.btn.btn-primary {
+  background-color: #00ff00;
+  color: black;
+  border: none;
+}
+
+button.btn:hover,
+button.btn:focus,
+.btn.btn-primary:focus,
+.btn.btn-primary:hover {
+  background-color: #0c0;
+  color: black;
+  box-shadow: none;
+}
+
+button.btn-link:hover {
+  background-color: inherit;
+  color: inherit;
 }
 
 a.c-hand {
@@ -82,6 +141,7 @@ a.c-hand {
   flex-direction: row;
   flex-wrap: wrap;
   gap: 10px;
+  justify-content: center;
 }
 
 .tile {
@@ -173,13 +233,13 @@ a.c-hand {
 }
 
 .form-input {
-  background-color: #00ff00;
-  color: black;
+  background-color: #030;
+  color: white;
   border: none;
 }
 
 input.form-input::placeholder {
-  color: black;
+  color: white;
 }
 
 .chip {
@@ -201,6 +261,14 @@ iframe,
 
 .modal-container {
   max-height: 600px;
+}
+
+.badge:not([data-badge])::after,
+.badge[data-badge]::after {
+  box-shadow: none;
+  background: #00ff00;
+  background-color: #00ff00;
+  color: black;
 }
 
 @keyframes scanlines {
