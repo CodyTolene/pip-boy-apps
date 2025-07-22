@@ -33,7 +33,7 @@ Image converter: https://www.espruino.com/Image%20Converter
 ### Writing Apps
 
 Please see the development documentation at [DEVELOPMENT.md](DEVELOPMENT.md) for
-more information on writing apps for the
+more information on writing apps for the Pip-Boy 3000 Mk V by The Wand Company.
 
 ### Running the application
 
