@@ -134,6 +134,9 @@ function PortaHack() {
     'TOSSED', 'INTO', 'MIDDLE', 'CONFLICT', 'WHEN', 'RAIDERS', 'KIDNAP', 'ENSLAVE', 'KINDLY', 'VILLAGERS', 'WHO', 'HAVE', 'SAVED', 'LIFE', 'AT', 'START', 'GAME', 'STRUGGLES', 'FIND', 'FREE', 'HE', 
     'UNCOVERS', 'MUST', 'ACT', 'STOP', 'DISCOVER', 'WAY', 'THWART', 'PLANS', 'BY', 'UNLOCKING', 'SECRET', 'ANDROID', 'CITIZENS', 'MAYVILLE', 'AI', 'CONTROLS', 'THEM', 'HIDDEN', 'DEEP', 'BENEATH', 'CORE', 
     'OFFERS', 'HELP', 'BEFORE', 'CAN', 'COMPLETE', 'FORGES', 'AN', 'UNLIKELY', 'ALLIANCE', 'BETWEEN', 'CITY', 'MUTANTS', 'GROUP', 'SCIENTISTS', 'SURVIVORS', 'FROM', 'BASE', 'RACE', 'AGAINST', 'FORCES', 'PARTS', 
+    // Had to remove these few lines in order to get the game to load (reduce 
+    // RAM usage). FUTURE TODO: Break these into multiple arrays and in their 
+    // own files, only load into memory when needed.
     // 'NEEDED', 'LAST', 'MINUTE', 'LEARNS', 'USING', 'HIM', 'SO', 'RULE', 'STEAD', 'ONLY', 'LEADING', 'ITS', 'OWN', 'ANDROIDS', 'REVOLUTION', 'IT', 'FOUND', 'VULNERABLE', 'ATTACK', 'BRIEF', 'PERIOD', 'JUST', 'AFTER', 
     // 'BEEN', 'BUILT', 'PRESSURE', 'ON', 'COHORTS', 'CLOCK', 'SHUT', 'DOWN', 'DESTROY', 'IF', 'FAILS', 'THEN', 'STERILIZE', 'EARTH', 'OR', 'ENACT', 'INSANE', 'DICTATES', 'WINS', 'OBLITERATE', 'FOES', 'GAIN', 
     // 'ACCESS', 'ADVANCED', 'MAY', 'OPEN', 'GATEWAY', 'VERY', 'STARS', 'FALLOUT', 'CARRIED', 'OVER', 'GENERATED', 'AFRESH', 'ALL', 'PCS', 'ARE', 'ASSUMED', 'COME', 'VAULT', 'UNEXPECTED', 'AWAKENING', 'WANDERING', 
@@ -154,13 +157,6 @@ function PortaHack() {
   const ALL_ON_SCREEN = LEFT_PASSWORDS.concat(RIGHT_PASSWORDS);
   correctPassword =
     ALL_ON_SCREEN[Math.floor(Math.random() * ALL_ON_SCREEN.length)];
-
-  // ──────── RESERVE A SLOT FOR IT ────────
-  const forcedSide = LEFT_PASSWORDS.includes(correctPassword) ? 'L' : 'R';
-  const forcedRow =
-    forcedSide === 'L'
-      ? LEFT_PASSWORDS.indexOf(correctPassword)
-      : RIGHT_PASSWORDS.indexOf(correctPassword);
 
   // Knobs and Buttons
   const KNOB_LEFT = 'knob1';
@@ -904,7 +900,7 @@ function PortaHack() {
         result += JUNK[(Math.random() * JUNK.length) | 0];
       }
     }
-    return { line: result, embedAt };
+    return { line: result, embedAt: embedAt };
   }
 
   function setupJunkLines() {
@@ -944,11 +940,6 @@ function PortaHack() {
     const allOnScreen = LEFT_PASSWORDS.concat(RIGHT_PASSWORDS);
     correctPassword =
       allOnScreen[Math.floor(Math.random() * allOnScreen.length)];
-    forcedSide = LEFT_PASSWORDS.includes(correctPassword) ? 'L' : 'R';
-    forcedRow =
-      forcedSide === 'L'
-        ? LEFT_PASSWORDS.indexOf(correctPassword)
-        : RIGHT_PASSWORDS.indexOf(correctPassword);
 
     // ─── 2) Boot the rest of the UI ─────────────────────
     Pip.removeAllListeners(VIDEO_STOPPED);
