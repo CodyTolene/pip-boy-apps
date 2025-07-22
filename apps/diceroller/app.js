@@ -8,19 +8,20 @@ function DiceRoller() {
   const self = {};
 
   const APP_NAME = 'Dice Roller';
-  const APP_VERSION = '1.1.1';
+  const APP_VERSION = '1.2.0';
 
   // General constants
-  const DICE_TYPES = ['D2', 'D4', 'D6', 'D8', 'D10', 'D12', 'D20'];
+  const DICE_TYPES = ['D2', 'D4', 'D6', 'D8', 'D10', 'D12', 'D20', 'D100'];
   const ELASTICITY = 0.95;
   const FRICTION = 0.98;
   const THROW_POWER = 8.0;
 
-  // States
+  // Game state
   let currentDiceIndex = DICE_TYPES.indexOf('D20');
   let dice = { x: 100, y: 100, vx: 2, vy: 3 };
   let face = 1;
   let faceTimer = null;
+  let inputInterval = null;
   let interval = null;
   let isRolling = false;
   let lastDraw = { x: 0, y: 0, w: 0, h: 0 };
@@ -47,8 +48,8 @@ function DiceRoller() {
   const KNOB_LEFT = 'knob1';
   const KNOB_RIGHT = 'knob2';
   const BTN_TOP = 'torch';
-  const KNOB_DEBOUNCE = 100;
-  let lastLeftKnobTime = 0;
+  const ROLL_DEBOUNCE = 250;
+  let lastRollTime = 0;
 
   // Colors
   const COLOR_BLACK = '#000000';
@@ -275,11 +276,13 @@ function DiceRoller() {
       case 'D10':
         return 6;
       case 'D12':
-        return 6;
+        return 7;
       case 'D20':
-        return 6;
+        return 8;
+      case 'D100':
+        return 10;
       default:
-        return 6;
+        throw new Error(`Unknown dice type: ${type}`);
     }
   }
 
@@ -288,17 +291,10 @@ function DiceRoller() {
   }
 
   function handleLeftKnob(dir) {
-    if (isRolling) {
-      // Still rolling, ignore left knob
-      return;
-    }
+    rollDice();
+  }
 
-    let now = Date.now();
-    if (now - lastLeftKnobTime < KNOB_DEBOUNCE) {
-      return;
-    }
-    lastLeftKnobTime = now;
-
+  function handlePlayButton() {
     rollDice();
   }
 
@@ -306,6 +302,9 @@ function DiceRoller() {
     clearIntervals();
     clearScreen();
     removeListeners();
+
+    clearInterval(inputInterval);
+    inputInterval = null;
 
     bC.clear(1).flip();
     E.reboot();
@@ -354,6 +353,12 @@ function DiceRoller() {
   }
 
   function rollDice() {
+    let now = Date.now();
+    if (now - lastRollTime < ROLL_DEBOUNCE) {
+      return;
+    }
+    lastRollTime = now;
+
     isRolling = true;
     const max = getSidesFromDiceType(DICE_TYPES[currentDiceIndex]);
     face = Math.floor(Math.random() * max) + 1;
@@ -396,7 +401,13 @@ function DiceRoller() {
     drawBoundaries(DICE_BOX_XY);
     drawDice();
 
-    setWatch(() => handlePowerButton(), BTN_POWER, {
+    inputInterval = setInterval(() => {
+      if (BTN_PLAY.read()) {
+        handlePlayButton();
+      }
+    }, 100);
+
+    setWatch(handlePowerButton, BTN_POWER, {
       debounce: 50,
       edge: 'rising',
       repeat: true,
