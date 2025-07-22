@@ -1,18 +1,23 @@
+* @gfwilliams @rblakesley @CodyTolene
+
 /apps/asteroid/       @rblakesley
 /apps/asteropips/     @killes007
 /apps/customalarm/    @rblakesley
 /apps/customimg/      @rblakesley
 /apps/custommap/      @rblakesley
+/apps/customtext/     @rblakesley
+/apps/diceroller/     @CodyTolene
 /apps/fileexplorer/   @CodyTolene
 /apps/gameexample/    @CodyTolene
 /apps/idcard/         @rblakesley
+/apps/mtgtracker/     @tylerjbartlett
 /apps/pip2048/        @killes007
 /apps/pippong/        @CodyTolene
 /apps/pipsnake/       @CodyTolene
 /apps/piptactoe/      @pip-4111
 /apps/piptris/        @CodyTolene
+/apps/portahack/      @pip-4111
 /apps/settings        @rblakesley
 /apps/statsdisplay/   @gnargle
-/apps/text/           @rblakesley
 /apps/vaultbreaker/   @TetrisKid48
 /apps/wasteland/      @CodyTolene

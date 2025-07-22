@@ -46,5 +46,6 @@ delete Pip.remove;
     if (interval) clearInterval(interval);
     interval = undefined;
     g.clear();
+    E.reboot();
   };
 }
