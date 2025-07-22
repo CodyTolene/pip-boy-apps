@@ -285,10 +285,6 @@ iframe,
   content: url('../img/heart.svg');
 }
 
-/* 
-
-*/
-
 @keyframes scanlines {
   0% {
     background-position-y: 0;

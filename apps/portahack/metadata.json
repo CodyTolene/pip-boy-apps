@@ -1,7 +1,7 @@
 {
   "id": "portahack",
   "name": "Porta Hack",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A recreation of the in-game hacking sequence, played right from your wrist!",
   "icon": "assets/portahack.png",
   "tags": "game",
