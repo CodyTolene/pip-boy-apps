@@ -864,9 +864,9 @@ function PortaHack() {
   }
 
   function shuffle(arr) {
-    for (var i = arr.length - 1; i > 0; i--) {
-      var j = (Math.random() * (i + 1)) | 0;
-      var tmp = arr[i];
+    for (let i = arr.length - 1; i > 0; i--) {
+      let j = (Math.random() * (i + 1)) | 0;
+      let tmp = arr[i];
       arr[i] = arr[j];
       arr[j] = tmp;
     }

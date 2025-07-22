@@ -4,6 +4,7 @@ https://github.com/CodyTolene/pip-boy-apps/pull/28
 - Fixed controls, no more scrolling to the bottom to get to the second grid.
 - Snippets are actually detected now, and have a 50/50 chance to reset your remaining attempts or remove a dud password.
 - Minor visual tweaks to be more accurate to the Fallout games.
+- Pip-Boy theme color support.
 
 1.0.0
 https://github.com/pip-4111/Porta-Hack
