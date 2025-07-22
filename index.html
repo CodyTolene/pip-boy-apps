@@ -1,41 +1,49 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=0.8,maximum-scale=0.8, minimum-scale=0.8, shrink-to-fit=no">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/spectre.min.css">
-    <link rel="stylesheet" href="css/spectre-exp.min.css">
-    <link rel="stylesheet" href="css/spectre-icons.min.css">
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="shortcut icon" type="image/x-icon" href="./favicon.ico?">
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=0.8,maximum-scale=0.8, minimum-scale=0.8, shrink-to-fit=no"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/spectre.min.css" />
+    <link rel="stylesheet" href="css/spectre-exp.min.css" />
+    <link rel="stylesheet" href="css/spectre-icons.min.css" />
+    <link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="css/main-overrides.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="./favicon.ico?" />
     <title>Pip-Boy Mod Tool</title>
   </head>
   <body>
     <header class="navbar-primary navbar">
-      <section class="navbar-section" >
-        <a href="https://www.thewandcompany.com/fallout-pip-boy/" target="_blank" class="navbar-brand mr-2"><img src="img/pb-small.png" alt="Pip-Boy"><span>&nbsp;Mod Tool</span></a>
-        <!-- <a href="#" class="btn btn-link">...</a> -->
+      <section class="navbar-section">
+        <a
+          href="https://www.thewandcompany.com/fallout-pip-boy/"
+          target="_blank"
+          class="navbar-brand mr-2"
+          ><img src="img/pb-small.png" alt="Pip-Boy" /><span
+            >&nbsp;Mod Tool</span
+          ></a
+        >
       </section>
       <section class="navbar-section">
+        <button class="btn hidden" id="rebootdevice">Reboot</button>
         <button class="btn" id="connectmydevice">Connect</button>
       </section>
-      <!--<section class="navbar-section">
-        <div class="input-group input-inline">
-          <input class="form-input" type="text" placeholder="search">
-          <button class="btn btn-primary input-group-btn">Search</button>
-        </div>
-      </section>-->
     </header>
 
-    <div class="container" style="padding-top:4px">
+    <div class="container" style="padding-top: 4px">
       <p id="requireHTTPS" class="hidden">
-        <b>STOP!</b> This page <b>must</b> be served over HTTPS. Please <a>reload this page via HTTPS</a>.
+        <b>STOP!</b> This page <b>must</b> be served over HTTPS. Please
+        <a>reload this page via HTTPS</a>.
       </p>
     </div>
-
 
     <ul class="tab tab-block" id="tab-navigate">
       <li class="tab-item active" id="tab-librarycontainer">
@@ -49,99 +57,147 @@
       </li>
     </ul>
 
-    <div class="container"  id="toastcontainer">
-    </div>
+    <div class="container" id="toastcontainer"></div>
 
     <div class="container apploader-tab" id="librarycontainer">
       <div class="dropdown-container">
         <div class="filter-nav">
-          <label class="chip active" filterid="" data-tooltip="Show all apps">All</label>
-          <label class="chip tooltip" filterid="game" data-tooltip="Have fun!">Games</label>
-          <label class="chip tooltip" filterid="favourites" data-tooltip="Apps that you've liked ❤️">Favourites</label>
+          <label class="chip active" filterid="" data-tooltip="Show all apps"
+            >All</label
+          >
+          <label class="chip tooltip" filterid="game" data-tooltip="Have fun!"
+            >Games</label
+          >
+          <label
+            class="chip tooltip"
+            filterid="favourites"
+            data-tooltip="Apps that you've liked ❤️"
+            >Favourites</label
+          >
         </div>
-        <div class="sort-nav hidden">
-        </div>
+        <div class="sort-nav hidden"></div>
       </div>
 
-      <div class="panel" style="clear:both">
+      <div class="panel" style="clear: both">
         <div class="panel-header">
-        <div class="input-group" id="searchform">
-            <input class="form-input" type="text" placeholder="Keywords...">
+          <div class="input-group" id="searchform">
+            <input class="form-input" type="text" placeholder="Keywords..." />
             <button class="btn btn-primary input-group-btn">Search</button>
-        </div>
+          </div>
         </div>
         <div class="panel-body columns"><!-- apps go here --></div>
       </div>
     </div>
 
-    <div class="container apploader-tab" id="myappscontainer" style="display:none">
+    <div
+      class="container apploader-tab"
+      id="myappscontainer"
+      style="display: none"
+    >
       <div class="panel">
-        <div class="panel-header" style="text-align:right">
+        <div class="panel-header" style="text-align: right">
           <button class="btn refresh">Refresh...</button>
-          <button class="btn btn-primary updateapps hidden">Update X apps</button>
+          <button class="btn btn-primary updateapps hidden">
+            Update X apps
+          </button>
         </div>
         <div class="panel-body columns"><!-- apps go here --></div>
       </div>
     </div>
 
-    <div class="container apploader-tab" id="morecontainer" style="display:none">
-      <div class="hero bg-gray">
+    <div
+      class="container apploader-tab"
+      id="morecontainer"
+      style="display: none"
+    >
+      <div class="hero">
         <div class="hero-body">
-          <a href="https://www.thewandcompany.com/fallout-pip-boy/ target="_blank"><img src="img/pb-mid.png" alt="Pip-Boy"></a>
+          <a
+            href="https://www.thewandcompany.com/fallout-pip-boy/"
+            target="_blank"
+            ><img src="img/pb-mid.png" alt="Pip-Boy"
+          /></a>
           <h2>Mod Tool</h2>
-          <p>A tool to modify your <a href="https://www.thewandcompany.com/fallout-pip-boy/" target="_blank">Pip-Boy</a> by adding apps and changing settings</p>
+          <p>
+            A tool to modify your
+            <a
+              href="https://www.thewandcompany.com/fallout-pip-boy/"
+              target="_blank"
+              >Pip-Boy</a
+            >
+            by adding apps and changing settings
+          </p>
         </div>
       </div>
-      <div class="container" style="padding-top: 8px;">
+      <div class="container" style="padding-top: 8px">
         <p id="apploaderlinks"></p>
-        <p>Check out <a href="https://github.com/thewandcompany/pip-boy" target="_blank">the Source on GitHub</a></p>
+        <p>
+          Check out
+          <a href="https://github.com/thewandcompany/pip-boy" target="_blank"
+            >the Source on GitHub</a
+          >
+        </p>
 
         <h3>Utilities</h3>
         <p>
-           <button class="btn tooltip" id="settime" data-tooltip="Set the time to your Browser's time">Set Time</button>
-           <button class="btn tooltip" id="screenshot" data-tooltip="Create screenshot">Screenshot</button>
-        </p><p>
+          <button
+            class="btn tooltip"
+            id="settime"
+            data-tooltip="Set the time to your Browser's time"
+          >
+            Set Time
+          </button>
+          <button
+            class="btn tooltip"
+            id="screenshot"
+            data-tooltip="Create screenshot"
+          >
+            Screenshot
+          </button>
         </p>
+        <p></p>
         <h3>Settings</h3>
         <div class="form-group">
           <label class="form-switch">
-            <input type="checkbox" id="settings-pretokenise">
-            <i class="form-icon"></i> Pretokenise apps before upload (smaller, faster apps)
+            <input type="checkbox" id="settings-pretokenise" />
+            <i class="form-icon"></i> Pretokenise apps before upload (smaller,
+            faster apps)
           </label>
           <label class="form-switch">
-            <input type="checkbox" id="settings-settime">
+            <input type="checkbox" id="settings-settime" />
             <i class="form-icon"></i> Always update time when we connect
           </label>
           <details>
             <summary>Advanced Options</summary>
             <label class="form-switch">
-              <input type="checkbox" id="settings-alwaysAllowUpdate">
-              <i class="form-icon"></i> Always show "reinstall app" button <i class="icon icon-refresh"></i> regardless of the version
+              <input type="checkbox" id="settings-alwaysAllowUpdate" />
+              <i class="form-icon"></i> Always show "reinstall app" button
+              <i class="icon icon-refresh"></i> regardless of the version
             </label>
-            <button class="btn" id="defaultsettings">Reset Mod Tool settings to defaults</button>
+            <button class="btn" id="defaultsettings">
+              Reset Mod Tool settings to defaults
+            </button>
           </details>
         </div>
-        <div id="more-deviceinfo" style="display:none">
+        <div id="more-deviceinfo" style="display: none">
           <h3>Device info</h3>
           <div id="more-deviceinfo-content"></div>
         </div>
       </div>
     </div>
-
+    <!-- CORE ESPRUINO SCRIPTS -->
     <script src="webtools/uart.js"></script>
     <script src="core/js/utils.js"></script>
-    <script>
-UART.ports = UART.ports.filter(e => e.includes("Serial"));
-Const.CONNECTION_DEVICE = "USB"; // We'll always be connecting over USB Serial - don't look it up
-    </script>
     <script src="webtools/heatshrink.js"></script>
     <script src="core/lib/marked.min.js"></script>
     <script src="core/lib/espruinotools.js"></script>
-
-    <script src="loader.js"></script>
+    <script src="scripts/loader.js"></script>
     <script src="core/js/ui.js"></script>
     <script src="core/js/comms.js"></script>
     <script src="core/js/appinfo.js"></script>
     <script src="core/js/index.js"></script>
+    <!-- ADDITIONS / OVERRIDES -->
+    <script src="scripts/buttons.js"></script>
+    <script src="scripts/loader-overrides.js"></script>
   </body>
 </html>

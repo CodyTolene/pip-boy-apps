@@ -1,0 +1,213 @@
+body {
+  background-color: #001100;
+  color: #00ff00;
+  height: 100%;
+  margin: 0;
+  position: relative;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 255, 0, 0.015) 0px,
+    rgba(0, 255, 0, 0.015) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 255, 0, 0.01);
+  mix-blend-mode: screen;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.dropdown-container {
+  margin: 1rem 0.8rem 0.5rem 0.8rem;
+}
+
+.tab {
+  border: none;
+}
+
+.tab-item {
+  margin: 0;
+}
+
+.tab .tab-item a.active,
+.tab .tab-item a {
+  color: #060;
+}
+
+.tab .tab-item a.active,
+.tab .tab-item a:hover,
+.tab .tab-item a.active,
+.tab .tab-item.active a {
+  color: #00ff00;
+}
+
+button i {
+  color: white;
+}
+
+a.c-hand {
+  color: white;
+}
+
+.tile .tile-subtitle,
+.tile .tile-title {
+  margin: 0;
+}
+
+.tile .tile-subtitle,
+.tile .tile-title {
+  text-shadow: none;
+}
+
+.panel {
+  border: none;
+}
+
+.panel .panel-body {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.tile {
+  border: 1px solid #00ff00;
+  box-shadow: none;
+  margin: 3px;
+  padding: 10px;
+  display: flex;
+  height: 200px;
+  flex-direction: row;
+  position: relative;
+  text-decoration: none;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+  background-color: rgba(0, 255, 0, 0.05);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.tile-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: space-between;
+}
+
+@media (max-width: 1200px) {
+  .tile {
+    width: 100%;
+  }
+}
+
+.tile::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 255, 0, 0.05);
+  mix-blend-mode: screen;
+  z-index: 1;
+}
+
+.tile::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    rgba(0, 255, 0, 0.15) 49%,
+    rgba(0, 255, 0, 0.05) 51%
+  );
+  background-size: 100% 4px;
+  z-index: 2;
+  animation: scanlines 1s linear infinite;
+}
+
+.tile::before,
+.tile::after {
+  pointer-events: none;
+}
+
+.tile h4,
+.tile-title {
+  color: #00ff00;
+  font-weight: normal;
+  margin: 1rem 0 0 0;
+  text-shadow:
+    0 0 2px #00ff00,
+    0 0 2px #00ff00;
+  z-index: 0;
+}
+
+.tile span {
+  color: #00ff00;
+  padding: 0.5rem 0;
+  z-index: 0;
+}
+
+.tile:hover {
+  box-shadow: 0 0 10px #00ff00;
+}
+
+.modal-container {
+  color: black;
+}
+
+.hero {
+  background-color: #00ff00;
+  color: black;
+}
+
+.form-input {
+  background-color: #00ff00;
+  color: black;
+  border: none;
+}
+
+input.form-input::placeholder {
+  color: black;
+}
+
+.chip {
+  background-color: #030;
+  color: black;
+  border: none;
+}
+
+.chip.active {
+  background-color: #00ff00;
+  color: black;
+  border: none;
+}
+
+iframe,
+.modal-body {
+  background-color: white;
+}
+
+.modal-container {
+  max-height: 600px;
+}
+
+@keyframes scanlines {
+  0% {
+    background-position-y: 0;
+  }
+  100% {
+    background-position-y: 4px;
+  }
+}
