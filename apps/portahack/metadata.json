@@ -4,7 +4,7 @@
   "version": "1.1.0",
   "description": "A recreation of the in-game hacking sequence, played right from your wrist!",
   "icon": "assets/portahack.png",
-  "tags": "",
+  "tags": "game",
   "type": "app",
   "readme": "README.md",
   "custom": "",

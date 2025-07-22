@@ -4,7 +4,7 @@
   "version": "1.0.1",
   "description": "Upload a custom image",
   "icon": "app.png",
-  "tags": "",
+  "tags": "media,tool",
   "type": "app",
   "readme": "README.md",
   "custom": "custom.html",
