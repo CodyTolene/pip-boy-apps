@@ -1,1 +1,6 @@
+1.0.1
+https://github.com/CodyTolene/pip-boy-apps/pull/34
+- Add reboot functionality on exit to prevent memory leaks.
+  Reference discussion: https://discord.com/channels/1353516386902737047/1357909727622860982/1397246046400417966
+
 0.01: New App!

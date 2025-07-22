@@ -844,9 +844,7 @@ function PortaHack() {
         const maxLines = Math.floor((LOG_XY.y2 - LOG_XY.y1) / 10) - 1;
         while (logEntries.length > maxLines) logEntries.shift();
         logEntries.push('> ' + selectedWord);
-        logEntries.push(`> [${likeness}]`);
-        // TODO: Should be this to match true Fallout behavior
-        // logEntries.push(`> ${likeness}/${correctPassword.length} correct.`);
+        logEntries.push(`> ${likeness}/${correctPassword.length} correct.`);
         attemptsRemaining--;
         drawAttemptCounter();
         drawPasswordMessage();

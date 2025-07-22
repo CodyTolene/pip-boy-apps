@@ -271,6 +271,20 @@ iframe,
   color: black;
 }
 
+.icon.icon-favourite {
+  text-indent: 0px;
+}
+.icon.icon-favourite::before {
+  content: url('../img/heart-hollow.svg');
+}
+
+.icon.icon-favourite-active {
+  text-indent: 0px;
+}
+.icon.icon-favourite-active::before {
+  content: url('../img/heart.svg');
+}
+
 @keyframes scanlines {
   0% {
     background-position-y: 0;
