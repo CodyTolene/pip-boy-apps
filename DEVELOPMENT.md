@@ -29,7 +29,7 @@ Pip.on('torch', () => {
 });
 ```
 - `g` is a graphics instance that writes direct to the screen
-- `bC` is a graphics instance that writes to a 2 bit offscreen buffer, and calling bC.flip() will flip that buffer to the screen with a scanline effect.
+- `bC` is a graphics instance that writes to a 2 bit offscreen buffer, and calling `bC.flip()` will flip that buffer to the screen with a scanline effect.
 
 To get started here is a few commonly used functions from the Espruino API that you can use in your apps:
 
