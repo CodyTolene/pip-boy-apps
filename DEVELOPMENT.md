@@ -1,4 +1,4 @@
-If you put a JS file in the USER folder, Pip-Boy will show it in a list of apps in the INV screen.
+If you put a JS file in the `USER` folder, Pip-Boy will show it in a list of apps in the `INV` screen.
 
 The following variables are available to you:
 
