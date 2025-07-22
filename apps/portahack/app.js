@@ -115,11 +115,10 @@ function PortaHack() {
   let logEntries = [];
 
   // Colors
-  const BLACK = '#000000';
-  const WHITE = '#ffffff';
-  const GREEN = '#00ff00';
-  const GREEN_DARK = '#007f00';
-  const GREEN_DARKER = '#003300';
+  const COLOR_BLACK = '#000000';
+  const COLOR_WHITE = '#ffffff';
+  const COLOR_THEME = g.theme.fg;
+  const COLOR_THEME_DARK = g.blendColor(COLOR_BLACK, COLOR_THEME, 0.5);
 
   // Video
   const VIDEO_STOPPED = 'videoStopped';
@@ -168,7 +167,7 @@ function PortaHack() {
   let lastPlayState = false;
 
   function clearScreen() {
-    gb.setColor(BLACK).fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    gb.setColor(COLOR_BLACK).fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
   }
 
   function drawAttemptCounter() {
@@ -179,14 +178,14 @@ function PortaHack() {
     }
 
     // Clear previous
-    gb.setColor(BLACK).fillRect(ATTEMPT_COUNTER_XY);
+    gb.setColor(COLOR_BLACK).fillRect(ATTEMPT_COUNTER_XY);
 
     const padding = ATTEMPT_COUNTER.padding;
     const textHeight = ATTEMPT_COUNTER.textHeight;
     const y = ATTEMPT_COUNTER_XY.y1 + textHeight + padding;
     let text = attemptsRemaining + ' ATTEMPT(S) LEFT:';
 
-    gb.setColor(GREEN)
+    gb.setColor(COLOR_THEME)
       .setFont(FONT)
       .setFontAlign(-1, -1)
       .drawString(text, ATTEMPT_COUNTER_XY.x1 + padding, y);
@@ -199,7 +198,7 @@ function PortaHack() {
     // Draw attempt boxes
     for (let i = 0; i < attemptsRemaining; i++) {
       const x = startX + i * (boxSize + boxPadding);
-      gb.setColor(GREEN).fillRect(x, y, x + boxSize, y + boxSize);
+      gb.setColor(COLOR_THEME).fillRect(x, y, x + boxSize, y + boxSize);
     }
   }
 
@@ -207,7 +206,7 @@ function PortaHack() {
     if (!DEBUG) {
       return; // Skip drawing boundaries if not in debug mode
     }
-    gb.setColor(WHITE).drawRect(area);
+    gb.setColor(COLOR_WHITE).drawRect(area);
   }
   function scanSnippets() {
     foundSnippets = [];
@@ -265,9 +264,9 @@ function PortaHack() {
       const prevAddr =
         '0xF' + (0x964 + drawCursor.prevRow).toString(16).padStart(3, '0');
 
-      gb.setColor(BLACK)
+      gb.setColor(COLOR_BLACK)
         .fillRect(prevArea.x1, prevY, prevArea.x2, prevY + 10)
-        .setColor(GREEN)
+        .setColor(COLOR_THEME)
         .setFont(FONT)
         .setFontAlign(-1, -1)
         .drawString(prevAddr + ' ' + prevJunk.line, prevArea.x1 + 2, prevY);
@@ -279,7 +278,7 @@ function PortaHack() {
 
     // 3) Draw this full line
     const addr = '0xF' + (0x964 + cursorRow).toString(16).padStart(3, '0');
-    gb.setColor(GREEN)
+    gb.setColor(COLOR_THEME)
       .setFont(FONT)
       .setFontAlign(-1, -1)
       .drawString(addr + ' ' + line, area.x1 + 2, y);
@@ -292,9 +291,9 @@ function PortaHack() {
     if (snippet) {
       const xSnip = area.x1 + 2 + (addrLen + snippet.startCol) * 6;
       const width = (snippet.endCol - snippet.startCol + 1) * 6;
-      gb.setColor(GREEN)
+      gb.setColor(COLOR_THEME)
         .fillRect(xSnip, y, xSnip + width, y + 10)
-        .setColor(BLACK)
+        .setColor(COLOR_BLACK)
         .drawString(
           line.substring(snippet.startCol, snippet.endCol + 1),
           xSnip,
@@ -319,16 +318,16 @@ function PortaHack() {
       !isDots
     ) {
       const xWord = area.x1 + 2 + (addrLen + start) * 6;
-      gb.setColor(GREEN)
+      gb.setColor(COLOR_THEME)
         .fillRect(xWord, y, xWord + length * 6, y + 10)
-        .setColor(BLACK)
+        .setColor(COLOR_BLACK)
         .drawString(segment, xWord, y);
     } else {
       // 6) Fallback: highlight just the one character under the cursor
       const xChar = area.x1 + 2 + (addrLen + cursorCol) * 6;
-      gb.setColor(GREEN)
+      gb.setColor(COLOR_THEME)
         .fillRect(xChar, y, xChar + 6, y + 10)
-        .setColor(BLACK)
+        .setColor(COLOR_BLACK)
         .drawString(line[cursorCol], xChar, y);
     }
   }
@@ -344,7 +343,7 @@ function PortaHack() {
     removeListeners();
 
     const gameOverText = 'LOCKOUT INITIATED';
-    gb.setColor(GREEN)
+    gb.setColor(COLOR_THEME)
       .setFontMonofonto18()
       .setFontAlign(-1, -1)
       .drawString(
@@ -354,7 +353,7 @@ function PortaHack() {
       );
 
     const replayText = 'Press radio button to retry or power to exit';
-    gb.setColor(GREEN_DARK)
+    gb.setColor(COLOR_THEME_DARK)
       .setFontMonofonto16()
       .setFontAlign(-1, -1)
       .drawString(
@@ -387,12 +386,12 @@ function PortaHack() {
 
   function drawHeader() {
     // Clear previous
-    gb.setColor(BLACK).fillRect(HEADER_XY);
+    gb.setColor(COLOR_BLACK).fillRect(HEADER_XY);
 
     const text =
       'ROBCO INDUSTRIES (TM) ' + GAME_NAME + ' v' + GAME_VERSION + ' PROTOCOL';
 
-    gb.setColor(GREEN)
+    gb.setColor(COLOR_THEME)
       .setFont(FONT)
       .setFontAlign(-1, -1)
       .drawString(
@@ -407,13 +406,13 @@ function PortaHack() {
     const maxLines = Math.floor((LOG_XY.y2 - LOG_XY.y1) / lineHeight);
     const entriesToShow = logEntries.slice(-maxLines);
 
-    gb.setColor(BLACK).fillRect(LOG_XY);
+    gb.setColor(COLOR_BLACK).fillRect(LOG_XY);
     gb.setFont('6x8').setFontAlign(-1, -1);
 
     for (let i = 0; i < entriesToShow.length; i++) {
       const y = LOG_XY.y2 - lineHeight * (entriesToShow.length - i);
       const entry = entriesToShow[i];
-      gb.setColor(GREEN).drawString(entry, LOG_XY.x1 + 2, y);
+      gb.setColor(COLOR_THEME).drawString(entry, LOG_XY.x1 + 2, y);
     }
   }
 
@@ -432,13 +431,13 @@ function PortaHack() {
 
       const line = junk.line;
       const y = area.y1 + i * lineHeight;
-      gb.setColor(GREEN).drawString(addr + ' ' + line, area.x1 + 2, y);
+      gb.setColor(COLOR_THEME).drawString(addr + ' ' + line, area.x1 + 2, y);
     }
   }
 
   function drawPasswordMessage() {
     // Clear previous.
-    gb.setColor(BLACK).fillRect(PASSWORD_MESSAGE_XY);
+    gb.setColor(COLOR_BLACK).fillRect(PASSWORD_MESSAGE_XY);
 
     let text = '';
     if (attemptsRemaining <= 0) {
@@ -454,7 +453,7 @@ function PortaHack() {
       text = 'ENTER PASSWORD NOW';
     }
 
-    gb.setColor(GREEN)
+    gb.setColor(COLOR_THEME)
       .setFont(FONT)
       .setFontAlign(-1, -1)
       .drawString(
@@ -471,7 +470,7 @@ function PortaHack() {
     removeListeners();
 
     const successText = 'ACCESS GRANTED';
-    gb.setColor(GREEN)
+    gb.setColor(COLOR_THEME)
       .setFontMonofonto18()
       .setFontAlign(-1, -1)
       .drawString(
@@ -481,7 +480,7 @@ function PortaHack() {
       );
 
     const replayText = 'Press radio to restart or power to exit';
-    gb.setColor(GREEN_DARK)
+    gb.setColor(COLOR_THEME_DARK)
       .setFontMonofonto16()
       .setFontAlign(-1, -1)
       .drawString(
@@ -743,13 +742,13 @@ function PortaHack() {
       const y = area.y1 + rowIndex * lineHeight;
 
       // clear the old text
-      gb.setColor(BLACK).fillRect(area.x1, y, area.x2, y + lineHeight);
+      gb.setColor(COLOR_BLACK).fillRect(area.x1, y, area.x2, y + lineHeight);
 
       // draw the new dotted‐out line
       const newLine = isLeft
         ? junkLinesLeft[rowIndex].line
         : junkLinesRight[rowIndex].line;
-      gb.setColor(GREEN)
+      gb.setColor(COLOR_THEME)
         .setFont('6x8')
         .setFontAlign(-1, -1)
         .drawString(addr + ' ' + newLine, area.x1 + 2, y);
