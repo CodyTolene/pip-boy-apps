@@ -4,6 +4,7 @@ const originalUploadApp = window.uploadApp || null;
 
 // Keep us on the correct page
 if (
+  window.top === window.self &&
   location.hostname === 'pip-boy.com' &&
   location.pathname !== '/3000-mk-v-apps'
 ) {
