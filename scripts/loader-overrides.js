@@ -2,6 +2,14 @@ UART.ports = UART.ports.filter((e) => e.includes('Serial'));
 Const.CONNECTION_DEVICE = 'USB';
 const originalUploadApp = window.uploadApp || null;
 
+// Keep us on the correct page
+if (
+  location.hostname === 'pip-boy.com' &&
+  location.pathname !== '/3000-mk-v-apps'
+) {
+  location.href = 'https://pip-boy.com/3000-mk-v-apps';
+}
+
 // Create all directories (including nested) for app/game files
 async function createNestedDirsForAppFiles(app) {
   console.log('[loader-overrides] Ensuring nested directories...');
