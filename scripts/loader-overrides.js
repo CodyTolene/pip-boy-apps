@@ -29,25 +29,25 @@ async function createNestedDirsForAppFiles(app) {
   for (const folder of folders) {
     await new Promise((resolve) => {
       const js = `
-              (() => {
-                var fs = require("fs");
-                var parts = ${JSON.stringify(folder)}.split('/');
-                var current = '';
-                for (var i = 0; i < parts.length; i++) {
-                  current += (current ? '/' : '') + parts[i];
-                  try {
-                    fs.readdir(current);
-                  } catch (e) {
-                    try {
-                      fs.mkdir(current);
-                    } catch (mkdirError) {
-                      return { success: false, message: "Failed to create " + current + ": " + mkdirError.message };
-                    }
-                  }
-                }
-                return { success: true, message: "Ensured " + ${JSON.stringify(folder)} };
-              })();
-            `;
+        (() => {
+          var fs = require("fs");
+          var parts = ${JSON.stringify(folder)}.split('/');
+          var current = '';
+          for (var i = 0; i < parts.length; i++) {
+            current += (current ? '/' : '') + parts[i];
+            try {
+              fs.readdir(current);
+            } catch (e) {
+              try {
+                fs.mkdir(current);
+              } catch (mkdirError) {
+                return { success: false, message: "Failed to create " + current + ": " + mkdirError.message };
+              }
+            }
+          }
+          return { success: true, message: "Ensured " + ${JSON.stringify(folder)} };
+        })();
+      `;
       UART.write(`\x10${js}\n`, (result) => {
         resolve();
       });
@@ -56,11 +56,53 @@ async function createNestedDirsForAppFiles(app) {
   console.log('[loader-overrides] Nested directories ready.');
 }
 
+// Install the bootloader script
+async function installBootloader() {
+  console.log('[loader-overrides] Installing bootloader...');
+
+  await new Promise((resolve) => {
+    const js = `
+        (() => {
+          try {
+            require("Storage").write(".boot0", \`
+              E.on("init", function () {
+                // Clean up any previous Pip app states before loading new scripts.
+                // This ensures old intervals, listeners, or buffers are removed to 
+                // prevent memory leaks.
+                if (typeof Pip !== 'undefined' && typeof Pip.remove === 'function') {
+                  Pip.remove();
+                }
+                require("fs")
+                  .readdir("USER_BOOT")
+                  .sort()
+                  .forEach(function (f) {
+                    if (f.endsWith(".js")) {
+                      eval(require("fs").readFile("USER_BOOT/" + f));
+                    }
+                  });
+              });
+            \`);
+            return { success: true, message: "Bootloader installed successfully!" };
+          } catch (e) {
+            return { success: false, message: e.message };
+          }
+        })();
+      `;
+    UART.write(`\x10${js}\n`, (result) => {
+      resolve();
+    });
+  });
+}
+
 // Make sure nested directories exist on the device before uploading files
 window.uploadApp = async function (app, options) {
   console.log('[loader-overrides] Hooked `uploadApp`!');
 
   await createNestedDirsForAppFiles(app);
+
+  if (app.type === 'bootloader') {
+    await installBootloader();
+  }
 
   // Call the original uploadApp
   if (originalUploadApp) {

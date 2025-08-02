@@ -1,0 +1,26 @@
+2.1.0
+https://github.com/CodyTolene/pip-boy-apps/pull/35
+- Update to be installable using the official TWC app loader.
+- Move assets to the `assets/` directory.
+- Add new `README.md` file.
+- Add new `metadata.json` file.
+- Add new `ChangeLog` file.
+- Add new app png icon.
+
+2.0.1
+https://github.com/CodyTolene/pip-apps/pull/74
+- Fix up file paths.
+
+2.0.0
+https://github.com/CodyTolene/pip-apps/pull/73
+- Perks tab.
+- Lots of stuff that I can't be bothered to list.
+
+1.0.0
+https://github.com/MercurialPony/PipUiPlus
+https://github.com/CodyTolene/pip-apps/pull/44
+- Add new app.
+- Add loader to the USER_BOOT directory.
+- Add SPECIAL app to the USER_BOOT/PipUiPlus directory.
+- Add assets to the USER_BOOT/PipUiPlus/Special directory.
+- Add app to the registry.json file.
