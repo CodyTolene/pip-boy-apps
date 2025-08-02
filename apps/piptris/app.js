@@ -9,7 +9,7 @@ function Piptris() {
 
   // Core
   const GAME_NAME = 'PIPTRIS';
-  const GAME_VERSION = '2.5.2';
+  const GAME_VERSION = '2.6.0';
 
   // File paths
   const CONFIG_PATH = 'USER/PIPTRIS/piptris.json';
@@ -37,10 +37,6 @@ function Piptris() {
   const NUKE_RADIUS = 2; // 5x5 area
   let nukeInProgress = false;
   let nukeWarningActive = false;
-
-  // Ghost piece
-  let showGhostPiece = false;
-  let lastGhost = null;
 
   // Game Difficulty
   let difficultyLevel = 0;
@@ -293,7 +289,6 @@ function Piptris() {
         }
       }
     }
-    drawGhostPiece();
     drawScore();
     drawLevel();
     drawLinesCleared();
@@ -364,7 +359,6 @@ function Piptris() {
     );
 
     drawPreviewBlockToggle();
-    drawGhostPieceToggle();
     setupOptions();
 
     inputInterval = setInterval(() => {
@@ -374,140 +368,6 @@ function Piptris() {
         startGame();
       }
     }, 100);
-  }
-
-  function drawGhostPiece(erase) {
-    if (!showGhostPiece || !blockCurrent || isGameOver) {
-      return;
-    }
-
-    let ghost =
-      erase && lastGhost
-        ? lastGhost
-        : {
-            x: blockCurrent.x,
-            y: blockCurrent.y,
-            shape: blockCurrent.shape,
-          };
-
-    if (!erase) {
-      while (!collides({ x: ghost.x, y: ghost.y + 1, shape: ghost.shape })) {
-        ghost.y++;
-      }
-      lastGhost = { x: ghost.x, y: ghost.y, shape: ghost.shape };
-    } else if (!lastGhost) {
-      return; // Nothing to erase
-    }
-
-    let color = erase ? COLOR_BLACK : COLOR_THEME_DARK;
-    g.setColor(color);
-
-    for (let y = 0; y < ghost.shape.length; y++) {
-      for (let x = 0; x < ghost.shape[y].length; x++) {
-        if (ghost.shape[y][x]) {
-          const blockValue = ghost.shape[y][x];
-          const blockX = PLAY_AREA_X + (ghost.x + x) * blockSize;
-          const blockY = PLAY_AREA_Y + (ghost.y + y) * blockSize;
-
-          if (!erase && blockValue === 2) {
-            try {
-              // Nuke ghost block
-              g.setColor(COLOR_RED_DARK);
-              g.drawImage(loadImage(NUKE_IMAGE_PATH), blockX, blockY, {
-                scale: blockSize / 15, // 15 = width of the nuke image
-                transparency: 0.5,
-              });
-            } catch (e) {
-              // Failed to load nuke ghost image
-              console.log(e);
-            }
-          } else {
-            // Default ghost block
-            if (useHollowBlocks) {
-              g.drawRect(
-                blockX,
-                blockY,
-                blockX + blockSize - 1,
-                blockY + blockSize - 1,
-              );
-            } else {
-              g.fillRect(
-                blockX,
-                blockY,
-                blockX + blockSize - 1,
-                blockY + blockSize - 1,
-              );
-            }
-          }
-        }
-      }
-    }
-  }
-
-  function drawGhostPieceToggle() {
-    g.setFont('6x8', 1);
-
-    const posY = SCREEN_AREA.y2 - 40;
-    const posX = 180;
-
-    const stateY = posY - 22;
-    const state = { ON: 'ON', OFF: 'OFF' };
-    const ghostState = showGhostPiece ? state.ON : state.OFF;
-
-    const fontHeight = 8;
-    const fontScale = 2;
-    g.setFont('6x' + fontHeight, fontScale);
-    const textWidth = g.stringWidth(state.OFF); // Widest state
-    const textHeight = fontHeight * fontScale;
-
-    // Clear previous area
-    const clearXY = {
-      x1: posX - textWidth / 2,
-      y1: stateY - textHeight / 2,
-      x2: posX + textWidth / 2,
-      y2: stateY + textHeight,
-    };
-    g.setColor(COLOR_BLACK);
-    g.fillRect(clearXY);
-
-    // drawBoundaries(clearXY);
-
-    g.setColor(COLOR_THEME);
-    g.drawString(ghostState, posX, stateY + 4);
-
-    g.setFont('6x8', 1);
-    g.setColor(COLOR_THEME_DARK);
-    const labelText = 'GHOST';
-    const labelWidth = g.stringWidth(labelText);
-    g.drawString(labelText, posX, posY);
-
-    const arrowSize = 5;
-    const arrowSpacing = 8;
-
-    // UP arrow (left of label)
-    const upArrowX = posX - labelWidth / 2 - arrowSpacing - 1;
-    const upArrowY = posY;
-    g.fillPoly([
-      upArrowX,
-      upArrowY - arrowSize,
-      upArrowX - arrowSize,
-      upArrowY + arrowSize,
-      upArrowX + arrowSize,
-      upArrowY + arrowSize,
-    ]);
-
-    // DOWN arrow (right of label)
-    const downArrowX = posX + labelWidth / 2 + arrowSpacing;
-    const downArrowY = posY;
-    const downArrowSize = arrowSize - 1;
-    g.fillPoly([
-      downArrowX,
-      downArrowY + downArrowSize,
-      downArrowX - downArrowSize,
-      downArrowY - downArrowSize,
-      downArrowX + downArrowSize,
-      downArrowY - downArrowSize,
-    ]);
   }
 
   function drawIncomingNuke() {
@@ -704,7 +564,7 @@ function Piptris() {
 
   function drawPreviewBlockToggle() {
     const posY = SCREEN_AREA.y2 - 40;
-    const posX = 300;
+    const posX = SCREEN_WIDTH / 2;
 
     const blockSize = 10;
     const blockHeight = T_SHAPE.length * blockSize;
@@ -837,14 +697,11 @@ function Piptris() {
       console.log(e);
     }
 
-    if (highScore > 0) {
-      g.setColor(COLOR_THEME_DARK);
-      g.setFont('6x8');
-      g.drawString('High Score: ' + highScore, centerX, centerY + 35);
-    }
+    g.setColor(COLOR_THEME_DARK);
+    g.setFont('6x8');
+    g.drawString('High Score: ' + highScore, centerX, centerY + 35);
 
     drawPreviewBlockToggle();
-    drawGhostPieceToggle();
     setupOptions();
   }
 
@@ -1051,14 +908,11 @@ function Piptris() {
   function move(dir) {
     if (isGameOver || !blockCurrent) return;
 
-    drawGhostPiece(true);
-
     let oldX = blockCurrent.x;
     blockCurrent.x += dir;
 
     if (collides(blockCurrent)) {
       blockCurrent.x = oldX;
-      drawGhostPiece();
       return;
     }
 
@@ -1070,7 +924,6 @@ function Piptris() {
       }
     }
 
-    drawGhostPiece();
     drawCurrentPiece(false);
     drawBoundaries(PLAY_AREA);
   }
@@ -1177,8 +1030,6 @@ function Piptris() {
   function rotate(dir) {
     if (isGameOver || !blockCurrent) return;
 
-    drawGhostPiece(true);
-
     const shape = blockCurrent.shape;
     const newShape =
       dir > 0
@@ -1190,7 +1041,6 @@ function Piptris() {
 
     if (collides(blockCurrent)) {
       blockCurrent.shape = oldShape;
-      drawGhostPiece();
       return;
     }
 
@@ -1203,7 +1053,6 @@ function Piptris() {
     }
 
     drawCurrentPiece(false);
-    drawGhostPiece();
     drawBoundaries(PLAY_AREA);
   }
 
@@ -1237,7 +1086,6 @@ function Piptris() {
   function setupOptions() {
     Pip.removeAllListeners(KNOB_LEFT);
     Pip.removeAllListeners(KNOB_RIGHT);
-    Pip.on(KNOB_LEFT, toggleGhostPiece);
     Pip.on(KNOB_RIGHT, togglePreviewStyle);
   }
 
@@ -1307,11 +1155,6 @@ function Piptris() {
 
     setListeners();
     mainLoopInterval = setInterval(mainLoop, blockDropSpeed);
-  }
-
-  function toggleGhostPiece() {
-    showGhostPiece = !showGhostPiece;
-    drawGhostPieceToggle();
   }
 
   function togglePreviewStyle() {

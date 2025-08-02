@@ -1,3 +1,8 @@
+2.6.0
+https://github.com/CodyTolene/pip-boy-apps/pull/36
+- Optimize the game logic and reduce memory usage.
+- Remove ghost piece/drop preview.
+
 2.5.2
 https://github.com/CodyTolene/pip-boy-apps/pull/30
 - Patch the file uploader script fixing the wav file upload issue.
