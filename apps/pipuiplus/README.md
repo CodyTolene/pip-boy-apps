@@ -22,3 +22,9 @@ around with.
 ### Tips
 
 Click the torch button while on the 'PERKS' page to edit your perks.
+
+### Warning
+
+Bootloader apps can cause general slowness and instability as they run with the
+main firmware, so use them with caution. If you experience issues, especially
+with apps that run by themselves, try disabling bootloader apps.
