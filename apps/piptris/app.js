@@ -35,6 +35,7 @@ function Piptris() {
   // Nuke
   const NUKE_POINTS_PER_BLOCK = 10;
   const NUKE_RADIUS = 2; // 5x5 area
+  let enableNukePiece = true;
   let nukeInProgress = false;
   let nukeWarningActive = false;
 
@@ -359,6 +360,7 @@ function Piptris() {
     );
 
     drawPreviewBlockToggle();
+    drawNukeToggle();
     setupOptions();
 
     inputInterval = setInterval(() => {
@@ -562,9 +564,70 @@ function Piptris() {
     }
   }
 
+  function drawNukeToggle() {
+    g.setFont('6x8', 1);
+
+    const posY = SCREEN_AREA.y2 - 40;
+    const posX = 180;
+
+    const stateY = posY - 22;
+    const state = { ON: 'ON', OFF: 'OFF' };
+    const nukeState = enableNukePiece ? state.ON : state.OFF;
+
+    const fontHeight = 8;
+    const fontScale = 2;
+    g.setFont('6x' + fontHeight, fontScale);
+    const textWidth = g.stringWidth(state.OFF);
+    const textHeight = fontHeight * fontScale;
+
+    const clearXY = {
+      x1: posX - textWidth / 2,
+      y1: stateY - textHeight / 2,
+      x2: posX + textWidth / 2,
+      y2: stateY + textHeight,
+    };
+    g.setColor(COLOR_BLACK);
+    g.fillRect(clearXY);
+
+    g.setColor(COLOR_THEME);
+    g.drawString(nukeState, posX, stateY + 4);
+
+    g.setFont('6x8', 1);
+    g.setColor(COLOR_THEME_DARK);
+    const labelText = 'NUKE';
+    const labelWidth = g.stringWidth(labelText);
+    g.drawString(labelText, posX, posY);
+
+    const arrowSize = 5;
+    const arrowSpacing = 8;
+
+    const upArrowX = posX - labelWidth / 2 - arrowSpacing - 1;
+    const upArrowY = posY;
+    g.fillPoly([
+      upArrowX,
+      upArrowY - arrowSize,
+      upArrowX - arrowSize,
+      upArrowY + arrowSize,
+      upArrowX + arrowSize,
+      upArrowY + arrowSize,
+    ]);
+
+    const downArrowX = posX + labelWidth / 2 + arrowSpacing;
+    const downArrowY = posY;
+    const downArrowSize = arrowSize - 1;
+    g.fillPoly([
+      downArrowX,
+      downArrowY + downArrowSize,
+      downArrowX - downArrowSize,
+      downArrowY - downArrowSize,
+      downArrowX + downArrowSize,
+      downArrowY - downArrowSize,
+    ]);
+  }
+
   function drawPreviewBlockToggle() {
     const posY = SCREEN_AREA.y2 - 40;
-    const posX = SCREEN_WIDTH / 2;
+    const posX = 300; // SCREEN_WIDTH / 2;
 
     const blockSize = 10;
     const blockHeight = T_SHAPE.length * blockSize;
@@ -702,6 +765,7 @@ function Piptris() {
     g.drawString('High Score: ' + highScore, centerX, centerY + 35);
 
     drawPreviewBlockToggle();
+    drawNukeToggle();
     setupOptions();
   }
 
@@ -773,7 +837,7 @@ function Piptris() {
 
   function getRandomPiece(allowNuke) {
     if (typeof allowNuke === 'undefined') {
-      allowNuke = true;
+      allowNuke = enableNukePiece;
     }
 
     let shapeData;
@@ -1086,6 +1150,7 @@ function Piptris() {
   function setupOptions() {
     Pip.removeAllListeners(KNOB_LEFT);
     Pip.removeAllListeners(KNOB_RIGHT);
+    Pip.on(KNOB_LEFT, toggleNukePiece);
     Pip.on(KNOB_RIGHT, togglePreviewStyle);
   }
 
@@ -1155,6 +1220,11 @@ function Piptris() {
 
     setListeners();
     mainLoopInterval = setInterval(mainLoop, blockDropSpeed);
+  }
+
+  function toggleNukePiece() {
+    enableNukePiece = !enableNukePiece;
+    drawNukeToggle();
   }
 
   function togglePreviewStyle() {
