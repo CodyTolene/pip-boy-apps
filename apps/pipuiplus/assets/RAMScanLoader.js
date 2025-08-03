@@ -1,5 +1,3 @@
-const originalDrawFooter = drawFooter;
-
 if (global.ui === undefined) {
   try {
     global.ui = JSON.parse(
@@ -20,28 +18,31 @@ function drawRamOverlay() {
   const mem = process.memory();
   const used = mem.usage;
   const total = mem.total;
-  const w = bF.getWidth();
-  const text = 'RAM   ' + used + '/' + total;
+  const text = used + '/' + total;
 
-  const areaX1 = w - 130;
-  const areaY1 = 0;
-  const areaX2 = w;
-  const areaY2 = 24;
+  const COLOR_THEME = g.theme.fg;
+  const COLOR_BLACK = '#000000';
+  const HEIGHT = g.getHeight();
+  const WIDTH = g.getWidth();
 
-  bF.clearRect(areaX1, areaY1, areaX2, areaY2);
+  const area = {
+    x1: WIDTH - 95,
+    y1: HEIGHT - 40,
+    x2: WIDTH - 55,
+    y2: HEIGHT - 30,
+  };
 
-  bF.setFontMonofonto16()
-    .setFontAlign(1, -1)
-    .setBgColor(1)
-    .setColor(3)
-    .drawString(text, w - 4, 4)
-    .flip();
+  // g.setColor(COLOR_THEME);
+  // g.drawRect(area);
+
+  g.setColor(COLOR_BLACK);
+  g.fillRect(area);
+
+  g.setColor(COLOR_THEME);
+  g.setFont('4x6');
+  g.setFontAlign(1, 1, 0);
+  g.drawString(text, area.x2, area.y1 + 8);
 }
-
-drawFooter = function () {
-  originalDrawFooter();
-  drawRamOverlay();
-};
 
 function clearRamScanTimeout() {
   if (global.ramScanTimeout) {
@@ -60,4 +61,6 @@ function ramScanLoop() {
 }
 
 clearRamScanTimeout();
-setTimeout(() => ramScanLoop(), 3000);
+setTimeout(() => {
+  ramScanLoop();
+}, 3000);

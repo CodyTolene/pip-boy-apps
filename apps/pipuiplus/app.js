@@ -194,6 +194,7 @@ function PipUIPlus() {
 
   self.run = function () {
     bC.clear();
+    global.ui.enableRamScan = false;
 
     removeListeners();
     setListeners();
