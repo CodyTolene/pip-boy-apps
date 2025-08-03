@@ -22,6 +22,8 @@ function PipUIPlus() {
   const AUDIO_STOPPED = 'audioStopped';
   const KNOB_DEBOUNCE = 30;
   let lastLeftKnobTime = 0;
+  let inputInterval = null;
+  let lastPlayButtonState = false;
 
   // Paging
   const PAGE_SIZE = 5;
@@ -30,25 +32,25 @@ function PipUIPlus() {
 
   // Saved options
   let options = {
-    enableSpecialTab: true,
-    enablePerksTab: true,
-    enableRamScan: true,
-    hideCogIcon: true,
-    hideHolotapeIcon: true,
+    enableSpecialTab: false,
+    enablePerksTab: false,
+    enableRamScan: false,
+    hideCogIcon: false,
+    hideHolotapeIcon: false,
   };
   const optionKeys = Object.keys(options);
 
-  function drawOptionsList() {
+  function draw() {
     g.clear();
 
     g.setFontMonofonto28();
     g.setColor(COLOR_THEME);
     g.setFontAlign(0, -1);
-    g.drawString(APP_NAME, CENTER, 10);
+    g.drawString(APP_NAME, CENTER, 20);
 
     g.setFontMonofonto18();
     g.setColor(COLOR_THEME_DARK);
-    g.drawString('Options Menu v' + APP_VERSION, CENTER, 45);
+    g.drawString('Options Menu v' + APP_VERSION, CENTER, 55);
 
     const start = page * PAGE_SIZE;
     const visibleKeys = optionKeys.slice(start, start + PAGE_SIZE);
@@ -57,7 +59,7 @@ function PipUIPlus() {
     g.setFontMonofonto18().setFontAlign(-1, -1);
 
     visibleKeys.forEach((key, i) => {
-      const y = 80 + i * rowHeight;
+      const y = 100 + i * rowHeight;
       const x = 50;
       const checked = options[key] ? 'X' : ' ';
       let label = `[ ${checked} ] `;
@@ -104,7 +106,7 @@ function PipUIPlus() {
     g.setFontMonofonto16();
     g.setColor(COLOR_THEME_DARK);
     g.setFontAlign(0, -1);
-    g.drawString('Press power button to exit', CENTER, HEIGHT - 75);
+    g.drawString('Press power button to exit', CENTER, HEIGHT - 40);
   }
 
   function handleLeftKnob(dir) {
@@ -121,10 +123,29 @@ function PipUIPlus() {
     }
   }
 
+  function handleRightKnob(dir) {
+    scrollMenu(dir);
+  }
+
   function handlePowerButton() {
     removeListeners();
+
+    clearInterval(inputInterval);
+    inputInterval = null;
+
     bC.clear(1).flip();
     E.reboot();
+  }
+
+  function handleTopButton() {
+    // Adjust brightness
+    const brightnessLevels = [1, 5, 10, 15, 20];
+    const currentIndex = brightnessLevels.findIndex(
+      (level) => level === Pip.brightness,
+    );
+    const nextIndex = (currentIndex + 1) % brightnessLevels.length;
+    Pip.brightness = brightnessLevels[nextIndex];
+    Pip.updateBrightness();
   }
 
   function readOptions() {
@@ -145,6 +166,8 @@ function PipUIPlus() {
 
   function setListeners() {
     Pip.on(KNOB_LEFT, handleLeftKnob);
+    Pip.on(KNOB_RIGHT, handleRightKnob);
+    Pip.on(BTN_TOP, handleTopButton);
   }
 
   function toggleSelectedOption() {
@@ -159,7 +182,7 @@ function PipUIPlus() {
     }
 
     saveOptions();
-    drawOptionsList();
+    draw();
   }
 
   function saveOptions() {
@@ -189,18 +212,28 @@ function PipUIPlus() {
       }
     }
 
-    drawOptionsList();
+    draw();
   }
 
   self.run = function () {
     bC.clear();
-    global.ui.enableRamScan = false;
+    if (global.ui.enableRamScan) {
+      global.ui.enableRamScan = false;
+    }
 
     removeListeners();
     setListeners();
 
     readOptions();
-    drawOptionsList();
+    draw();
+
+    inputInterval = setInterval(() => {
+      const currentState = BTN_PLAY.read();
+      if (currentState && !lastPlayButtonState) {
+        toggleSelectedOption();
+      }
+      lastPlayButtonState = currentState;
+    }, 100);
 
     setWatch(() => handlePowerButton(), BTN_POWER, {
       debounce: 50,

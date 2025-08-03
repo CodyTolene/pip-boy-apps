@@ -1,7 +1,7 @@
 {
-  "enableSpecialTab": true,
-  "enablePerksTab": true,
-  "enableRamScan": true,
-  "hideCogIcon": true,
-  "hideHolotapeIcon": true
+  "enableSpecialTab": false,
+  "enablePerksTab": false,
+  "enableRamScan": false,
+  "hideCogIcon": false,
+  "hideHolotapeIcon": false
 }

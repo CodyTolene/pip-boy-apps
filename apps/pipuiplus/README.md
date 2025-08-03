@@ -13,16 +13,24 @@
 
 ### Description
 
-Pip UI+ expands the capabilities of the Pip‑Boy 3000 Mk V by adding familiar
-in‑game elements like the SPECIAL and PERKS tabs, making your stats screen feel
-complete. It also introduces new interface features such as a RAM usage monitor
-for real‑time performance insight, as well as hiding certain elements to reduce
-clutter.
+Pip UI+ enhances the Pip‑Boy 3000 Mk V with classic tabs like SPECIAL and PERKS,
+a real‑time RAM monitor, and options to hide interface elements for a cleaner,
+less cluttered display.
 
 ### Instructions
 
-After installing, you can modify your UI by navigating to the Pip UI+ options
-app under INV > APPS. Here, you can toggle various UI features on and off.
+After installing, you can modify your UI by navigating to the Pip UI+ app under
+INV > APPS. Here, you can toggle various UI features on and off.
+
+### Features
+
+| Feature                              |
+| ------------------------------------ |
+| Enable STATS > SPECIAL tab           |
+| Enable STATS > PERKS tab             |
+| Enable RAM Scan (bottom right of OS) |
+| Hide Cog Icon (top left of OS)       |
+| Hide Holotape Icon (top right of OS) |
 
 ### Tips
 
