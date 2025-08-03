@@ -10,6 +10,7 @@
   "custom": "install.html",
   "storage": [
     { "name": "USER/piptris.js", "url": "app.min.js" },
+    { "name": "USER/PIPTRIS/piptris.min.js", "url": "assets/piptris.min.js" },
     { "name": "USER/PIPTRIS/piptris.json", "url": "assets/piptris.json" },
     { "name": "USER/PIPTRIS/gear.json", "url": "assets/gear.json" },
     { "name": "USER/PIPTRIS/nuke.json", "url": "assets/nuke.json" },
