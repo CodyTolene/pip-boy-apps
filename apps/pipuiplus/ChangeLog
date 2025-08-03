@@ -1,3 +1,12 @@
+3.0.0
+https://github.com/CodyTolene/pip-boy-apps/pull/37
+- Add a Pip UI+ options app to toggle UI features on and off.
+- Add new UI feature: "RAM Scan". Displays the current RAM usage on the bottom left of the screen.
+- Add new UI feature: Enable/disable the cog icon in the top left corner. 
+  Thanks @misscurlybrace!
+- Add new UI feature: Enable/disable the holotape icon in the top right corner. 
+  Thanks @misscurlybrace!
+
 2.1.0
 https://github.com/CodyTolene/pip-boy-apps/pull/35
 - Update to be installable using the official TWC app loader.
