@@ -1,17 +1,30 @@
 {
   "id": "pipuiplus",
   "name": "Pip UI+",
-  "version": "2.1.0",
-  "description": "Pip UI+ aims to add some of the missing in-game tabs (such as special, perks, and so on) to the Pip-Boy 3000 Mk V. Inspired by gnargle's Stats Display.",
+  "version": "3.0.0",
+  "description": "Pip UI+ enhances the Pip‑Boy 3000 Mk V with classic tabs like SPECIAL and PERKS, a real‑time RAM monitor, and options to hide interface elements for a cleaner, less cluttered display.",
   "icon": "assets/pipuiplus.png",
   "tags": "bootloader,media,tool",
   "type": "bootloader",
   "readme": "README.md",
   "custom": "",
   "storage": [
+    { "name": "USER/pipuiplus.js", "url": "app.min.js" },
+    {
+      "name": "USER/PIP_UI_PLUS/options.json",
+      "url": "assets/options.json"
+    },
+    {
+      "name": "USER_BOOT/IconsLoader.min.js",
+      "url": "assets/IconsLoader.min.js"
+    },
     {
       "name": "USER_BOOT/PipUiPlusLoader.min.js",
       "url": "assets/PipUiPlusLoader.min.js"
+    },
+    {
+      "name": "USER_BOOT/RAMScanLoader.min.js",
+      "url": "assets/RAMScanLoader.min.js"
     },
     {
       "name": "USER_BOOT/PIP_UI_PLUS/Menu.min.js",
