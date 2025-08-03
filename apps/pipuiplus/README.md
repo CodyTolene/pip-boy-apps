@@ -2,26 +2,31 @@
 
 ### Info
 
-**Author:** Mercy (MercurialPony)
+**Author(s):**
 
-**Website(s):**
+- [Mercy](https://github.com/MercurialPony)
+- [Cody Tolene](https://github.com/CodyTolene)
 
-- [GitHub - MercurialPony](https://github.com/MercurialPony)
+**Links(s):**
+
 - [GitHub - PipUiPlus](https://github.com/MercurialPony/PipUiPlus)
 
 ### Description
 
-Pip UI+ aims to add some of the missing in-game tabs (such as special, perks,
-and so on) to the Pip-Boy 3000 Mk V. Inspired by gnargle's Stats Display.
+Pip UI+ expands the capabilities of the Pip‑Boy 3000 Mk V by adding familiar
+in‑game elements like the SPECIAL and PERKS tabs, making your stats screen feel
+complete. It also introduces new interface features such as a RAM usage monitor
+for real‑time performance insight, as well as hiding certain elements to reduce
+clutter.
 
 ### Instructions
 
-The 'STAT' page will now have the 'SPECIAL' and 'PERKS' tabs which you can mess
-around with.
+After installing, you can modify your UI by navigating to the Pip UI+ options
+app under INV > APPS. Here, you can toggle various UI features on and off.
 
 ### Tips
 
-Click the torch button while on the 'PERKS' page to edit your perks.
+Click the torch button while on the 'PERKS' tab to modify your perks.
 
 ### Warning
 

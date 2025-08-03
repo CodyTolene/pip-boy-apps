@@ -48,7 +48,7 @@ async function createNestedDirsForAppFiles(app) {
           return { success: true, message: "Ensured " + ${JSON.stringify(folder)} };
         })();
       `;
-      UART.write(`\x10${js}\n`, (result) => {
+      UART.write(`\x10${js}\n`, () => {
         resolve();
       });
     });
@@ -88,7 +88,7 @@ async function installBootloader() {
           }
         })();
       `;
-    UART.write(`\x10${js}\n`, (result) => {
+    UART.write(`\x10${js}\n`, () => {
       resolve();
     });
   });
