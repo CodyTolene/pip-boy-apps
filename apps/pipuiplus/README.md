@@ -22,15 +22,13 @@ less cluttered display.
 After installing, you can modify your UI by navigating to the Pip UI+ app under
 INV > APPS. Here, you can toggle various UI features on and off.
 
-### Features
+### Options
 
-| Feature                              |
-| ------------------------------------ |
-| Enable STATS > SPECIAL tab           |
-| Enable STATS > PERKS tab             |
-| Enable RAM Scan (bottom right of OS) |
-| Hide Cog Icon (top left of OS)       |
-| Hide Holotape Icon (top right of OS) |
+- Enable STATS > SPECIAL tab
+- Enable STATS > PERKS tab
+- Enable RAM Scan (bottom right of OS)
+- Hide Cog Icon (top left of OS)
+- Hide Holotape Icon (top right of OS)
 
 ### Tips
 
