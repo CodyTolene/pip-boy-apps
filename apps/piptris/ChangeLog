@@ -1,5 +1,11 @@
+3.0.0
+https://github.com/CodyTolene/pip-boy-apps/pull/39
+- Optimize the game logic and reduce memory usage.
+- Remove ghost piece/drop preview.
+- Add nuke on/off toggle option to replace ghost piece/drop preview.
+
 2.6.0
-https://github.com/CodyTolene/pip-boy-apps/pull/36
+https://github.com/CodyTolene/pip-boy-apps/pull/38
 - Clear memory before the game starts to prevent loading issues.
 
 2.5.2
