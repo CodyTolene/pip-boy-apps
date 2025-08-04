@@ -953,28 +953,58 @@ function Piptris() {
   function rotate(dir) {
     if (isGameOver || !blockCurrent) return;
 
-    const shape = blockCurrent.shape;
-    const newShape =
-      dir > 0
-        ? shape[0].map((_, i) => shape.map((row) => row[row.length - 1 - i]))
-        : shape[0].map((_, i) => shape.map((row) => row[i]).reverse());
-
     const oldShape = blockCurrent.shape;
-    blockCurrent.shape = newShape;
+    const oldX = blockCurrent.x;
+    const oldY = blockCurrent.y;
 
-    if (collides(blockCurrent)) {
-      blockCurrent.shape = oldShape;
-      return;
-    }
-
+    // Erase
     for (let y = 0; y < oldShape.length; y++) {
       for (let x = 0; x < oldShape[y].length; x++) {
         if (oldShape[y][x]) {
-          eraseBlock(blockCurrent.x + x, blockCurrent.y + y);
+          eraseBlock(oldX + x, oldY + y);
         }
       }
     }
 
+    // Generate
+    const newShape =
+      dir > 0
+        ? oldShape[0].map((_, i) =>
+            oldShape.map((row) => row[row.length - 1 - i]),
+          )
+        : oldShape[0].map((_, i) => oldShape.map((row) => row[i]).reverse());
+
+    let newX = oldX;
+    let newY = oldY;
+
+    // Rotate around center of I shapes
+    if (oldShape.length === 1 && oldShape[0].length === 4) {
+      // Horizontal to vertical
+      newX += 1; // shift right
+      newY -= 1; // shift up
+    } else if (oldShape.length === 4 && oldShape[0].length === 1) {
+      // Vertical to horizontal
+      newX -= 1; // shift left
+      newY += 1; // shift down
+    }
+
+    // Apply new shape and check
+    blockCurrent.shape = newShape;
+    blockCurrent.x = newX;
+    blockCurrent.y = newY;
+
+    if (collides(blockCurrent)) {
+      // Revert if invalid
+      blockCurrent.shape = oldShape;
+      blockCurrent.x = oldX;
+      blockCurrent.y = oldY;
+
+      // Redraw old shape
+      drawCurrentPiece(false);
+      return;
+    }
+
+    // Draw new rotated piece
     drawCurrentPiece(false);
     drawBoundaries(PLAY_AREA);
   }

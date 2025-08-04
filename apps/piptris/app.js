@@ -13,8 +13,21 @@ function clearMemory() {
     Pip[k] = undefined;
   });
 
+  // Disable bootloader functions for PipUI+
+  if (global.ui) {
+    if (global.ui.enableRamScan) {
+      global.ui.enableRamScan = false;
+    }
+    if (global.ui.enableSpecialTab) {
+      global.ui.enableSpecialTab = false;
+    }
+    if (global.ui.enablePerksTab) {
+      global.ui.enablePerksTab = false;
+    }
+  }
+
   clearInterval();
-  // clearTimeout();
+  clearTimeout();
   clearWatch();
 
   Pip.removeAllListeners && Pip.removeAllListeners();
