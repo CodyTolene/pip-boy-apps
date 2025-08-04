@@ -1,3 +1,7 @@
+1.2.0
+https://github.com/CodyTolene/pip-boy-apps/pull/41
+- Clear memory before the game starts to prevent loading issues.
+
 1.1.1
 https://github.com/CodyTolene/pip-boy-apps/pull/34
 - Restore the likeness message to match the true Fallout behavior.

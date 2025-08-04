@@ -1,7 +1,7 @@
 {
   "id": "portahack",
   "name": "Porta Hack",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "A recreation of the in-game hacking sequence, played right from your wrist!",
   "icon": "assets/portahack.png",
   "tags": "game",
@@ -10,6 +10,10 @@
   "custom": "",
   "storage": [
     { "name": "USER/portahack.js", "url": "app.min.js" },
-    { "name": "USER/PORTAHACK/STARTHACK.avi", "url": "assets/STARTHACK.avi" }
+    {
+      "name": "USER/PORTA_HACK/portahack.min.js",
+      "url": "assets/portahack.min.js"
+    },
+    { "name": "USER/PORTA_HACK/STARTHACK.avi", "url": "assets/STARTHACK.avi" }
   ]
 }
