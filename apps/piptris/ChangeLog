@@ -1,3 +1,7 @@
+2.6.0
+https://github.com/CodyTolene/pip-boy-apps/pull/36
+- Clear memory before the game starts to prevent loading issues.
+
 2.5.2
 https://github.com/CodyTolene/pip-boy-apps/pull/30
 - Patch the file uploader script fixing the wav file upload issue.
