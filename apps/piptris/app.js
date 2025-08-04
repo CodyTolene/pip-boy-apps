@@ -14,7 +14,7 @@ function clearMemory() {
   });
 
   clearInterval();
-  clearTimeout();
+  // clearTimeout();
   clearWatch();
 
   Pip.removeAllListeners && Pip.removeAllListeners();

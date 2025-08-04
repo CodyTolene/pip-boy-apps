@@ -923,10 +923,17 @@ function Piptris() {
       console.log('No music tracks available');
       return;
     }
-    const track = musicList[Math.floor(Math.random() * musicList.length)];
-    if (track === currentTrack) {
-      return playMusic(); // Restart if same track
+
+    // Pick a different track if possible
+    let track;
+    if (musicList.length === 1) {
+      track = musicList[0];
+    } else {
+      do {
+        track = musicList[Math.floor(Math.random() * musicList.length)];
+      } while (track === currentTrack);
     }
+
     Pip.audioStop();
     Pip.audioStart(track);
     currentTrack = track;
