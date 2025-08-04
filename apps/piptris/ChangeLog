@@ -1,3 +1,11 @@
+3.1.0
+https://github.com/CodyTolene/pip-boy-apps/pull/40
+- Add a few optimizations for block rendering:
+  - Add new block sprite to replace the more complex manually drawn 3D blocks.
+  - The new block sprite also looks better in a 3D sense, so win-win!
+  - Using the block sprite also fixes the music skipping when blocks were first drawn previously.
+  - Load nuke & block images into memory for resuse on app initialization.
+
 3.0.0
 https://github.com/CodyTolene/pip-boy-apps/pull/39
 - Optimize the game logic and reduce memory footprint:

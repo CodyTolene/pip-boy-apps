@@ -9,9 +9,10 @@ function Piptris() {
 
   // Core
   const GAME_NAME = 'PIPTRIS';
-  const GAME_VERSION = '3.0.0';
+  const GAME_VERSION = '3.1.0';
 
   // File paths
+  const BLOCK_IMAGE_PATH = 'USER/PIPTRIS/block.json';
   const CONFIG_PATH = 'USER/PIPTRIS/piptris.json';
   const GEAR_IMAGE_PATH = 'USER/PIPTRIS/gear.json';
   const NUKE_IMAGE_PATH = 'USER/PIPTRIS/nuke.json';
@@ -19,10 +20,10 @@ function Piptris() {
 
   // Game State
   const BLOCK_START_SPEED = 800;
+  const BLOCK_SIZE = 15;
   let blockCurrent = null;
   let blockDropSpeed = BLOCK_START_SPEED;
   let blockNext = null;
-  let blockSize = 15;
   let currentInterval = blockDropSpeed;
   let highScore = 0;
   let inputInterval = null;
@@ -36,6 +37,7 @@ function Piptris() {
   const NUKE_RADIUS = 2; // 5x5 area
   let nukeInProgress = false;
   let nukeWarningActive = false;
+  let nukeImage = null;
 
   // Game Difficulty
   let difficultyLevel = 0;
@@ -67,16 +69,16 @@ function Piptris() {
   const PLAY_AREA_HEIGHT = 20;
   const PLAY_AREA_BLOCKS = new Uint8Array(PLAY_AREA_WIDTH * PLAY_AREA_HEIGHT);
   const PLAY_AREA_X =
-    (SCREEN_AREA.x1 + SCREEN_AREA.x2) / 2 - (blockSize * PLAY_AREA_WIDTH) / 2;
+    (SCREEN_AREA.x1 + SCREEN_AREA.x2) / 2 - (BLOCK_SIZE * PLAY_AREA_WIDTH) / 2;
   const PLAY_AREA_Y =
     SCREEN_AREA.y1 +
     (SCREEN_AREA.y2 - SCREEN_AREA.y1) / 2 -
-    (blockSize * PLAY_AREA_HEIGHT) / 2;
+    (BLOCK_SIZE * PLAY_AREA_HEIGHT) / 2;
   const PLAY_AREA = {
     x1: PLAY_AREA_X - 1,
     y1: PLAY_AREA_Y - 1,
-    x2: PLAY_AREA_X + PLAY_AREA_WIDTH * blockSize,
-    y2: PLAY_AREA_Y + PLAY_AREA_HEIGHT * blockSize,
+    x2: PLAY_AREA_X + PLAY_AREA_WIDTH * BLOCK_SIZE,
+    y2: PLAY_AREA_Y + PLAY_AREA_HEIGHT * BLOCK_SIZE,
   };
 
   // Knobs and Buttons
@@ -91,13 +93,13 @@ function Piptris() {
   let musicList = [];
   let currentTrack = null;
 
+  // Shapes (game pieces)
+  let blockImage = null;
   // prettier-ignore
   const T_SHAPE = [
     [0, 1, 0],
     [1, 1, 1]
   ];
-
-  // Shapes (game pieces)
   // prettier-ignore
   const SHAPES = [
     [[1, 1, 1, 1]],         // I
@@ -238,31 +240,21 @@ function Piptris() {
         ? forceValue
         : PLAY_AREA_BLOCKS[y * PLAY_AREA_WIDTH + x];
 
-    const x1 = PLAY_AREA_X + x * blockSize;
-    const y1 = PLAY_AREA_Y + y * blockSize;
-    const x2 = x1 + blockSize - 1;
-    const y2 = y1 + blockSize - 1;
+    const x1 = PLAY_AREA_X + x * BLOCK_SIZE;
+    const y1 = PLAY_AREA_Y + y * BLOCK_SIZE;
 
     if (blockValue === 2) {
       try {
         g.setColor(COLOR_RED);
-        g.drawImage(loadImage(NUKE_IMAGE_PATH), x1, y1);
+        g.drawImage(nukeImage, x1, y1);
       } catch (e) {
         console.log(e);
       }
       return;
+    } else if (blockValue) {
+      g.setColor(COLOR_THEME);
+      g.drawImage(blockImage, x1, y1);
     }
-
-    g.setColor(COLOR_THEME_DARK);
-    g.fillRect(x1, y1, x2, y2);
-
-    g.setColor(COLOR_THEME);
-    g.drawLine(x1, y1, x2, y1);
-    g.drawLine(x1, y1, x1, y2);
-
-    g.setColor(COLOR_HIGHLIGHT);
-    g.drawLine(x1 + 1, y1 + 1, x2 - 1, y1 + 1);
-    g.drawLine(x1 + 1, y1 + 1, x1 + 1, y2 - 1);
   }
 
   function drawBoundaries(area) {
@@ -511,11 +503,11 @@ function Piptris() {
     const startX = PLAY_AREA.x2 + 65;
     const startY = PLAY_AREA.y1 + 25;
 
-    const previewBlockArea = 4 * blockSize;
+    const previewBlockArea = 4 * BLOCK_SIZE;
     const previewPadding = 6;
 
     const clearX1 = startX - previewBlockArea / 2 - previewPadding;
-    const clearY1 = startY + 15 - previewPadding;
+    const clearY1 = startY + BLOCK_SIZE - previewPadding;
     const clearX2 = startX + previewBlockArea / 2 + previewPadding;
     const clearY2 = startY + 15 + previewBlockArea + previewPadding;
 
@@ -535,7 +527,7 @@ function Piptris() {
     g.drawString('NEXT', startX, startY);
 
     const piece = blockNext.shape;
-    const piecePixelWidth = piece[0].length * blockSize;
+    const piecePixelWidth = piece[0].length * BLOCK_SIZE;
     const offsetX = startX - piecePixelWidth / 2 - 2;
     const offsetY = startY + 20;
 
@@ -543,35 +535,15 @@ function Piptris() {
       for (let x = 0; x < piece[y].length; x++) {
         if (piece[y][x]) {
           const blockValue = piece[y][x];
-          const blockX = offsetX + x * blockSize;
-          const blockY = offsetY + y * blockSize;
+          const blockX = offsetX + x * BLOCK_SIZE;
+          const blockY = offsetY + y * BLOCK_SIZE;
 
           if (blockValue === 2) {
-            // Nuke
-            try {
-              const nukeImage = loadImage(NUKE_IMAGE_PATH);
-              g.setColor(COLOR_RED);
-              g.drawImage(nukeImage, blockX, blockY, {
-                scale: blockSize / nukeImage.width,
-              });
-            } catch (e) {
-              // Failed to load nuke image
-              console.log(e);
-            }
+            g.setColor(COLOR_RED);
+            g.drawImage(nukeImage, blockX, blockY);
           } else {
-            const x2 = blockX + blockSize - 1;
-            const y2 = blockY + blockSize - 1;
-
-            g.setColor(COLOR_THEME_DARK);
-            g.fillRect(blockX, blockY, x2, y2);
-
             g.setColor(COLOR_THEME);
-            g.drawLine(blockX, blockY, x2, blockY);
-            g.drawLine(blockX, blockY, blockX, y2);
-
-            g.setColor(COLOR_HIGHLIGHT);
-            g.drawLine(blockX + 1, blockY + 1, x2 - 1, blockY + 1);
-            g.drawLine(blockX + 1, blockY + 1, blockX + 1, y2 - 1);
+            g.drawImage(blockImage, blockX, blockY);
           }
         }
       }
@@ -701,10 +673,10 @@ function Piptris() {
   function eraseBlock(x, y) {
     g.setColor(COLOR_BLACK);
     g.fillRect(
-      PLAY_AREA_X + x * blockSize,
-      PLAY_AREA_Y + y * blockSize,
-      PLAY_AREA_X + (x + 1) * blockSize - 1,
-      PLAY_AREA_Y + (y + 1) * blockSize - 1,
+      PLAY_AREA_X + x * BLOCK_SIZE,
+      PLAY_AREA_Y + y * BLOCK_SIZE,
+      PLAY_AREA_X + (x + 1) * BLOCK_SIZE - 1,
+      PLAY_AREA_Y + (y + 1) * BLOCK_SIZE - 1,
     );
   }
 
@@ -890,10 +862,10 @@ function Piptris() {
 
     // Blast area
     let blastArea = {
-      x1: PLAY_AREA_X + (centerX - NUKE_RADIUS) * blockSize + 1,
-      y1: PLAY_AREA_Y + (centerY - NUKE_RADIUS) * blockSize + 1,
-      x2: PLAY_AREA_X + (centerX + NUKE_RADIUS + 1) * blockSize - 2,
-      y2: PLAY_AREA_Y + (centerY + NUKE_RADIUS + 1) * blockSize - 2,
+      x1: PLAY_AREA_X + (centerX - NUKE_RADIUS) * BLOCK_SIZE + 1,
+      y1: PLAY_AREA_Y + (centerY - NUKE_RADIUS) * BLOCK_SIZE + 1,
+      x2: PLAY_AREA_X + (centerX + NUKE_RADIUS + 1) * BLOCK_SIZE - 2,
+      y2: PLAY_AREA_Y + (centerY + NUKE_RADIUS + 1) * BLOCK_SIZE - 2,
     };
     // Keep within play area
     blastArea.x1 = Math.max(blastArea.x1, PLAY_AREA.x1 + 1);
@@ -966,8 +938,8 @@ function Piptris() {
     g.fillRect(
       PLAY_AREA_X,
       PLAY_AREA_Y,
-      PLAY_AREA_X + PLAY_AREA_WIDTH * blockSize - 1,
-      PLAY_AREA_Y + PLAY_AREA_HEIGHT * blockSize - 1,
+      PLAY_AREA_X + PLAY_AREA_WIDTH * BLOCK_SIZE - 1,
+      PLAY_AREA_Y + PLAY_AREA_HEIGHT * BLOCK_SIZE - 1,
     );
   }
 
@@ -1109,6 +1081,9 @@ function Piptris() {
 
   self.run = function () {
     loadConfig();
+
+    blockImage = loadImage(BLOCK_IMAGE_PATH);
+    nukeImage = loadImage(NUKE_IMAGE_PATH);
 
     drawStartScreen();
 
