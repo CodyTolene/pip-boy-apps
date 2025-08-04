@@ -717,8 +717,18 @@ function Piptris() {
     while (true) {
       let picked = Math.floor(Math.random() * SHAPES.length);
       shapeData = SHAPES[picked];
-      if (!(!allowNuke && shapeData[0][0] === 2)) break;
+
+      // If it's a nuke
+      if (shapeData[0][0] === 2) {
+        if (!allowNuke) continue;
+
+        // 50% chance to reroll
+        if (Math.random() < 0.5) continue;
+      }
+
+      break;
     }
+
     let offset = Math.floor((PLAY_AREA_WIDTH - shapeData[0].length) / 2);
     return { shape: shapeData, x: offset, y: 0 };
   }
