@@ -1,7 +1,7 @@
 {
   "id": "piptris",
   "name": "Piptris",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "Stack, rotate, and clear falling blocks in this Tetris inspired mini-game. Simple, addictive, and perfect for idle moments between scavenging runs or stimpak breaks.",
   "icon": "assets/piptris.png",
   "tags": "game",
@@ -12,6 +12,7 @@
     { "name": "USER/piptris.js", "url": "app.min.js" },
     { "name": "USER/PIPTRIS/piptris.min.js", "url": "assets/piptris.min.js" },
     { "name": "USER/PIPTRIS/piptris.json", "url": "assets/piptris.json" },
+    { "name": "USER/PIPTRIS/block.json", "url": "assets/block.json" },
     { "name": "USER/PIPTRIS/gear.json", "url": "assets/gear.json" },
     { "name": "USER/PIPTRIS/nuke.json", "url": "assets/nuke.json" },
     {
