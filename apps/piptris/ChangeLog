@@ -6,6 +6,7 @@ https://github.com/CodyTolene/pip-boy-apps/pull/40
   - Using the block sprite also fixes the music skipping when blocks were first drawn previously.
   - Load nuke & block images into memory for resuse on app initialization.
 - Fix recursion issue in music playback. Thanks [Theeohn](https://github.com/Theeohn) for the report!
+- Add center pivot for I piece rotation. Thanks [Theeohn](https://github.com/Theeohn) for the suggestion!
 
 3.0.0
 https://github.com/CodyTolene/pip-boy-apps/pull/39
