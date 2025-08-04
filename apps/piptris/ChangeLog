@@ -1,5 +1,13 @@
+3.0.0
+https://github.com/CodyTolene/pip-boy-apps/pull/39
+- Optimize the game logic and reduce memory footprint:
+  - Remove ghost piece/drop preview.
+  - Remove block type selector.
+- Style blocks to be 3D so they're easier to see.
+- Restyle nuke image to be a bit more 3D looking.
+
 2.6.0
-https://github.com/CodyTolene/pip-boy-apps/pull/36
+https://github.com/CodyTolene/pip-boy-apps/pull/38
 - Clear memory before the game starts to prevent loading issues.
 
 2.5.2

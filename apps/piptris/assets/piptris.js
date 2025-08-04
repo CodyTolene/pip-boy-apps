@@ -9,7 +9,7 @@ function Piptris() {
 
   // Core
   const GAME_NAME = 'PIPTRIS';
-  const GAME_VERSION = '2.6.0';
+  const GAME_VERSION = '3.0.0';
 
   // File paths
   const CONFIG_PATH = 'USER/PIPTRIS/piptris.json';
@@ -30,17 +30,12 @@ function Piptris() {
   let linesCleared = 0;
   let mainLoopInterval = null;
   let score = 0;
-  let useHollowBlocks = false;
 
   // Nuke
   const NUKE_POINTS_PER_BLOCK = 10;
   const NUKE_RADIUS = 2; // 5x5 area
   let nukeInProgress = false;
   let nukeWarningActive = false;
-
-  // Ghost piece
-  let showGhostPiece = false;
-  let lastGhost = null;
 
   // Game Difficulty
   let difficultyLevel = 0;
@@ -61,9 +56,11 @@ function Piptris() {
   // Colors
   const COLOR_BLACK = '#000000';
   const COLOR_RED = '#FF0000';
+  const COLOR_WHITE = '#FFFFFF';
   const COLOR_RED_DARK = g.blendColor(COLOR_BLACK, COLOR_RED, 0.5);
   const COLOR_THEME = g.theme.fg;
   const COLOR_THEME_DARK = g.blendColor(COLOR_BLACK, COLOR_THEME, 0.5);
+  const COLOR_HIGHLIGHT = g.blendColor(COLOR_THEME, COLOR_WHITE, 0.3);
 
   // Play Area
   const PLAY_AREA_WIDTH = 10;
@@ -95,7 +92,10 @@ function Piptris() {
   let currentTrack = null;
 
   // prettier-ignore
-  const T_SHAPE = [[0, 1, 0],[1, 1, 1]];
+  const T_SHAPE = [
+    [0, 1, 0],
+    [1, 1, 1]
+  ];
 
   // Shapes (game pieces)
   // prettier-ignore
@@ -240,23 +240,29 @@ function Piptris() {
 
     const x1 = PLAY_AREA_X + x * blockSize;
     const y1 = PLAY_AREA_Y + y * blockSize;
+    const x2 = x1 + blockSize - 1;
+    const y2 = y1 + blockSize - 1;
 
     if (blockValue === 2) {
       try {
         g.setColor(COLOR_RED);
         g.drawImage(loadImage(NUKE_IMAGE_PATH), x1, y1);
       } catch (e) {
-        // Failed to load nuke image
         console.log(e);
       }
-    } else {
-      g.setColor(COLOR_THEME);
-      if (useHollowBlocks) {
-        g.drawRect(x1, y1, x1 + blockSize - 1, y1 + blockSize - 1);
-      } else {
-        g.fillRect(x1, y1, x1 + blockSize - 1, y1 + blockSize - 1);
-      }
+      return;
     }
+
+    g.setColor(COLOR_THEME_DARK);
+    g.fillRect(x1, y1, x2, y2);
+
+    g.setColor(COLOR_THEME);
+    g.drawLine(x1, y1, x2, y1);
+    g.drawLine(x1, y1, x1, y2);
+
+    g.setColor(COLOR_HIGHLIGHT);
+    g.drawLine(x1 + 1, y1 + 1, x2 - 1, y1 + 1);
+    g.drawLine(x1 + 1, y1 + 1, x1 + 1, y2 - 1);
   }
 
   function drawBoundaries(area) {
@@ -293,7 +299,6 @@ function Piptris() {
         }
       }
     }
-    drawGhostPiece();
     drawScore();
     drawLevel();
     drawLinesCleared();
@@ -308,10 +313,12 @@ function Piptris() {
 
     g.setColor(COLOR_THEME);
     g.setFontMonofonto28();
+    g.setFontAlign(0, 0);
     g.drawString(GAME_NAME, startX, startY);
 
     g.setColor(COLOR_THEME);
     g.setFont('6x8', 1);
+    g.setFontAlign(0, 0);
     g.drawString('v' + GAME_VERSION, startX, startY + fontHeight);
   }
 
@@ -325,10 +332,12 @@ function Piptris() {
 
     g.setColor(COLOR_THEME);
     g.setFont('6x8', 4);
+    g.setFontAlign(0, 0);
     g.drawString('GAME OVER', centerX, centerY - 100);
 
     g.setColor(COLOR_THEME_DARK);
     g.setFont('6x8', 2);
+    g.setFontAlign(0, 0);
     g.drawString('Press    to RESTART', centerX, centerY - 60);
 
     try {
@@ -344,6 +353,7 @@ function Piptris() {
 
     g.setColor(COLOR_THEME);
     g.setFont('6x8');
+    g.setFontAlign(0, 0);
     g.drawString('Score: ' + score, centerX, statsYStart);
     g.drawString(
       'Level: ' + difficultyLevel,
@@ -363,10 +373,6 @@ function Piptris() {
       statsYStart + statsLineHeight * 3 + 10,
     );
 
-    drawPreviewBlockToggle();
-    drawGhostPieceToggle();
-    setupOptions();
-
     inputInterval = setInterval(() => {
       if (BTN_PLAY.read()) {
         clearInterval(inputInterval);
@@ -374,140 +380,6 @@ function Piptris() {
         startGame();
       }
     }, 100);
-  }
-
-  function drawGhostPiece(erase) {
-    if (!showGhostPiece || !blockCurrent || isGameOver) {
-      return;
-    }
-
-    let ghost =
-      erase && lastGhost
-        ? lastGhost
-        : {
-            x: blockCurrent.x,
-            y: blockCurrent.y,
-            shape: blockCurrent.shape,
-          };
-
-    if (!erase) {
-      while (!collides({ x: ghost.x, y: ghost.y + 1, shape: ghost.shape })) {
-        ghost.y++;
-      }
-      lastGhost = { x: ghost.x, y: ghost.y, shape: ghost.shape };
-    } else if (!lastGhost) {
-      return; // Nothing to erase
-    }
-
-    let color = erase ? COLOR_BLACK : COLOR_THEME_DARK;
-    g.setColor(color);
-
-    for (let y = 0; y < ghost.shape.length; y++) {
-      for (let x = 0; x < ghost.shape[y].length; x++) {
-        if (ghost.shape[y][x]) {
-          const blockValue = ghost.shape[y][x];
-          const blockX = PLAY_AREA_X + (ghost.x + x) * blockSize;
-          const blockY = PLAY_AREA_Y + (ghost.y + y) * blockSize;
-
-          if (!erase && blockValue === 2) {
-            try {
-              // Nuke ghost block
-              g.setColor(COLOR_RED_DARK);
-              g.drawImage(loadImage(NUKE_IMAGE_PATH), blockX, blockY, {
-                scale: blockSize / 15, // 15 = width of the nuke image
-                transparency: 0.5,
-              });
-            } catch (e) {
-              // Failed to load nuke ghost image
-              console.log(e);
-            }
-          } else {
-            // Default ghost block
-            if (useHollowBlocks) {
-              g.drawRect(
-                blockX,
-                blockY,
-                blockX + blockSize - 1,
-                blockY + blockSize - 1,
-              );
-            } else {
-              g.fillRect(
-                blockX,
-                blockY,
-                blockX + blockSize - 1,
-                blockY + blockSize - 1,
-              );
-            }
-          }
-        }
-      }
-    }
-  }
-
-  function drawGhostPieceToggle() {
-    g.setFont('6x8', 1);
-
-    const posY = SCREEN_AREA.y2 - 40;
-    const posX = 180;
-
-    const stateY = posY - 22;
-    const state = { ON: 'ON', OFF: 'OFF' };
-    const ghostState = showGhostPiece ? state.ON : state.OFF;
-
-    const fontHeight = 8;
-    const fontScale = 2;
-    g.setFont('6x' + fontHeight, fontScale);
-    const textWidth = g.stringWidth(state.OFF); // Widest state
-    const textHeight = fontHeight * fontScale;
-
-    // Clear previous area
-    const clearXY = {
-      x1: posX - textWidth / 2,
-      y1: stateY - textHeight / 2,
-      x2: posX + textWidth / 2,
-      y2: stateY + textHeight,
-    };
-    g.setColor(COLOR_BLACK);
-    g.fillRect(clearXY);
-
-    // drawBoundaries(clearXY);
-
-    g.setColor(COLOR_THEME);
-    g.drawString(ghostState, posX, stateY + 4);
-
-    g.setFont('6x8', 1);
-    g.setColor(COLOR_THEME_DARK);
-    const labelText = 'GHOST';
-    const labelWidth = g.stringWidth(labelText);
-    g.drawString(labelText, posX, posY);
-
-    const arrowSize = 5;
-    const arrowSpacing = 8;
-
-    // UP arrow (left of label)
-    const upArrowX = posX - labelWidth / 2 - arrowSpacing - 1;
-    const upArrowY = posY;
-    g.fillPoly([
-      upArrowX,
-      upArrowY - arrowSize,
-      upArrowX - arrowSize,
-      upArrowY + arrowSize,
-      upArrowX + arrowSize,
-      upArrowY + arrowSize,
-    ]);
-
-    // DOWN arrow (right of label)
-    const downArrowX = posX + labelWidth / 2 + arrowSpacing;
-    const downArrowY = posY;
-    const downArrowSize = arrowSize - 1;
-    g.fillPoly([
-      downArrowX,
-      downArrowY + downArrowSize,
-      downArrowX - downArrowSize,
-      downArrowY - downArrowSize,
-      downArrowX + downArrowSize,
-      downArrowY - downArrowSize,
-    ]);
   }
 
   function drawIncomingNuke() {
@@ -541,6 +413,7 @@ function Piptris() {
 
     g.setFont('6x8', 2);
     g.setColor(COLOR_RED);
+    g.setFontAlign(0, 0);
     g.drawString('INCOMING', startX, startY);
     g.drawString('NUKE!', startX, startY + textLineHeight);
 
@@ -585,9 +458,11 @@ function Piptris() {
     // });
 
     g.setColor(COLOR_THEME_DARK);
+    g.setFontAlign(0, 0);
     g.drawString('LINES', linesX, linesY);
 
     g.setColor(COLOR_THEME);
+    g.setFontAlign(0, 0);
     g.drawString(text, linesX, linesY + fontHeight);
   }
 
@@ -619,10 +494,12 @@ function Piptris() {
 
     // Draw static label (only once in startGame if you want)
     g.setColor(COLOR_THEME_DARK);
+    g.setFontAlign(0, 0);
     g.drawString('LEVEL', levelX, levelY);
 
     // Draw dynamic level number
     g.setColor(COLOR_THEME);
+    g.setFontAlign(0, 0);
     g.drawString(text, levelX, levelY + fontHeight);
   }
 
@@ -654,18 +531,20 @@ function Piptris() {
 
     g.setFont('6x8', 2);
     g.setColor(COLOR_THEME_DARK);
+    g.setFontAlign(0, 0);
     g.drawString('NEXT', startX, startY);
 
     const piece = blockNext.shape;
     const piecePixelWidth = piece[0].length * blockSize;
     const offsetX = startX - piecePixelWidth / 2 - 2;
+    const offsetY = startY + 20;
 
     for (let y = 0; y < piece.length; y++) {
       for (let x = 0; x < piece[y].length; x++) {
         if (piece[y][x]) {
           const blockValue = piece[y][x];
           const blockX = offsetX + x * blockSize;
-          const blockY = startY + 20 + y * blockSize;
+          const blockY = offsetY + y * blockSize;
 
           if (blockValue === 2) {
             // Nuke
@@ -680,98 +559,19 @@ function Piptris() {
               console.log(e);
             }
           } else {
+            const x2 = blockX + blockSize - 1;
+            const y2 = blockY + blockSize - 1;
+
+            g.setColor(COLOR_THEME_DARK);
+            g.fillRect(blockX, blockY, x2, y2);
+
             g.setColor(COLOR_THEME);
-            if (useHollowBlocks) {
-              g.drawRect(
-                blockX,
-                blockY,
-                blockX + blockSize - 1,
-                blockY + blockSize - 1,
-              );
-            } else {
-              g.fillRect(
-                blockX,
-                blockY,
-                blockX + blockSize - 1,
-                blockY + blockSize - 1,
-              );
-            }
-          }
-        }
-      }
-    }
-  }
+            g.drawLine(blockX, blockY, x2, blockY);
+            g.drawLine(blockX, blockY, blockX, y2);
 
-  function drawPreviewBlockToggle() {
-    const posY = SCREEN_AREA.y2 - 40;
-    const posX = 300;
-
-    const blockSize = 10;
-    const blockHeight = T_SHAPE.length * blockSize;
-    const blockWidth = T_SHAPE[0].length * blockSize;
-
-    const startY = posY - blockHeight - 10;
-    const startX = posX - blockWidth / 2;
-
-    g.setFont('6x8', 1);
-    g.setColor(COLOR_THEME_DARK);
-
-    const labelText = 'TYPE';
-    const labelWidth = g.stringWidth(labelText);
-    g.drawString(labelText, posX, posY);
-
-    const arrowSize = 6;
-    const arrowSpacing = 10;
-
-    // LEFT arrow (left of label)
-    const leftArrowX = posX - labelWidth / 2 - arrowSpacing;
-    const leftArrowY = posY;
-    g.fillPoly([
-      leftArrowX,
-      leftArrowY,
-      leftArrowX + arrowSize,
-      leftArrowY - arrowSize,
-      leftArrowX + arrowSize,
-      leftArrowY + arrowSize,
-    ]);
-
-    // RIGHT arrow (right of label)
-    const rightArrowX = posX + labelWidth / 2 + arrowSpacing;
-    const rightArrowY = posY;
-    g.fillPoly([
-      rightArrowX,
-      rightArrowY,
-      rightArrowX - arrowSize,
-      rightArrowY - arrowSize,
-      rightArrowX - arrowSize,
-      rightArrowY + arrowSize,
-    ]);
-
-    // Clear previous area
-    const clearXY = {
-      x1: startX - 2,
-      y1: startY - 2,
-      x2: startX + blockWidth + 2,
-      y2: startY + blockHeight + 2,
-    };
-    g.setColor(COLOR_BLACK);
-    g.fillRect(clearXY);
-
-    // drawBoundaries(clearXY);
-
-    // Draw the T-shape preview block
-    g.setColor(COLOR_THEME);
-    for (let y = 0; y < T_SHAPE.length; y++) {
-      for (let x = 0; x < T_SHAPE[y].length; x++) {
-        if (T_SHAPE[y][x]) {
-          const x1 = startX + x * blockSize;
-          const y1 = startY + y * blockSize;
-          const x2 = x1 + blockSize - 1;
-          const y2 = y1 + blockSize - 1;
-          if (useHollowBlocks) {
-            g.drawRect(x1, y1, x2, y2);
-          } else {
-            g.fillRect(x1, y1, x2, y2);
+            g.setColor(COLOR_HIGHLIGHT);
+            g.drawLine(blockX + 1, blockY + 1, x2 - 1, blockY + 1);
+            g.drawLine(blockX + 1, blockY + 1, blockX + 1, y2 - 1);
           }
         }
       }
@@ -807,9 +607,11 @@ function Piptris() {
     // });
 
     g.setColor(COLOR_THEME_DARK);
+    g.setFontAlign(0, 0);
     g.drawString('SCORE', scoreX, scoreY);
 
     g.setColor(COLOR_THEME);
+    g.setFontAlign(0, 0);
     g.drawString(text, scoreX, scoreY + fontHeight);
   }
 
@@ -823,29 +625,21 @@ function Piptris() {
 
     g.setColor(COLOR_THEME);
     g.setFontMonofonto36();
+    g.setFontAlign(0, 0);
     g.drawString(GAME_NAME, centerX, centerY - 50);
 
     g.setColor(COLOR_THEME_DARK);
     g.setFont('6x8', 2);
+    g.setFontAlign(0, 0);
     g.drawString('Press    to START', centerX, centerY - 15);
 
-    try {
-      g.setColor(COLOR_THEME);
-      g.drawImage(loadImage(GEAR_IMAGE_PATH), centerX - 34, centerY - 29);
-    } catch (e) {
-      // Failed to load gear image
-      console.log(e);
-    }
+    g.setColor(COLOR_THEME);
+    g.drawImage(loadImage(GEAR_IMAGE_PATH), centerX - 34, centerY - 29);
 
-    if (highScore > 0) {
-      g.setColor(COLOR_THEME_DARK);
-      g.setFont('6x8');
-      g.drawString('High Score: ' + highScore, centerX, centerY + 35);
-    }
-
-    drawPreviewBlockToggle();
-    drawGhostPieceToggle();
-    setupOptions();
+    g.setColor(COLOR_THEME_DARK);
+    g.setFont('6x8');
+    g.setFontAlign(0, 0);
+    g.drawString('High Score: ' + highScore, centerX, centerY + 35);
   }
 
   function dropPiece() {
@@ -923,8 +717,18 @@ function Piptris() {
     while (true) {
       let picked = Math.floor(Math.random() * SHAPES.length);
       shapeData = SHAPES[picked];
-      if (!(!allowNuke && shapeData[0][0] === 2)) break;
+
+      // If it's a nuke
+      if (shapeData[0][0] === 2) {
+        if (!allowNuke) continue;
+
+        // 50% chance to reroll
+        if (Math.random() < 0.5) continue;
+      }
+
+      break;
     }
+
     let offset = Math.floor((PLAY_AREA_WIDTH - shapeData[0].length) / 2);
     return { shape: shapeData, x: offset, y: 0 };
   }
@@ -1048,14 +852,11 @@ function Piptris() {
   function move(dir) {
     if (isGameOver || !blockCurrent) return;
 
-    drawGhostPiece(true);
-
     let oldX = blockCurrent.x;
     blockCurrent.x += dir;
 
     if (collides(blockCurrent)) {
       blockCurrent.x = oldX;
-      drawGhostPiece();
       return;
     }
 
@@ -1067,7 +868,6 @@ function Piptris() {
       }
     }
 
-    drawGhostPiece();
     drawCurrentPiece(false);
     drawBoundaries(PLAY_AREA);
   }
@@ -1174,8 +974,6 @@ function Piptris() {
   function rotate(dir) {
     if (isGameOver || !blockCurrent) return;
 
-    drawGhostPiece(true);
-
     const shape = blockCurrent.shape;
     const newShape =
       dir > 0
@@ -1187,7 +985,6 @@ function Piptris() {
 
     if (collides(blockCurrent)) {
       blockCurrent.shape = oldShape;
-      drawGhostPiece();
       return;
     }
 
@@ -1200,7 +997,6 @@ function Piptris() {
     }
 
     drawCurrentPiece(false);
-    drawGhostPiece();
     drawBoundaries(PLAY_AREA);
   }
 
@@ -1229,13 +1025,6 @@ function Piptris() {
     Pip.on(KNOB_RIGHT, handleRightKnob);
     Pip.on(BTN_TOP, handleTopButton);
     Pip.on(MUSIC_STOPPED, handleMusicStopped);
-  }
-
-  function setupOptions() {
-    Pip.removeAllListeners(KNOB_LEFT);
-    Pip.removeAllListeners(KNOB_RIGHT);
-    Pip.on(KNOB_LEFT, toggleGhostPiece);
-    Pip.on(KNOB_RIGHT, togglePreviewStyle);
   }
 
   function spawnPiece() {
@@ -1306,16 +1095,6 @@ function Piptris() {
     mainLoopInterval = setInterval(mainLoop, blockDropSpeed);
   }
 
-  function toggleGhostPiece() {
-    showGhostPiece = !showGhostPiece;
-    drawGhostPieceToggle();
-  }
-
-  function togglePreviewStyle() {
-    useHollowBlocks = !useHollowBlocks;
-    drawPreviewBlockToggle();
-  }
-
   function updateDifficulty() {
     let newLevel = Math.floor(linesCleared / LINES_PER_LEVEL);
     if (newLevel > difficultyLevel) {
@@ -1332,7 +1111,6 @@ function Piptris() {
     loadConfig();
 
     drawStartScreen();
-    setupOptions();
 
     Pip.on(BTN_TOP, handleTopButton);
 
@@ -1340,8 +1118,6 @@ function Piptris() {
       if (BTN_PLAY.read()) {
         clearInterval(inputInterval);
         inputInterval = null;
-        Pip.removeListener(KNOB_LEFT, togglePreviewStyle);
-        Pip.removeListener(KNOB_RIGHT, togglePreviewStyle);
         Pip.removeAllListeners(BTN_TOP);
         startGame();
       }
