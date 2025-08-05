@@ -18,8 +18,8 @@ A DOOM inspired RPG engine for the Pip-Boy 3000 Mk V.
 ### Controls
 
 - Use the front radio play button to move forward.
-- Use the top-left or top right knob to turn the character 45 degrees.
-- Use the top-left knob button to move backwards.
+- Use the top-left or top right knob to turn the character.
+- Use the top-left knob button to shoot.
 - Use the top-right torch button to toggle the screen brightness.
 - Use the bottom-right power button to exit the game.
 
@@ -38,5 +38,7 @@ the Creative Commons 0 License. The list of sounds can be found below:
   MikeFozzy98
 - [`F_STEP_2.wav`](https://freesound.org/people/gobbe57/sounds/746681/) by
   gobbe57
+- [`SHOOT.wav`](https://freesound.org/people/DarkShroom/sounds/645317/) by
+  DarkShroom
 
 `SPDX-License-Identifiers: CC-BY-NC-4.0, CC0-1.0`

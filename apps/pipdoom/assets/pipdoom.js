@@ -75,11 +75,15 @@ function PipDoom() {
   let shooting = false;
   let pistolFrame = 0;
 
-  // Example simple sprite frames (replace with your own graphics)
-  const pistolFrames = [
-    loadImage('USER/PIP_DOOM/pistol_0.json'),
-    loadImage('USER/PIP_DOOM/pistol_1.json'),
-  ];
+  // Asset files
+  const IMG_PISTOL_0 = 'USER/PIP_DOOM/pistol_0.json';
+  const IMG_PISTOL_1 = 'USER/PIP_DOOM/pistol_1.json';
+  const SND_FOOTSTEP_1 = 'USER/PIP_DOOM/F_STEP.wav';
+  const SND_FOOTSTEP_2 = 'USER/PIP_DOOM/F_STEP_2.wav';
+  const SND_WALL_HIT = 'USER/PIP_DOOM/OOF.wav';
+
+  // Pistol
+  const pistolFrames = [loadImage(IMG_PISTOL_0), loadImage(IMG_PISTOL_1)];
 
   function castRay(dx, dy) {
     let x = player.x,
@@ -146,6 +150,7 @@ function PipDoom() {
       if (turning) return;
       turning = true;
       player.angleIdx = (player.angleIdx + dir + ANGLE_STEPS) % ANGLE_STEPS;
+      Pip.audioStart(SND_FOOTSTEP_2);
       drawFrame();
       setTimeout(() => (turning = false), 120);
     } else {
@@ -176,10 +181,15 @@ function PipDoom() {
     const ny = player.y + sinTable[player.angleIdx] * MOVE_SPEED * dir;
     const mx = (ny / TILE_SIZE) | 0;
     const my = (nx / TILE_SIZE) | 0;
+
     if (!map[mx][my]) {
       player.x = nx;
       player.y = ny;
+    } else {
+      Pip.audioStop();
+      Pip.audioStart(SND_WALL_HIT);
     }
+
     drawFrame();
   }
 
@@ -189,15 +199,22 @@ function PipDoom() {
   }
 
   function shoot() {
-    if (shooting) return;
+    if (shooting) {
+      return;
+    }
+
+    Pip.audioStop();
+    Pip.audioStart('USER/PIP_DOOM/SHOOT.wav');
+
     shooting = true;
     pistolFrame = 1;
     drawFrame();
+
     setTimeout(() => {
       pistolFrame = 0;
       shooting = false;
       drawFrame();
-    }, 120);
+    }, 60);
   }
 
   self.run = function () {
@@ -207,7 +224,10 @@ function PipDoom() {
     Pip.on(KNOB_RIGHT, handleTurn);
 
     buttonHandlerInterval = setInterval(() => {
-      if (BTN_PLAY.read()) move(1);
+      if (BTN_PLAY.read()) {
+        Pip.audioStart(SND_FOOTSTEP_1);
+        move(1);
+      }
     }, 120);
 
     setWatch(
