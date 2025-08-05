@@ -1,6 +1,9 @@
 1.3.0
 https://github.com/CodyTolene/pip-boy-apps/pull/
-- 
+- Revamp the app with a more structured approach and a new ray-casting engine.
+- Add new sprites for the hand and pistol w/ firing sequence.
+- Add new sound effect for the pistol firing.
+- Add new start menu with logo.
 
 1.2.2
 https://github.com/CodyTolene/pip-boy-apps/pull/30

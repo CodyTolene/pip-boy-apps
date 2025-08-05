@@ -10,15 +10,17 @@
   "custom": "",
   "storage": [
     { "name": "USER/pipdoom.js", "url": "app.min.js" },
+    { "name": "USER/PIP_DOOM/pipdoom.min.js", "url": "assets/pipdoom.min.js" },
     {
-      "name": "USER/PIP_DOOM/pipdoom.min.js",
-      "url": "assets/pipdoom.min.js"
+      "name": "USER/PIP_DOOM/pipdoom-start.min.js",
+      "url": "assets/pipdoom-start.min.js"
     },
-    { "name": "USER/PIP_DOOM/pistol_0.json", "url": "assets/pistol_0.json" },
-    { "name": "USER/PIP_DOOM/pistol_1.json", "url": "assets/pistol_1.json" },
-    { "name": "USER/PIP_DOOM/F_STEP.wav", "url": "assets/F_STEP.wav" },
+    { "name": "USER/PIP_DOOM/F_STEP_1.wav", "url": "assets/F_STEP_1.wav" },
     { "name": "USER/PIP_DOOM/F_STEP_2.wav", "url": "assets/F_STEP_2.wav" },
+    { "name": "USER/PIP_DOOM/LOGO.json", "url": "assets/LOGO.json" },
     { "name": "USER/PIP_DOOM/OOF.wav", "url": "assets/OOF.wav" },
+    { "name": "USER/PIP_DOOM/PISTOL_0.json", "url": "assets/PISTOL_0.json" },
+    { "name": "USER/PIP_DOOM/PISTOL_1.json", "url": "assets/PISTOL_1.json" },
     { "name": "USER/PIP_DOOM/SHOOT.wav", "url": "assets/SHOOT.wav" }
   ]
 }

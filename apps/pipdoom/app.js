@@ -317,6 +317,8 @@ function clearMemory() {
 
   // Re-add watches for button handling
   Pip.addWatches();
+
+  process.memory(true); // GC
 }
 
 function memoryCheck(run) {
@@ -334,7 +336,7 @@ function memoryCheck(run) {
   );
 }
 
-log('Starting Porta Hack...');
+log('[PIP-DOOM] Preloading...');
 
 memoryCheck('before');
 clearMemory();
@@ -345,5 +347,7 @@ delete global.clearMemory;
 memoryCheck = undefined;
 delete global.memoryCheck;
 
-log('Loading Porta Hack...');
-eval(fs.readFile('USER/PIP_DOOM/pipdoom.min.js'));
+process.memory(true); // GC
+
+log('[PIP-DOOM] Loading menu...');
+eval(fs.readFile('USER/PIP_DOOM/pipdoom-start.min.js'));

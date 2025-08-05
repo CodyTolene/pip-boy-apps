@@ -76,14 +76,14 @@ function PipDoom() {
   let pistolFrame = 0;
 
   // Asset files
-  const IMG_PISTOL_0 = 'USER/PIP_DOOM/pistol_0.json';
-  const IMG_PISTOL_1 = 'USER/PIP_DOOM/pistol_1.json';
-  const SND_FOOTSTEP_1 = 'USER/PIP_DOOM/F_STEP.wav';
-  const SND_FOOTSTEP_2 = 'USER/PIP_DOOM/F_STEP_2.wav';
-  const SND_WALL_HIT = 'USER/PIP_DOOM/OOF.wav';
+  const PATH_FOOTSTEP_1 = 'USER/PIP_DOOM/F_STEP_1.wav';
+  const PATH_FOOTSTEP_2 = 'USER/PIP_DOOM/F_STEP_2.wav';
+  const PATH_PISTOL_0 = 'USER/PIP_DOOM/PISTOL_0.json';
+  const PATH_PISTOL_1 = 'USER/PIP_DOOM/PISTOL_1.json';
+  const PATH_WALL_HIT = 'USER/PIP_DOOM/OOF.wav';
 
   // Pistol
-  const pistolFrames = [loadImage(IMG_PISTOL_0), loadImage(IMG_PISTOL_1)];
+  const pistolFrames = [loadImage(PATH_PISTOL_0), loadImage(PATH_PISTOL_1)];
 
   function castRay(dx, dy) {
     let x = player.x,
@@ -150,7 +150,7 @@ function PipDoom() {
       if (turning) return;
       turning = true;
       player.angleIdx = (player.angleIdx + dir + ANGLE_STEPS) % ANGLE_STEPS;
-      Pip.audioStart(SND_FOOTSTEP_2);
+      Pip.audioStart(PATH_FOOTSTEP_2);
       drawFrame();
       setTimeout(() => (turning = false), 120);
     } else {
@@ -187,7 +187,7 @@ function PipDoom() {
       player.y = ny;
     } else {
       Pip.audioStop();
-      Pip.audioStart(SND_WALL_HIT);
+      Pip.audioStart(PATH_WALL_HIT);
     }
 
     drawFrame();
@@ -225,7 +225,7 @@ function PipDoom() {
 
     buttonHandlerInterval = setInterval(() => {
       if (BTN_PLAY.read()) {
-        Pip.audioStart(SND_FOOTSTEP_1);
+        Pip.audioStart(PATH_FOOTSTEP_1);
         move(1);
       }
     }, 120);
