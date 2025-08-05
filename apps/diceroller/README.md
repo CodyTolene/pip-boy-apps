@@ -13,8 +13,8 @@
 
 ### Description
 
-Toss tabletop dice: D2, D4, D6, D8, D10, D12, and D20. War never changes, but
-your roll might!
+Toss tabletop dice: D2, D4, D6, D8, D10, D12, D20, and D100. War never changes,
+but your roll might!
 
 ### Controls
 
