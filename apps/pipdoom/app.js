@@ -346,4 +346,4 @@ memoryCheck = undefined;
 delete global.memoryCheck;
 
 log('Loading Porta Hack...');
-eval(fs.readFile('USER/WASTELAND/wasteland.min.js'));
+eval(fs.readFile('USER/PIP_DOOM/pipdoom.min.js'));

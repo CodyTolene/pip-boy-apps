@@ -1,4 +1,4 @@
-function Wasteland() {
+function PipDoom() {
   const self = {};
 
   const SCREEN_WIDTH = g.getWidth();
@@ -77,8 +77,8 @@ function Wasteland() {
 
   // Example simple sprite frames (replace with your own graphics)
   const pistolFrames = [
-    loadImage('USER/WASTELAND/pistol_0.json'),
-    loadImage('USER/WASTELAND/pistol_1.json'),
+    loadImage('USER/PIP_DOOM/pistol_0.json'),
+    loadImage('USER/PIP_DOOM/pistol_1.json'),
   ];
 
   function castRay(dx, dy) {
@@ -227,4 +227,4 @@ function Wasteland() {
   return self;
 }
 
-Wasteland().run();
+PipDoom().run();

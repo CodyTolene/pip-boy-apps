@@ -1,0 +1,20 @@
+{
+  "id": "pipdoom",
+  "name": "Pip-DOOM",
+  "version": "1.3.0",
+  "description": "A DOOM inspired RPG engine for the Pip-Boy 3000 Mk V.",
+  "icon": "assets/pipdoom.png",
+  "tags": "game",
+  "type": "app",
+  "readme": "README.md",
+  "custom": "",
+  "storage": [
+    { "name": "USER/pipdoom.js", "url": "app.min.js" },
+    {
+      "name": "USER/PIP_DOOM/pipdoom.min.js",
+      "url": "assets/pipdoom.min.js"
+    },
+    { "name": "USER/PIP_DOOM/pistol_0.json", "url": "assets/pistol_0.json" },
+    { "name": "USER/PIP_DOOM/pistol_1.json", "url": "assets/pistol_1.json" }
+  ]
+}
