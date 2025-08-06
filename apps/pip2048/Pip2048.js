@@ -203,4 +203,18 @@ Pip.on('torch', function () {
   E.reboot();
 });
 
+setWatch(
+  () => {
+    console.log('Game stopping');
+    g.clear();
+    E.reboot();
+  },
+  BTN_POWER,
+  {
+    debounce: 50,
+    edge: 'rising',
+    repeat: !0,
+  },
+);
+
 initGame();

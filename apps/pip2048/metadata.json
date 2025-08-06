@@ -1,7 +1,7 @@
 {
   "id": "pip2048",
   "name": "Pip2048",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A classic 2048 game.",
   "icon": "pip2048.png",
   "tags": "game",
