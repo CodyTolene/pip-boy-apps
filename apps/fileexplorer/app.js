@@ -271,7 +271,7 @@ function FileExplorer() {
   }
 
   self.run = function () {
-    if (global.ui.enableRamScan) {
+    if (global.ui && global.ui.enableRamScan) {
       global.ui.enableRamScan = false;
     }
 
