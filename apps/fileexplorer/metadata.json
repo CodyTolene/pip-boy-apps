@@ -1,8 +1,8 @@
 {
   "id": "fileexplorer",
   "name": "File Explorer",
-  "version": "2.1.3",
-  "description": "Seamlessly browse your system's directories and view pre-approved images and videos. Designed for clarity, built for the future, just the way Vault-Tec intended.",
+  "version": "2.2.0",
+  "description": "Seamlessly browse your system's directories and view pre-approved images, videos, and text files. Designed for clarity, built for the future, just the way Vault-Tec intended.",
   "icon": "fileexplorer.png",
   "tags": "media,tool",
   "type": "app",

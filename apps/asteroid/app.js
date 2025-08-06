@@ -195,5 +195,11 @@ function onFrame() {
   if (crashed) gameStop();
 }
 
+setWatch(E.reboot, BTN_POWER, {
+  debounce: 50,
+  edge: 'rising',
+  repeat: true,
+});
+
 gameStart();
 var frameInterval = setInterval(onFrame, 50);

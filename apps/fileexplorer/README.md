@@ -13,9 +13,9 @@
 
 ### Description
 
-Seamlessly browse your system’s directories and view pre-approved images and
-videos. Designed for clarity, built for the future, just the way Vault-Tec
-intended.
+Seamlessly browse your system's directories and view pre-approved images,
+videos, and text files. Designed for clarity, built for the future, just the way
+Vault-Tec intended.
 
 ### Controls
 

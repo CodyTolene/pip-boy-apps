@@ -1,12 +1,12 @@
 {
   "id": "vaultbreaker",
   "name": "Vault Breaker",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A classic brick-breaking game.",
   "icon": "vaultbreaker.png",
   "tags": "game",
   "type": "app",
   "readme": "README.md",
   "custom": "",
-  "storage": [{ "name": "USER/VaultBreaker.js", "url": "VaultBreaker.js" }]
+  "storage": [{ "name": "USER/vaultbreaker.js", "url": "VaultBreaker.js" }]
 }

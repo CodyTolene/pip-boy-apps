@@ -2,7 +2,7 @@
 // Name: Vault Breaker
 // License: CC-BY-NC-4.0
 // Description: A breakout clone for the Pip-Boy 3000 Mk V.
-// Version: 1.0.1
+// Version: 1.0.2
 // =============================================================================
 
 const themeSettingsFolder = 'USER/ThemePicker';
@@ -366,3 +366,9 @@ Pip.typeText(
 Pip.on('knob1', handleKnob1);
 Pip.on('knob2', handleKnob2);
 Pip.on('torch', handleTorch);
+
+setWatch(E.reboot, BTN_POWER, {
+  debounce: 50,
+  edge: 'rising',
+  repeat: true,
+});

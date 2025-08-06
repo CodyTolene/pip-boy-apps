@@ -4,20 +4,20 @@
 //  Repository: https://github.com/CodyTolene/pip-boy-apps
 // =============================================================================
 
-const fs = require('fs');
-const s = require('Storage');
-
 function FileExplorer() {
   const self = {};
+  const gx = g;
 
   const APP_NAME = 'File Explorer';
-  const APP_VERSION = '2.1.3';
+  const APP_VERSION = '2.2.0';
 
-  const SCREEN_WIDTH = g.getWidth();
-  const SCREEN_HEIGHT = g.getHeight();
+  const SCREEN_WIDTH = gx.getWidth();
+  const SCREEN_HEIGHT = gx.getHeight();
 
-  const COLOR_GREEN = '#0F0';
-  const COLOR_WHITE = '#FFF';
+  // Colors
+  const COLOR_BLACK = '#000000';
+  const COLOR_THEME = g.theme.fg;
+  const COLOR_THEME_DARK = g.blendColor(COLOR_BLACK, COLOR_THEME, 0.5);
 
   const LINE_HEIGHT = 12;
   const TOP_PADDING = 40;
@@ -33,6 +33,7 @@ function FileExplorer() {
   let currentPath = ROOT_PATH;
 
   try {
+    const s = require('Storage');
     const l = s.list();
     if (l.includes('VERSION') && l.includes('.bootcde')) {
       const versionStr = s.read('VERSION') || '';
@@ -49,20 +50,20 @@ function FileExplorer() {
   }
 
   function drawUI() {
-    g.clear();
+    gx.clear();
 
-    g.setColor(COLOR_GREEN);
-    g.setFont('6x8', 2);
-    g.drawString(APP_NAME + ' v' + APP_VERSION, SCREEN_WIDTH / 2, 20);
+    gx.setColor(COLOR_THEME)
+      .setFont('6x8', 2)
+      .setFontAlign(0, 0)
+      .drawString(APP_NAME + ' v' + APP_VERSION, SCREEN_WIDTH / 2, 20);
 
-    g.setColor(COLOR_WHITE);
-    g.setFont('6x8', 1);
+    gx.setColor(COLOR_THEME_DARK).setFontAlign(0, 0).setFont('6x8', 1);
 
     let visible = entries.slice(scrollOffset, scrollOffset + MAX_LINES);
 
     visible.forEach(function (entry, i) {
       let isSelected = scrollOffset + i === currentIndex;
-      g.setColor(isSelected ? COLOR_GREEN : COLOR_WHITE);
+      gx.setColor(isSelected ? COLOR_THEME : COLOR_THEME_DARK);
 
       let indent = '';
       let effectiveDepth =
@@ -73,14 +74,14 @@ function FileExplorer() {
 
       let tag = entry.type === 'dir' ? '[DIR] ' : '[FILE] ';
       let label = indent + tag + entry.name;
-      let labelWidth = g.stringWidth(label);
+      let labelWidth = gx.stringWidth(label);
       let x = 60 + labelWidth / 2;
       let y = TOP_PADDING + i * LINE_HEIGHT;
 
-      g.drawString(label, x, y);
+      gx.drawString(label, x, y);
 
       if (entry.path === currentAudio) {
-        g.drawString(' (PLAYING)', x + labelWidth + 4, y);
+        gx.drawString(' (PLAYING)', x + labelWidth + 4, y);
       }
     });
   }
@@ -191,14 +192,46 @@ function FileExplorer() {
 
     if (name.endsWith('.avi')) {
       Pip.audioStop();
-      Pip.videoStart(selected.path, { x: 40, y: 0 });
+      Pip.videoStart(selected.path, { x: 60, y: 10 });
       isVideoPlaying = true;
       currentAudio = null;
       return;
     }
 
-    if (name.endsWith('.holotape')) {
-      Pip.loadApp(selected.path);
+    // Check for any text-based file extensions
+    if (
+      name.endsWith('.info') ||
+      name.endsWith('.txt') ||
+      name.endsWith('.log') ||
+      name.endsWith('.js') ||
+      name.endsWith('.json') ||
+      name.endsWith('.md')
+    ) {
+      gx.clear();
+
+      // Read and split
+      let lines = fs.readFile(selected.path).split('\n');
+      gx.setFont('6x8', 1).setColor(COLOR_THEME).setFontAlign(-1, -1);
+
+      const marginLeft = 70;
+      const marginRight = 100;
+      const marginTop = 20;
+      const usableWidth = gx.getWidth() - (marginLeft + marginRight);
+
+      // Wrap and limit
+      lines = [].concat.apply(
+        [],
+        lines.map((line) => (line ? gx.wrapString(line, usableWidth) : [''])),
+      );
+
+      // Draw
+      let y = marginTop;
+      const lineHeight = gx.stringMetrics('X').height + 4;
+      lines.forEach((line) => {
+        gx.drawString(line, marginLeft, y);
+        y += lineHeight;
+      });
+
       return;
     }
   }
@@ -230,18 +263,24 @@ function FileExplorer() {
   }
 
   function showLoadingScreen() {
-    g.clear();
-    g.setFont('6x8', 2);
-    g.setColor(COLOR_WHITE);
-    g.drawString('Loading...', SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
+    gx.clear();
+    gx.setFont('6x8', 2)
+      .setFontAlign(0, 0)
+      .setColor(COLOR_THEME_DARK)
+      .drawString('Loading...', SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
   }
 
   self.run = function () {
+    if (global.ui.enableRamScan) {
+      global.ui.enableRamScan = false;
+    }
+
     if (!Pip.isSDCardInserted()) {
-      g.clear();
-      g.setFont('6x8', 2);
-      g.setColor('#F00');
-      g.drawString('NO SD CARD DETECTED', SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
+      gx.clear();
+      gx.setFont('6x8', 2)
+        .setFontAlign(0, 0)
+        .setColor('#F00')
+        .drawString('NO SD CARD DETECTED', SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
       return;
     }
 
