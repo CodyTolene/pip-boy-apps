@@ -1,3 +1,7 @@
+v1.0.2
+https://github.com/CodyTolene/pip-boy-apps/pull/44
+- Add power button handler - reset device on press.
+
 v1.0.1
 https://github.com/CodyTolene/pip-apps/pull/32
 - Works with new 1.29 update theme settings
