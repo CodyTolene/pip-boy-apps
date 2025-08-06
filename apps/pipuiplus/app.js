@@ -217,7 +217,7 @@ function PipUIPlus() {
 
   self.run = function () {
     bC.clear();
-    if (global.ui.enableRamScan) {
+    if (global.ui && global.ui.enableRamScan) {
       global.ui.enableRamScan = false;
     }
 
