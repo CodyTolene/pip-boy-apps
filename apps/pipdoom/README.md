@@ -1,4 +1,4 @@
-# Wasteland
+# Pip-DOOM
 
 ### Info
 
@@ -18,8 +18,8 @@ A DOOM inspired RPG engine for the Pip-Boy 3000 Mk V.
 ### Controls
 
 - Use the front radio play button to move forward.
-- Use the top-left or top right knob to turn the character 45 degrees.
-- Use the top-left knob button to move backwards.
+- Use the top-left or top right knob to turn the character.
+- Use the top-left knob button to shoot.
 - Use the top-right torch button to toggle the screen brightness.
 - Use the bottom-right power button to exit the game.
 
@@ -34,9 +34,12 @@ This project uses sounds found on FreeSound.org. The sounds are licensed under
 the Creative Commons 0 License. The list of sounds can be found below:
 
 - [`OOF.wav`](https://freesound.org/people/tonsil5/sounds/416839/) by tonsil5
-- [`F_STEP.wav`](https://freesound.org/people/MikeFozzy98/sounds/670102/) by
+- [`F_STEP_1.wav`](https://freesound.org/people/MikeFozzy98/sounds/670102/) by
   MikeFozzy98
 - [`F_STEP_2.wav`](https://freesound.org/people/gobbe57/sounds/746681/) by
   gobbe57
+- [`SHOOT.wav`](https://freesound.org/people/DarkShroom/sounds/645317/) by
+  DarkShroom
+- [`RELOAD.wav`](https://freesound.org/people/GFL7/sounds/276959/) by GFL7
 
 `SPDX-License-Identifiers: CC-BY-NC-4.0, CC0-1.0`

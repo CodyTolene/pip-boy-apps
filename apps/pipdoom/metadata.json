@@ -1,0 +1,27 @@
+{
+  "id": "pipdoom",
+  "name": "Pip-DOOM",
+  "version": "1.3.0",
+  "description": "A DOOM inspired RPG engine for the Pip-Boy 3000 Mk V.",
+  "icon": "assets/pipdoom.png",
+  "tags": "game",
+  "type": "app",
+  "readme": "README.md",
+  "custom": "",
+  "storage": [
+    { "name": "USER/pipdoom.js", "url": "app.min.js" },
+    { "name": "USER/PIP_DOOM/pipdoom.min.js", "url": "assets/pipdoom.min.js" },
+    {
+      "name": "USER/PIP_DOOM/pipdoom-start.min.js",
+      "url": "assets/pipdoom-start.min.js"
+    },
+    { "name": "USER/PIP_DOOM/F_STEP_1.wav", "url": "assets/F_STEP_1.wav" },
+    { "name": "USER/PIP_DOOM/F_STEP_2.wav", "url": "assets/F_STEP_2.wav" },
+    { "name": "USER/PIP_DOOM/LOGO.json", "url": "assets/LOGO.json" },
+    { "name": "USER/PIP_DOOM/OOF.wav", "url": "assets/OOF.wav" },
+    { "name": "USER/PIP_DOOM/PISTOL_0.json", "url": "assets/PISTOL_0.json" },
+    { "name": "USER/PIP_DOOM/PISTOL_1.json", "url": "assets/PISTOL_1.json" },
+    { "name": "USER/PIP_DOOM/RELOAD.wav", "url": "assets/RELOAD.wav" },
+    { "name": "USER/PIP_DOOM/SHOOT.wav", "url": "assets/SHOOT.wav" }
+  ]
+}

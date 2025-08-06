@@ -12,6 +12,7 @@
 /apps/idcard/         @rblakesley
 /apps/mtgtracker/     @tylerjbartlett
 /apps/pip2048/        @killes007
+/apps/pipdoom/        @CodyTolene
 /apps/pippong/        @CodyTolene
 /apps/pipsnake/       @CodyTolene
 /apps/piptactoe/      @pip-4111
@@ -20,4 +21,3 @@
 /apps/settings        @rblakesley
 /apps/statsdisplay/   @gnargle
 /apps/vaultbreaker/   @TetrisKid48
-/apps/wasteland/      @CodyTolene
