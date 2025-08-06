@@ -1,3 +1,8 @@
+2.1.4
+https://github.com/CodyTolene/pip-boy-apps/pull/44
+- Give ability to open text-based files ('.info', '.txt', '.log', '.js', '.json', '.md').
+- Fix bug where text was misaligned when the RAM Scan was running.
+
 2.1.3
 https://github.com/CodyTolene/pip-boy-apps/pull/12
 - Update torch button (top right) to toggle screen brightness when pressed.

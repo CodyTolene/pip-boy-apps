@@ -1,7 +1,7 @@
 {
   "id": "diceroller",
   "name": "Dice Roller",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Toss tabletop dice: D2, D4, D6, D8, D10, D12, D20, and D100. War never changes, but your roll might!",
   "icon": "assets/diceroller.png",
   "tags": "game,tool",
