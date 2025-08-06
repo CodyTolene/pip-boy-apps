@@ -221,4 +221,10 @@ function initStart() {
   );
 }
 
+setWatch(endGame, BTN_POWER, {
+  debounce: 50,
+  edge: 'rising',
+  repeat: !0,
+});
+
 initStart();
