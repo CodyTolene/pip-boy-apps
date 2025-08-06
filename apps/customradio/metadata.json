@@ -12,7 +12,7 @@
     { "name": "USER/customradio.js", "url": "app.min.js" },
     {
       "name": "USER/CUSTOM_RADIO/customradio.min.js",
-      "url": "assets/customradio.js"
+      "url": "assets/customradio.min.js"
     }
   ]
 }

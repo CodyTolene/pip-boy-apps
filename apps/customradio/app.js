@@ -196,7 +196,7 @@ function clearMemory() {
     // 'VUSB_MEAS',
     // 'VUSB_PRESENT',
     'alarmTimeout',
-    // 'bC',
+    'bC',
     // 'bF',
     // 'bH',
     'checkBatteryAndSleep',
@@ -315,6 +315,8 @@ function clearMemory() {
 
   // Re-add watches for button handling
   Pip.addWatches();
+
+  process.memory(true); // GC
 }
 
 function memoryCheck(run) {

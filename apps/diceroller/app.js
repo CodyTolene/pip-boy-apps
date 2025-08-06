@@ -1,420 +1,351 @@
-// =============================================================================
-//  Name: Dice Roller
-//  License: CC-BY-NC-4.0
-//  Repository: https://github.com/CodyTolene/pip-boy-apps
-// =============================================================================
+// Clear everything from memory that's not needed
+function clearMemory() {
+  if (Pip.remove) Pip.remove();
+  if (Pip.removeSubmenu) Pip.removeSubmenu();
 
-function DiceRoller() {
-  const self = {};
+  [
+    'demoTimeout',
+    'idleTimer',
+    // 'kickIdleTimer',
+    'typeTimer',
+  ].forEach((k) => {
+    if (Pip[k]) clearTimeout(Pip[k]);
+    Pip[k] = undefined;
+  });
 
-  const APP_NAME = 'Dice Roller';
-  const APP_VERSION = '1.2.0';
-
-  // General constants
-  const DICE_TYPES = ['D2', 'D4', 'D6', 'D8', 'D10', 'D12', 'D20', 'D100'];
-  const ELASTICITY = 0.95;
-  const FRICTION = 0.98;
-  const THROW_POWER = 8.0;
-
-  // Game state
-  let currentDiceIndex = DICE_TYPES.indexOf('D20');
-  let dice = { x: 100, y: 100, vx: 2, vy: 3 };
-  let face = 1;
-  let faceTimer = null;
-  let inputInterval = null;
-  let interval = null;
-  let isRolling = false;
-  let lastDraw = { x: 0, y: 0, w: 0, h: 0 };
-  let rollCount = 0;
-
-  // Positions
-  const SCREEN_WIDTH = g.getWidth();
-  const SCREEN_HEIGHT = g.getHeight();
-  const SCREEN_VISIBLE_AREA = {
-    x1: 60,
-    x2: SCREEN_WIDTH - 60,
-    y1: 10,
-    y2: SCREEN_HEIGHT - 10,
-  };
-  const HEADER_HEIGHT = 35;
-  const DICE_BOX_XY = {
-    x1: SCREEN_VISIBLE_AREA.x1,
-    x2: SCREEN_VISIBLE_AREA.x2,
-    y1: SCREEN_VISIBLE_AREA.y1 + HEADER_HEIGHT,
-    y2: SCREEN_VISIBLE_AREA.y2,
-  };
-
-  // Knobs and Buttons
-  const KNOB_LEFT = 'knob1';
-  const KNOB_RIGHT = 'knob2';
-  const BTN_TOP = 'torch';
-  const ROLL_DEBOUNCE = 250;
-  let lastRollTime = 0;
-
-  // Colors
-  const COLOR_BLACK = '#000000';
-  const COLOR_THEME = g.theme.fg;
-  const COLOR_THEME_DARK = g.blendColor(COLOR_BLACK, COLOR_THEME, 0.5);
-
-  // Sounds
-  const SOUNDS = {
-    coinDrop: 'USER/DICEROLLER/coin-drop.wav',
-    coinFlip: 'USER/DICEROLLER/coin-flip.wav',
-    diceThrow: 'USER/DICEROLLER/dice-throw.wav',
-  };
-
-  function animateDice() {
-    const type = DICE_TYPES[currentDiceIndex];
-    const isCoin = type === 'D2';
-    const radius = 30;
-    const padding = 5;
-
-    if (isCoin) {
-      // Keep D2 coin centered during flip
-      dice.x = (DICE_BOX_XY.x1 + DICE_BOX_XY.x2) / 2;
-      dice.y = (DICE_BOX_XY.y1 + DICE_BOX_XY.y2) / 2;
-    } else {
-      // Update dice position
-      dice.x += dice.vx;
-      dice.y += dice.vy;
-
-      // Bounce off walls
-      if (
-        dice.x < DICE_BOX_XY.x1 + radius + padding ||
-        dice.x > DICE_BOX_XY.x2 - radius - padding
-      ) {
-        dice.vx = -dice.vx * ELASTICITY;
-        dice.x = Math.max(
-          DICE_BOX_XY.x1 + radius + padding,
-          Math.min(dice.x, DICE_BOX_XY.x2 - radius - padding),
-        );
-      }
-
-      // Bounce off floor/ceiling
-      if (
-        dice.y < DICE_BOX_XY.y1 + radius + padding ||
-        dice.y > DICE_BOX_XY.y2 - radius - padding
-      ) {
-        dice.vy = -dice.vy * ELASTICITY;
-        dice.y = Math.max(
-          DICE_BOX_XY.y1 + radius + padding,
-          Math.min(dice.y, DICE_BOX_XY.y2 - radius - padding),
-        );
-      }
-
-      // Apply friction
-      dice.vx *= FRICTION;
-      dice.vy *= FRICTION;
+  // Disable bootloader functions for PipUI+
+  if (global.ui) {
+    if (global.ui.enableRamScan) {
+      global.ui.enableRamScan = false;
     }
-
-    const speed = Math.sqrt(dice.vx * dice.vx + dice.vy * dice.vy);
-    const max = getSidesFromDiceType(type);
-
-    if (faceTimer) {
-      clearTimeout(faceTimer);
+    if (global.ui.enableSpecialTab) {
+      global.ui.enableSpecialTab = false;
     }
-
-    const nextDelay = Math.max(50, 600 - speed * 80);
-    faceTimer = setTimeout(() => {
-      // Alternate D2 face using rollCount
-      face = isCoin ? (rollCount % 2) + 1 : Math.floor(Math.random() * max) + 1;
-      drawDice();
-    }, nextDelay);
-
-    rollCount++;
-    drawDice();
-
-    if (rollCount >= 40 || speed < 0.5) {
-      if (interval) {
-        clearInterval(interval);
-      }
-      if (faceTimer) {
-        clearTimeout(faceTimer);
-      }
-
-      if (isCoin) {
-        if (rollCount % 2 === 0) {
-          // Make sure coin doesn't land on edge
-          rollCount++;
-        }
-
-        face = Math.random() < 0.5 ? 1 : 2;
-        // Play the coin drop sound
-        Pip.audioStart(SOUNDS.coinDrop);
-      } else {
-        face = Math.floor(Math.random() * max) + 1;
-      }
-
-      drawDice();
-      isRolling = false;
+    if (global.ui.enablePerksTab) {
+      global.ui.enablePerksTab = false;
     }
   }
 
-  function clearIntervals() {
-    if (interval) {
-      clearInterval(interval);
-    }
-    if (faceTimer) {
-      clearTimeout(faceTimer);
-    }
+  clearInterval();
+  clearTimeout();
+  clearWatch();
 
-    interval = null;
-    faceTimer = null;
-  }
+  Pip.removeAllListeners && Pip.removeAllListeners();
 
-  function clearScreen() {
-    g.setColor(COLOR_BLACK);
-    g.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-  }
+  // Display buffers
+  g.clear(); // Used
+  bF.clear(); // Used
+  bH.clear(); // Used
+  bC && bC.clear();
+  bC = undefined;
 
-  function drawBoundaries(area) {
-    g.setColor(COLOR_THEME).drawRect(area.x1, area.y1, area.x2, area.y2);
-  }
+  // Radio
+  rd && rd.tuningInterval && clearInterval(rd.tuningInterval);
+  rd = undefined;
+  stationName = undefined;
+  stationNameSegments = undefined;
+  stationNameTemp = undefined;
 
-  function drawDice() {
-    g.setColor(COLOR_BLACK);
-    g.fillRect(
-      lastDraw.x,
-      lastDraw.y,
-      lastDraw.x + lastDraw.w,
-      lastDraw.y + lastDraw.h,
-    );
+  // Factory test and settings
+  ftm = undefined;
 
-    const size = 60;
-    const radius = size / 2;
-    const type = DICE_TYPES[currentDiceIndex];
-    let result = face.toString();
-    const isCoin = type === 'D2';
-    const flipPhase = rollCount % 2;
+  // Other objects
+  SEQ = undefined;
+  alarmTimeout = undefined;
+  d0 = undefined;
+  lastValue = undefined;
+  mPrev = undefined;
+  rd = undefined;
+  settings = settings || {};
+  settings.idleTimeout = 0; // Disable idle timeout
+  sm0 = undefined;
+  tm0 = undefined;
+  ts0 = undefined;
 
-    g.setColor(COLOR_THEME);
+  // Clear global variables that are not needed
+  // log(Object.keys(global));
+  [
+    // 'A0',
+    // 'A1',
+    // 'A10',
+    // 'A11',
+    // 'A12',
+    // 'A13',
+    // 'A14',
+    // 'A15',
+    // 'A2',
+    // 'A3',
+    // 'A4',
+    // 'A5',
+    // 'A6',
+    // 'A7',
+    // 'A8',
+    // 'A9',
+    // 'Array',
+    // 'B0',
+    // 'B1',
+    // 'B10',
+    // 'B11',
+    // 'B12',
+    // 'B13',
+    // 'B14',
+    // 'B15',
+    // 'B2',
+    // 'B3',
+    // 'B4',
+    // 'B5',
+    // 'B6',
+    // 'B7',
+    // 'B8',
+    // 'B9',
+    'BGRECT',
+    // 'BTN_PLAY',
+    // 'BTN_POWER',
+    // 'BTN_TORCH',
+    // 'BTN_TUNEDOWN',
+    // 'BTN_TUNEUP',
+    // 'C0',
+    // 'C1',
+    // 'C10',
+    // 'C11',
+    // 'C12',
+    // 'C13',
+    // 'C14',
+    // 'C15',
+    // 'C2',
+    // 'C3',
+    // 'C4',
+    // 'C5',
+    // 'C6',
+    // 'C7',
+    // 'C8',
+    // 'C9',
+    // 'CHARGE_STAT',
+    'CLIP_TYPE',
+    // 'D0',
+    // 'D1',
+    // 'D10',
+    // 'D11',
+    // 'D12',
+    // 'D13',
+    // 'D14',
+    // 'D15',
+    // 'D2',
+    // 'D3',
+    // 'D4',
+    // 'D5',
+    // 'D6',
+    // 'D7',
+    // 'D8',
+    // 'D9',
+    // 'Date',
+    // 'E',
+    // 'E0',
+    // 'E1',
+    // 'E10',
+    // 'E11',
+    // 'E12',
+    // 'E13',
+    // 'E14',
+    // 'E15',
+    // 'E2',
+    // 'E3',
+    // 'E4',
+    // 'E5',
+    // 'E6',
+    // 'E7',
+    // 'E8',
+    // 'E9',
+    // 'Error',
+    // 'File',
+    // 'Function',
+    // 'Graphics',
+    // 'H0',
+    // 'H1',
+    // 'I2C',
+    // 'JSON',
+    // 'KNOB1_A',
+    // 'KNOB1_B',
+    // 'KNOB1_BTN',
+    // 'KNOB2_A',
+    // 'KNOB2_B',
+    // 'LCD_BL',
+    // 'LED_BLUE',
+    // 'LED_GREEN',
+    // 'LED_RED',
+    // 'LED_TUNING',
+    // 'MEAS_ENB',
+    'MIN_FW_VER',
+    // 'MODE',
+    // 'MODEINFO',
+    'SEQ',
+    'MODE_SELECTOR',
+    // 'Math',
+    // 'Number',
+    // 'Object',
+    // 'Pin',
+    // 'Pip',
+    // 'Promise',
+    'RADIO_AUDIO',
+    // 'RegExp',
+    // 'SDCARD_DETECT',
+    // 'String',
+    // 'Uint16Array',
+    // 'VBAT_MEAS',
+    // 'VERSION',
+    // 'VUSB_MEAS',
+    // 'VUSB_PRESENT',
+    'alarmTimeout',
+    'bC',
+    // 'bF',
+    // 'bH',
+    'checkBatteryAndSleep',
+    'checkMode',
+    'configureAlarm',
+    // 'console',
+    'createDateTimeSubmenu',
+    'd0',
+    // 'dc',
+    // 'drawFooter',
+    // 'drawHeader',
+    'drawText',
+    'drawVaultNumLogo',
+    'drawVaultTecLogo',
+    'enterDemoMode',
+    'factoryTestMode',
+    // 'fs',
+    // 'g',
+    'getRandomExcluding',
+    'ftm',
+    'getUserApps',
+    'getUserAudio',
+    'getUserVideos',
+    // 'icons',
+    'lastValue',
+    'leaveDemoMode',
+    // 'log',
+    'mPrev',
+    // 'modes',
+    'playBootAnimation',
+    // 'process',
+    // 'radioPlayClip',
+    'rd',
+    'readRDSData',
+    'saveSettings',
+    // 'settings',
+    'showAlarm',
+    'showMainMenu',
+    'showTorch',
+    'showVaultAssignment',
+    'sm0',
+    'stationName',
+    'stationNameSegments',
+    'stationNameTemp',
+    'submenuAbout',
+    'submenuApparel',
+    'submenuApps',
+    'submenuAudio',
+    'submenuBlank',
+    'submenuClock',
+    'submenuConnect',
+    'submenuDiagnostics',
+    'submenuExtTerminal',
+    'submenuInvAttach',
+    'submenuMaintenance',
+    'submenuMap',
+    'submenuPalette',
+    'submenuRad',
+    'submenuRadio',
+    'submenuSetAlarm',
+    'submenuSetAlarmTime',
+    'submenuSetDateTime',
+    'submenuStats',
+    'submenuStatus',
+    'submenuVideos',
+    'tm0',
+    // 'torchButtonHandler',
+    'ts0',
+    'ui',
+    'wakeFromSleep',
+    'wakeOnLongPress',
+  ].forEach((k) => {
+    try {
+      delete global[k];
+    } catch (e) {}
+  });
 
-    if (isCoin) {
-      if (isRolling && flipPhase === 0) {
-        // Coin edge
-        g.fillRect(dice.x - radius, dice.y - 2, dice.x + radius, dice.y + 2);
-        result = ''; // No label when on edge
-      } else {
-        // Coin face
-        g.drawCircle(dice.x, dice.y, radius);
-        result = face === 1 ? 'H' : 'T';
-      }
-    } else {
-      // Draw polygonal dice
-      const sides = getDrawSidesFromDiceType(type);
-      const points = [];
-      for (let i = 0; i < sides; i++) {
-        const angle = Math.PI / 2 + (i * Math.PI * 2) / sides;
-        points.push([
-          dice.x + radius * Math.cos(angle),
-          dice.y + radius * Math.sin(angle),
-        ]);
-      }
-      for (let i = 0; i < sides; i++) {
-        const p1 = points[i];
-        const p2 = points[(i + 1) % sides];
-        g.drawLine(p1[0], p1[1], p2[0], p2[1]);
-      }
-    }
+  // Clear Pip object properties that are not needed
+  // log(Object.keys(Pip));
+  [
+    '#onknob1',
+    // 'addWatches',
+    // 'brightness',
+    'btnDownPrev',
+    'btnPlayPrev',
+    'btnUpPrev',
+    'clockVertical',
+    'demoMode',
+    'demoTimeout',
+    'fadeOff',
+    'fadeOn',
+    // 'getDateAndTime',
+    // 'getID',
+    // 'idleTimer',
+    // 'isSDCardInserted',
+    // 'kickIdleTimer',
+    // 'knob1Click',
+    // 'knob2Click',
+    // 'measurePin',
+    // 'mode',
+    'offAnimation',
+    // 'offButtonHandler',
+    'offOrSleep',
+    // 'powerButtonHandler',
+    'setDateAndTime',
+    // 'sleeping',
+    'typeText',
+    // 'typeTimer',
+    // 'updateBrightness',
+    // 'usbConnectHandler',
+  ].forEach((k) => {
+    try {
+      delete Pip[k];
+    } catch (e) {}
+  });
 
-    if (result) {
-      g.setFont('6x8', 3);
-      g.setFontAlign(-1, -1, 0);
-      const textWidth = g.stringWidth(result);
-      const textHeight = g.getFontHeight();
-      g.drawString(result, dice.x - textWidth / 2 + 2, dice.y - textHeight / 2);
-    }
+  // Re-add watches for button handling
+  Pip.addWatches();
 
-    lastDraw = {
-      x: dice.x - radius - 2,
-      y: dice.y - radius - 2,
-      w: size + 4,
-      h: size + 4,
-    };
-  }
-
-  function drawDiceLabel() {
-    const name = DICE_TYPES[currentDiceIndex];
-
-    g.setColor(COLOR_THEME)
-      .setFontMonofonto23()
-      .setFontAlign(1, -1, 0) // Align right-top
-      .drawString(name, SCREEN_VISIBLE_AREA.x2 - 5, SCREEN_VISIBLE_AREA.y1 + 5);
-  }
-
-  function drawTitle() {
-    g.setColor(COLOR_THEME)
-      .setFontMonofonto23()
-      .setFontAlign(-1, -1, 0)
-      .drawString(
-        APP_NAME,
-        SCREEN_VISIBLE_AREA.x1 + 5,
-        SCREEN_VISIBLE_AREA.y1 + 5,
-      );
-
-    const appNameWidth = g.stringWidth(APP_NAME);
-    g.setColor(COLOR_THEME_DARK)
-      .setFontMonofonto16()
-      .setFontAlign(-1, -1, 0) // Align left-top
-      .drawString(
-        'v' + APP_VERSION,
-        SCREEN_VISIBLE_AREA.x1 + 10 + appNameWidth,
-        SCREEN_VISIBLE_AREA.y1 + 5 + 8,
-      );
-  }
-
-  function getDrawSidesFromDiceType(type) {
-    switch (type) {
-      case 'D2':
-        return 0;
-      case 'D4':
-        return 3;
-      case 'D6':
-        return 4;
-      case 'D8':
-        return 5;
-      case 'D10':
-        return 6;
-      case 'D12':
-        return 7;
-      case 'D20':
-        return 8;
-      case 'D100':
-        return 10;
-      default:
-        throw new Error(`Unknown dice type: ${type}`);
-    }
-  }
-
-  function getSidesFromDiceType(type) {
-    return parseInt(type.substring(1));
-  }
-
-  function handleLeftKnob(dir) {
-    rollDice();
-  }
-
-  function handlePlayButton() {
-    rollDice();
-  }
-
-  function handlePowerButton() {
-    clearIntervals();
-    clearScreen();
-    removeListeners();
-
-    clearInterval(inputInterval);
-    inputInterval = null;
-
-    bC.clear(1).flip();
-    E.reboot();
-  }
-
-  function handleRightKnob(dir) {
-    if (isRolling) {
-      return;
-    }
-
-    currentDiceIndex += dir;
-    if (currentDiceIndex < 0) {
-      currentDiceIndex = DICE_TYPES.length - 1;
-    }
-    if (currentDiceIndex >= DICE_TYPES.length) {
-      currentDiceIndex = 0;
-    }
-
-    face =
-      Math.floor(
-        Math.random() * getSidesFromDiceType(DICE_TYPES[currentDiceIndex]),
-      ) + 1;
-
-    clearScreen();
-    drawDiceLabel();
-    drawTitle();
-    drawBoundaries(DICE_BOX_XY);
-    drawDice();
-  }
-
-  function handleTopButton() {
-    // Adjust brightness
-    const brightnessLevels = [1, 5, 10, 15, 20];
-    const currentIndex = brightnessLevels.findIndex(
-      (level) => level === Pip.brightness,
-    );
-    const nextIndex = (currentIndex + 1) % brightnessLevels.length;
-    Pip.brightness = brightnessLevels[nextIndex];
-    Pip.updateBrightness();
-  }
-
-  function removeListeners() {
-    Pip.removeAllListeners(KNOB_LEFT);
-    Pip.removeAllListeners(KNOB_RIGHT);
-    Pip.removeAllListeners(BTN_TOP);
-  }
-
-  function rollDice() {
-    let now = Date.now();
-    if (now - lastRollTime < ROLL_DEBOUNCE) {
-      return;
-    }
-    lastRollTime = now;
-
-    isRolling = true;
-    const max = getSidesFromDiceType(DICE_TYPES[currentDiceIndex]);
-    face = Math.floor(Math.random() * max) + 1;
-    dice.vx = (Math.random() * 6 - 3) * THROW_POWER;
-    dice.vy = (Math.random() * 6 - 3) * THROW_POWER;
-    rollCount = 0;
-
-    if (interval) {
-      clearInterval(interval);
-    }
-
-    const isCoin = DICE_TYPES[currentDiceIndex] === 'D2';
-    let frameRate = 100;
-
-    if (isCoin) {
-      // For D2 coin flip, we want a slightly slower animation
-      frameRate = 150;
-      // Play the coin flip sound
-      Pip.audioStart(SOUNDS.coinFlip);
-    } else {
-      // Play the dice throw sound
-      Pip.audioStart(SOUNDS.diceThrow);
-    }
-
-    interval = setInterval(animateDice, frameRate);
-  }
-
-  function setListeners() {
-    Pip.on(KNOB_LEFT, handleLeftKnob);
-    Pip.on(KNOB_RIGHT, handleRightKnob);
-    Pip.on(BTN_TOP, handleTopButton);
-  }
-
-  self.run = function () {
-    bC.clear();
-    clearScreen();
-    setListeners();
-    drawTitle();
-    drawDiceLabel();
-    drawBoundaries(DICE_BOX_XY);
-    drawDice();
-
-    inputInterval = setInterval(() => {
-      if (BTN_PLAY.read()) {
-        handlePlayButton();
-      }
-    }, 100);
-
-    setWatch(handlePowerButton, BTN_POWER, {
-      debounce: 50,
-      edge: 'rising',
-      repeat: true,
-    });
-  };
-
-  return self;
+  process.memory(true); // GC
 }
 
-DiceRoller().run();
+function memoryCheck(run) {
+  const mem = process.memory();
+  log(
+    '[DICE ROLLER] Memory ' +
+      run +
+      ' cleanup: ' +
+      mem.usage +
+      '/' +
+      mem.total +
+      ' (' +
+      Math.round((mem.usage / mem.total) * 100) +
+      '%)',
+  );
+}
+
+log('[DICE ROLLER] Preloading...');
+
+memoryCheck('before');
+clearMemory();
+memoryCheck('after');
+
+clearMemory = undefined;
+delete global.clearMemory;
+memoryCheck = undefined;
+delete global.memoryCheck;
+
+process.memory(true); // GC
+
+log('[DICE ROLLER] Loading app...');
+eval(fs.readFile('USER/DICE_ROLLER/diceroller.min.js'));

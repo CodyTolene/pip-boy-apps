@@ -10,8 +10,15 @@
   "custom": "",
   "storage": [
     { "name": "USER/diceroller.js", "url": "app.min.js" },
-    { "name": "USER/DICEROLLER/coin-drop.wav", "url": "assets/coin-drop.wav" },
-    { "name": "USER/DICEROLLER/coin-flip.wav", "url": "assets/coin-flip.wav" },
-    { "name": "USER/DICEROLLER/dice-throw.wav", "url": "assets/dice-throw.wav" }
+    {
+      "name": "USER/DICE_ROLLER/diceroller.min.js",
+      "url": "assets/diceroller.min.js"
+    },
+    { "name": "USER/DICE_ROLLER/coin-drop.wav", "url": "assets/coin-drop.wav" },
+    { "name": "USER/DICE_ROLLER/coin-flip.wav", "url": "assets/coin-flip.wav" },
+    {
+      "name": "USER/DICE_ROLLER/dice-throw.wav",
+      "url": "assets/dice-throw.wav"
+    }
   ]
 }
