@@ -1,6 +1,6 @@
 2.2.1
 https://github.com/CodyTolene/pip-boy-apps/pull/45
-- Fix up RAM Scan compatability - checking for variable that's undefined when PipUI+ isn't installed.
+- Fix up RAM Scan compatibility - checking for variable that's undefined when PipUI+ isn't installed.
 
 2.2.0
 https://github.com/CodyTolene/pip-boy-apps/pull/44
