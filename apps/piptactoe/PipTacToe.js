@@ -340,16 +340,10 @@ function showMainMenu() {
   });
 }
 
-setWatch(
-  () => {
-    E.reboot();
-  },
-  BTN_POWER,
-  {
-    debounce: 50,
-    edge: 'rising',
-    repeat: !0,
-  },
-);
+setWatch(E.reboot, BTN_POWER, {
+  debounce: 50,
+  edge: 'rising',
+  repeat: true,
+});
 
 setTimeout(showMainMenu, 100);

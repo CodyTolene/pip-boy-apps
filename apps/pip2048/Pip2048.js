@@ -76,6 +76,7 @@ function drawBoard() {
         g.setFontVector(fontSize);
         var str = val.toString();
         var strWidth = str.length * fontSize * 0.5;
+        g.setFontAlign(0, 0);
         g.drawString(
           str,
           tx + tileSize / 2 - tilePadding / 2,
@@ -94,6 +95,7 @@ function drawBoard() {
     );
     g.setColor(255, 0, 0);
     g.setFontVector(28);
+    g.setFontAlign(0, 0);
     g.drawString('GAME OVER', screenWidth / 2, screenHeight / 2);
   }
 }
@@ -203,18 +205,10 @@ Pip.on('torch', function () {
   E.reboot();
 });
 
-setWatch(
-  () => {
-    console.log('Game stopping');
-    g.clear();
-    E.reboot();
-  },
-  BTN_POWER,
-  {
-    debounce: 50,
-    edge: 'rising',
-    repeat: !0,
-  },
-);
+setWatch(E.reboot, BTN_POWER, {
+  debounce: 50,
+  edge: 'rising',
+  repeat: true,
+});
 
 initGame();
