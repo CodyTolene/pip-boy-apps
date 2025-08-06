@@ -40,5 +40,6 @@ the Creative Commons 0 License. The list of sounds can be found below:
   gobbe57
 - [`SHOOT.wav`](https://freesound.org/people/DarkShroom/sounds/645317/) by
   DarkShroom
+- [`RELOAD.wav`](https://freesound.org/people/GFL7/sounds/276959/) by GFL7
 
 `SPDX-License-Identifiers: CC-BY-NC-4.0, CC0-1.0`

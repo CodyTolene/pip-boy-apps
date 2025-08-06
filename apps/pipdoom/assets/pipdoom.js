@@ -21,6 +21,7 @@ function PipDoom() {
   const PATH_PISTOL_1 = 'USER/PIP_DOOM/PISTOL_1.json';
   const PATH_RELOAD = 'USER/PIP_DOOM/RELOAD.wav';
   const PATH_WALL_HIT = 'USER/PIP_DOOM/OOF.wav';
+  const PATH_SHOOT = 'USER/PIP_DOOM/SHOOT.wav';
 
   // Game constants
   const FOV = Math.PI / 3;
@@ -43,7 +44,7 @@ function PipDoom() {
     COLOR_THEME_DARKEST,
   ];
 
-  // Player & game state
+  // Player, enemies, and game state
   let player = { x: 2.5 * TILE_SIZE, y: 2.5 * TILE_SIZE, angleIdx: 0 };
   let turning = false;
   let buttonHandlerInterval;
@@ -87,7 +88,7 @@ function PipDoom() {
 
   // Weapons
   const BULLET_PADDING = 2;
-  const BULLET_RELOAD_MS = 2378; // Reload .wav duration
+  const BULLET_RELOAD_MS = 2378; // Reload sound duration
   const BULLET_SIZE = 8;
   const MAX_BULLETS = 12;
   const PISTOL_FRAMES = [loadImage(PATH_PISTOL_0), loadImage(PATH_PISTOL_1)];
@@ -98,8 +99,8 @@ function PipDoom() {
   let shooting = false;
 
   function castRay(dx, dy) {
-    let x = player.x,
-      y = player.y;
+    let x = player.x;
+    let y = player.y;
     for (let i = 0; i < MAX_RAY_STEPS; i++) {
       x += dx * STEP_SIZE;
       y += dy * STEP_SIZE;
@@ -168,14 +169,13 @@ function PipDoom() {
     const scaledW = frame.width * scale;
     const scaledH = frame.height * scale;
 
-    // Bottom center position
     const px = (SCREEN_WIDTH - scaledW) >> 1;
     const py = SCREEN_HEIGHT - scaledH - 4 + (shooting ? 3 : 0);
 
-    // Clear the old frame area
+    // Clear
     g.setColor(COLOR_BLACK).fillRect(px, py, px + scaledW, py + scaledH);
 
-    // Draw scaled frame
+    // Draw
     g.setColor(COLOR_THEME);
     g.drawImage(frame, px, py, { scale: scale });
   }
@@ -234,7 +234,6 @@ function PipDoom() {
     }
 
     reloading = true;
-
     Pip.audioStop();
     Pip.audioStart(PATH_RELOAD);
 
@@ -265,12 +264,12 @@ function PipDoom() {
       return;
     }
 
-    // Fire a bullet
+    // Fire
     bullets--;
     drawRemainingBullets();
 
     Pip.audioStop();
-    Pip.audioStart('USER/PIP_DOOM/SHOOT.wav');
+    Pip.audioStart(PATH_SHOOT);
 
     shooting = true;
     pistolFrame = 1;
