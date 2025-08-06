@@ -138,6 +138,7 @@ function checkWin() {
   }
   return 'Draw';
 }
+
 function minimax(b, depth, isMaximizing) {
   let result = checkWinner(b);
   if (result !== null) {
@@ -338,5 +339,17 @@ function showMainMenu() {
     E.reboot();
   });
 }
+
+setWatch(
+  () => {
+    E.reboot();
+  },
+  BTN_POWER,
+  {
+    debounce: 50,
+    edge: 'rising',
+    repeat: !0,
+  },
+);
 
 setTimeout(showMainMenu, 100);
