@@ -214,10 +214,11 @@ function PipDoom() {
   function move(dir) {
     const nx = player.x + COS_TABLE[player.angleIdx] * MOVE_SPEED * dir;
     const ny = player.y + SIN_TABLE[player.angleIdx] * MOVE_SPEED * dir;
-    const mx = (ny / TILE_SIZE) | 0;
-    const my = (nx / TILE_SIZE) | 0;
 
-    if (!MAP[mx][my]) {
+    const tx = (nx / TILE_SIZE) | 0;
+    const ty = (ny / TILE_SIZE) | 0;
+
+    if (!MAP[ty][tx]) {
       player.x = nx;
       player.y = ny;
     } else {
