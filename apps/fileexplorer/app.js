@@ -9,7 +9,7 @@ function FileExplorer() {
   const gx = g;
 
   const APP_NAME = 'File Explorer';
-  const APP_VERSION = '2.1.4';
+  const APP_VERSION = '2.2.0';
 
   const SCREEN_WIDTH = gx.getWidth();
   const SCREEN_HEIGHT = gx.getHeight();
