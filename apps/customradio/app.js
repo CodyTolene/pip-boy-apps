@@ -299,7 +299,7 @@ function clearMemory() {
     // 'mode',
     'offAnimation',
     // 'offButtonHandler',
-    'offOrSleep',
+    // 'offOrSleep',
     // 'powerButtonHandler',
     'setDateAndTime',
     // 'sleeping',
