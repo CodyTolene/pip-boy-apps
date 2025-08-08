@@ -9,7 +9,7 @@ function CustomRadio() {
 
   // General
   const APP_NAME = 'Custom Radio';
-  const APP_VERSION = '3.3.0';
+  const APP_VERSION = '3.3.1';
 
   // Screen
   const SCREEN_WIDTH = g.getWidth(); // Width (480px)
@@ -27,7 +27,7 @@ function CustomRadio() {
   const LEFT_HALF_XY = {
     x1: SCREEN_XY.x1 + 10,
     y1: SCREEN_XY.y1 + 30,
-    x2: (SCREEN_XY.x2 + SCREEN_XY.x1) / 2,
+    x2: (SCREEN_XY.x2 + SCREEN_XY.x1) / 2 + 10,
     y2: SCREEN_XY.y2 - 20,
   };
   const RIGHT_HALF_XY = {
@@ -75,16 +75,16 @@ function CustomRadio() {
   `);
 
   // Folder navigation
-  let currentPath = MUSIC_DIR; // eg "RADIO", "RADIO/Fallout_3"
-  let currentFilesSongs = []; // only .wav in current folder, used by RANDOM
+  let currentPath = MUSIC_DIR;
+  let currentFilesSongs = [];
 
   // List + pagination
   const PAGE_SIZE = 10;
   let page = 0;
   let selectedIndex = 0;
-  let entries = null; // visible list for the current folder
+  let entries = null;
 
-  // Random song selection (per folder only)
+  // Random song selection
   let playingRandom = false;
   let randomQueue = [];
   let randomIndex = 0;
@@ -105,39 +105,6 @@ function CustomRadio() {
   const COLOR_THEME = g.theme.fg;
   const COLOR_THEME_DARK = g.blendColor('#000', COLOR_THEME, 0.5);
   const COLOR_THEME_DARKER = g.blendColor('#000', COLOR_THEME, 0.75);
-
-  function pathJoin(a, b) {
-    if (!a) return b;
-    if (!b) return a;
-    return a + '/' + b;
-  }
-
-  function getParentPath(path) {
-    const i = path.lastIndexOf('/');
-    if (i <= 0) return MUSIC_DIR;
-    return path.slice(0, i);
-  }
-
-  function isDirectory(path) {
-    try {
-      fs.readdir('/' + path);
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  function unloadList() {
-    // Drop references to help GC
-    entries = null;
-    currentFilesSongs = null;
-    randomQueue = null;
-    E.defrag();
-    // Recreate arrays fresh
-    entries = [];
-    currentFilesSongs = [];
-    randomQueue = [];
-  }
 
   function clearFooterBar() {
     if (footerInterval) clearInterval(footerInterval);
@@ -230,13 +197,6 @@ function CustomRadio() {
       .drawString('Now Playing', NOW_PLAYING_XY.x2, NOW_PLAYING_XY.y1 + 15);
   }
 
-  function formatEntryLabel(e) {
-    if (e.type === 'folder') {
-      return e.name; // no slash
-    }
-    return e.name.replace(/\.wav$/i, '');
-  }
-
   function drawSongList() {
     const start = page * PAGE_SIZE;
     const visible = entries.slice(start, start + PAGE_SIZE);
@@ -320,13 +280,9 @@ function CustomRadio() {
       if (Pip.radioClipPlaying) {
         Pip.getAudioWaveform(waveformPoints, 20, 100);
       } else if (Pip.radioOn && typeof RADIO_AUDIO !== 'undefined') {
-        for (let i = 1; i < 60; i += 2) {
-          waveformPoints[i] = E.clip(
-            60 + (analogRead(RADIO_AUDIO) - 0.263) * 600,
-            0,
-            119,
-          );
-        }
+        const adc = analogRead(RADIO_AUDIO); // one sample
+        const v = E.clip(60 + (adc - 0.263) * 600, 0, 119) | 0;
+        for (let i = 1; i < 60; i += 2) waveformPoints[i] = v;
       } else {
         let a = animationAngle;
         for (let i = 1; i < 60; i += 2) {
@@ -339,6 +295,19 @@ function CustomRadio() {
       animationAngle += 0.3;
       Pip.blitImage(waveformGfx, 285, 75, { noScanEffect: true });
     }, INTERVAL_WAVEFORM_MS);
+  }
+
+  function formatEntryLabel(e) {
+    if (e.type === 'folder') {
+      return e.name; // no slash
+    }
+    return e.name.replace(/\.wav$/i, '');
+  }
+
+  function getParentPath(path) {
+    const i = path.lastIndexOf('/');
+    if (i <= 0) return MUSIC_DIR;
+    return path.slice(0, i);
   }
 
   function handleLeftKnob(dir) {
@@ -425,6 +394,15 @@ function CustomRadio() {
     const nextIndex = (currentIndex + 1) % brightnessLevels.length;
     Pip.brightness = brightnessLevels[nextIndex];
     Pip.updateBrightness();
+  }
+
+  function isDirectory(path) {
+    try {
+      fs.readdir('/' + path);
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
   function onMusicStopped() {
@@ -553,6 +531,12 @@ function CustomRadio() {
     drawSongList();
   }
 
+  function pathJoin(a, b) {
+    if (!a) return b;
+    if (!b) return a;
+    return a + '/' + b;
+  }
+
   function playRandomSong() {
     if (!currentFilesSongs || currentFilesSongs.length === 0) {
       // Nothing to play in this folder
@@ -604,6 +588,18 @@ function CustomRadio() {
 
     clearNowPlaying();
     drawAllBoundaries();
+  }
+
+  function unloadList() {
+    // Drop references to help GC
+    entries = null;
+    currentFilesSongs = null;
+    randomQueue = null;
+    // E.defrag();
+    // Recreate arrays fresh
+    entries = [];
+    currentFilesSongs = [];
+    randomQueue = [];
   }
 
   self.run = function () {
