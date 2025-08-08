@@ -14,8 +14,16 @@
 ### Description
 
 Custom Radio lets you browse and play your own `.wav` music files directly from
-the `/RADIO` folder, giving you full control over your playlist for wasteland
-adventures.
+the `/RADIO` folder and nested directories (playlists), giving you full control
+over your playlist for wasteland adventures.
+
+### Playlists
+
+You can have custom playlists by nesting your songs in a folder under `RADIO/`.
+For example `RADIO/MyFolder/MySong.wav`. It's important that you **do not** nest
+folder deeper than this. It's technically possible but you will get a
+`File path too long` error if your file paths are too long. Try to limit each
+folder/playlist to less than 100 songs for best performance!
 
 ### Controls
 
