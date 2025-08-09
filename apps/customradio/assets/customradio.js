@@ -62,6 +62,7 @@ function CustomRadio() {
   const MUSIC_DIR = 'RADIO';
   let currentAudio = null;
   let nextSongToPlay = null;
+  let lastPlayedName = null;
 
   // Icons
   const ICON_FOLDER = Graphics.createImage(`
@@ -704,6 +705,9 @@ function CustomRadio() {
       currentAudio = full;
       Pip.audioStart(full);
       Pip.radioClipPlaying = true;
+
+      lastPlayedName = file.name;
+
       clearNowPlaying();
       drawNowPlayingTitle();
       drawNowPlaying(file);
@@ -716,15 +720,55 @@ function CustomRadio() {
   }
 
   function playRandomSong() {
-    if (!currentFilesSongs.length) {
+    const pool = currentFilesSongs;
+    if (!pool.length) {
       playingRandom = false;
       return;
     }
+
+    // If theres is only one song, we have to replay it
+    if (pool.length === 1) {
+      play(pool[0]);
+      return;
+    }
+
     if (!randomQueue || randomIndex >= randomQueue.length) {
-      randomQueue = currentFilesSongs.slice().sort(() => Math.random() - 0.5);
+      randomQueue = pool.slice();
+      shuffle(randomQueue);
+
+      // Do not play the same song over again
+      if (
+        lastPlayedName &&
+        randomQueue.length > 1 &&
+        randomQueue[0].name === lastPlayedName
+      ) {
+        const t = randomQueue[0];
+        randomQueue[0] = randomQueue[1];
+        randomQueue[1] = t;
+      }
       randomIndex = 0;
     }
-    play(randomQueue[randomIndex++]);
+
+    // If song is the same as last, try the next one or reshuffle
+    let next = randomQueue[randomIndex++];
+    if (lastPlayedName && next.name === lastPlayedName) {
+      if (randomIndex < randomQueue.length) {
+        next = randomQueue[randomIndex++];
+      } else {
+        // All we had left was the last played, reshuffle
+        randomQueue = pool.slice();
+        shuffle(randomQueue);
+        if (randomQueue.length > 1 && randomQueue[0].name === lastPlayedName) {
+          const t = randomQueue[0];
+          randomQueue[0] = randomQueue[1];
+          randomQueue[1] = t;
+        }
+        randomIndex = 1;
+        next = randomQueue[0];
+      }
+    }
+
+    play(next);
   }
 
   function removeListeners() {
@@ -746,10 +790,33 @@ function CustomRadio() {
     });
   }
 
+  function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = (E.hwRand() >>> 0) % (i + 1);
+      const t = arr[i];
+      arr[i] = arr[j];
+      arr[j] = t;
+    }
+  }
+
   function startRandomForCurrentFolder() {
     playingRandom = true;
     // Only songs in the current folder
-    randomQueue = currentFilesSongs.slice().sort(() => Math.random() - 0.5);
+    randomQueue = currentFilesSongs.slice();
+    shuffle(randomQueue);
+
+    // Avoid placing the last played track at the front
+    if (
+      lastPlayedName &&
+      randomQueue.length > 1 &&
+      randomQueue[0].name === lastPlayedName
+    ) {
+      const swapIdx = 1;
+      const t = randomQueue[0];
+      randomQueue[0] = randomQueue[swapIdx];
+      randomQueue[swapIdx] = t;
+    }
+
     randomIndex = 0;
     playRandomSong();
   }
