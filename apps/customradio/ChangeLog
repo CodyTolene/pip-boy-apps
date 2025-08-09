@@ -1,3 +1,15 @@
+3.3.2
+https://github.com/CodyTolene/pip-boy-apps/pull/48
+- Widen the left half of the screen, giving more space for song names.
+- Fix bug of song names leaving behind ghost letters (letters not properly cleared).
+- Do not play the same song twice in a row when playing random songs, unless it's the only song in the folder.
+- Add new icon for the "RANDOM" option.
+- Add new icon for music tracks.
+- Update folder icon size and position (centered vertically).
+- Add new icon for unplayable tracks (tracks with a file path that's too long).
+- Add new icon for the "BACK" option (the option that navigates back one folder).
+- Other misc polishing like text size and colors, and highlighting.
+
 3.3.1
 https://github.com/CodyTolene/pip-boy-apps/pull/47
 - Performance improvements

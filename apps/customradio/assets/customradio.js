@@ -9,7 +9,7 @@ function CustomRadio() {
 
   // General
   const APP_NAME = 'Custom Radio';
-  const APP_VERSION = '3.3.1';
+  const APP_VERSION = '3.3.2';
 
   // Screen
   const SCREEN_WIDTH = g.getWidth(); // Width (480px)
@@ -18,6 +18,7 @@ function CustomRadio() {
   let originalIdleTimeout = settings.idleTimeout;
 
   // UX Mapping
+  const LEFT_HALF_OFFSET = 40;
   const SCREEN_XY = {
     x1: 60,
     y1: 40,
@@ -27,17 +28,17 @@ function CustomRadio() {
   const LEFT_HALF_XY = {
     x1: SCREEN_XY.x1 + 10,
     y1: SCREEN_XY.y1 + 30,
-    x2: (SCREEN_XY.x2 + SCREEN_XY.x1) / 2 + 15,
+    x2: (SCREEN_XY.x2 + SCREEN_XY.x1) / 2 + LEFT_HALF_OFFSET,
     y2: SCREEN_XY.y2 - 20,
   };
   const RIGHT_HALF_XY = {
-    x1: LEFT_HALF_XY.x2 + 10,
+    x1: LEFT_HALF_XY.x2,
     y1: SCREEN_XY.y1 + 30,
     x2: SCREEN_XY.x2 - 10,
     y2: SCREEN_XY.y2 - 20,
   };
   const NOW_PLAYING_XY = {
-    x1: LEFT_HALF_XY.x2 + 10,
+    x1: LEFT_HALF_XY.x2,
     y1: SCREEN_XY.y2 - 100,
     x2: SCREEN_XY.x2 - 10,
     y2: SCREEN_XY.y2 - 60,
@@ -61,29 +62,75 @@ function CustomRadio() {
   const MUSIC_DIR = 'RADIO';
   let currentAudio = null;
   let nextSongToPlay = null;
+  let lastPlayedName = null;
 
+  // Icons
   const ICON_FOLDER = Graphics.createImage(`
-    .........XXXXX..
-    XXXXXXXXX.....XX
-    X..............X
-    X..............X
-    X..............X
-    X..............X
-    X..............X
-    X..............X
-    XXXXXXXXXXXXXXXX
+    .......XXXXX..
+    XXXXXXX.....XX
+    X............X
+    X............X
+    X............X
+    X............X
+    X............X
+    X............X
+    XXXXXXXXXXXXXX
+  `);
+  const ICON_LEFT_ARROW = Graphics.createImage(`
+    ........X.....
+    .......XX.....
+    ......XXX.....
+    .....XXXX.....
+    ....XXXXX.....
+    .....XXXX.....
+    ......XXX.....
+    .......XX.....
+    ........X.....
+  `);
+  const ICON_MUSIC_NOTE = Graphics.createImage(`
+    ..............
+    ....XXXXXXXX..
+    ....XX....XX..
+    ....XX....XX..
+    ....XX....XX..
+    ....XX....XX..
+    ..XXXX..XXXX..
+    ..XXXX..XXXX..
+    ..............
+  `);
+  const ICON_X = Graphics.createImage(`
+    ..............
+    ..XX......XX..
+    ...XX....XX...
+    ....XX..XX....
+    .....XXXX.....
+    ....XX..XX....
+    ...XX....XX...
+    ..XX......XX..
+    ..............
+  `);
+  const ICON_RANDOM = Graphics.createImage(`
+    ..XX..........
+    .XX...........
+    XXXXXXXXXXXXX.
+    .XX...........
+    ..XX......XX..
+    ...........XX.
+    .XXXXXXXXXXXXX
+    ...........XX.
+    ..........XX..
   `);
 
-  // Folder navigation
-  const MAX_PATH = 60;
+  // Folders
+  const MAX_PATH = 56;
   let currentPath = MUSIC_DIR;
   let currentFilesSongs = [];
 
-  // List + pagination
+  // Music List
   const PAGE_SIZE = 10;
   let page = 0;
   let selectedIndex = 0;
-  let entries = null;
+  let songFiles = null;
 
   // Random song selection
   let playingRandom = false;
@@ -102,18 +149,23 @@ function CustomRadio() {
   let footerInterval = null;
 
   // Colors
-  const BLACK = '#000000';
+  const COLOR_BLACK = '#000000';
+  const COLOR_RED = '#FF0000';
+  const COLOR_RED_DARK = g.blendColor('#000', COLOR_RED, 0.5);
   const COLOR_THEME = g.theme.fg;
   const COLOR_THEME_DARK = g.blendColor('#000', COLOR_THEME, 0.5);
   const COLOR_THEME_DARKER = g.blendColor('#000', COLOR_THEME, 0.75);
 
   function clearFooterBar() {
-    if (footerInterval) clearInterval(footerInterval);
+    if (footerInterval) {
+      clearInterval(footerInterval);
+    }
+
     footerInterval = null;
   }
 
   function clearNowPlaying() {
-    g.setColor(BLACK).fillRect(NOW_PLAYING_XY);
+    g.setColor(COLOR_BLACK).fillRect(NOW_PLAYING_XY);
   }
 
   function clearWaveform() {
@@ -133,11 +185,12 @@ function CustomRadio() {
   function drawAllBoundaries() {
     if (SHOW_BOUNDARIES === false) return;
 
-    drawBoundaries(SCREEN_XY);
-    drawBoundaries(LEFT_HALF_XY);
-    drawBoundaries(NOW_PLAYING_XY);
-    drawBoundaries(RIGHT_HALF_XY);
-    drawBoundaries(WAVEFORM_XY);
+    g.setColor(COLOR_THEME_DARKER);
+    g.drawRect(SCREEN_XY);
+    g.drawRect(LEFT_HALF_XY);
+    g.drawRect(NOW_PLAYING_XY);
+    g.drawRect(RIGHT_HALF_XY);
+    g.drawRect(WAVEFORM_XY);
     drawWaveformBorder();
   }
 
@@ -170,24 +223,28 @@ function CustomRadio() {
     );
   }
 
-  function drawBoundaries(area) {
-    g.setColor(COLOR_THEME_DARKER).drawRect(area.x1, area.y1, area.x2, area.y2);
-  }
-
   function drawFooterBar() {
     clearFooterBar();
     footerInterval = setInterval(drawFooter, INTERVAL_FOOTER_MS);
   }
 
-  function drawNowPlaying(song) {
-    const display = song.replace(/\.wav$/i, '');
+  function drawNowPlaying(file) {
+    let name = file.name;
+    let color = COLOR_THEME;
+
+    if (file.type === 'ptl') {
+      name = 'FILE PATH TOO LONG!';
+      color = COLOR_RED;
+    }
+
+    const display = name.replace(/\.wav$/i, '');
     const displayName =
-      display.length > 19 ? display.slice(0, 16) + '...' : display;
+      display.length > 21 ? display.slice(0, 18) + '...' : display;
 
     // Draw the currently playing song text
-    g.setColor(COLOR_THEME)
+    g.setColor(color)
       .setFontAlign(1, -1, 0) // Align right-top
-      .setFontMonofonto16()
+      .setFont('6x8')
       .drawString(displayName, NOW_PLAYING_XY.x2, NOW_PLAYING_XY.y1 + 20);
   }
 
@@ -200,34 +257,54 @@ function CustomRadio() {
 
   function drawSongList() {
     const start = page * PAGE_SIZE;
-    const visible = entries.slice(start, start + PAGE_SIZE);
+    const visibleFiles = songFiles.slice(start, start + PAGE_SIZE);
 
-    // Clear
-    g.setColor(BLACK).fillRect(LEFT_HALF_XY);
-
+    g.setColor(COLOR_BLACK).fillRect(LEFT_HALF_XY);
     g.setFontMonofonto16().setFontAlign(-1, -1, 0);
-    const padding = 5;
+
+    const iconTopPadding = 4;
+    const iconRightPadding = 4;
+    const textPadding = 5;
     const rowHeight = 20;
 
-    visible.forEach((e, i) => {
-      const y = LEFT_HALF_XY.y1 + i * rowHeight + padding;
-      let label = formatEntryLabel(e);
-      label = label.length > 19 ? label.slice(0, 16) + '...' : label;
+    visibleFiles.forEach((file, i) => {
+      const y = LEFT_HALF_XY.y1 + i * rowHeight + textPadding;
 
-      const color =
-        e.type === 'ptl'
-          ? COLOR_THEME_DARKER
-          : i === selectedIndex
-            ? COLOR_THEME
-            : COLOR_THEME_DARK;
+      let label = formatEntryLabel(file);
+      let color = COLOR_THEME_DARK;
+
+      if (file.type === 'ptl') {
+        if (i === selectedIndex) {
+          color = COLOR_RED;
+        } else {
+          color = COLOR_RED_DARK;
+        }
+      } else if (i === selectedIndex) {
+        color = COLOR_THEME;
+      }
 
       g.setColor(color);
+      let textX = LEFT_HALF_XY.x1;
 
-      let textX = LEFT_HALF_XY.x1 + padding;
-      if (e.type === 'folder') {
-        g.drawImage(ICON_FOLDER, textX, y);
-        textX += ICON_FOLDER.width + 4;
+      if (file.type === 'folder') {
+        g.drawImage(ICON_FOLDER, textX, y + iconTopPadding);
+        textX += ICON_FOLDER.width + iconRightPadding;
+      } else if (file.type === 'up') {
+        g.drawImage(ICON_LEFT_ARROW, textX, y + iconTopPadding);
+        textX += ICON_LEFT_ARROW.width + iconRightPadding;
+      } else if (file.type === 'file') {
+        g.drawImage(ICON_MUSIC_NOTE, textX, y + iconTopPadding);
+        textX += ICON_MUSIC_NOTE.width + iconRightPadding;
+      } else if (file.type === 'ptl') {
+        g.drawImage(ICON_X, textX, y + iconTopPadding);
+        textX += ICON_X.width + iconRightPadding;
+      } else if (file.type === 'random') {
+        g.drawImage(ICON_RANDOM, textX, y + iconTopPadding);
+        textX += ICON_RANDOM.width + iconRightPadding;
       }
+
+      const maxPx = LEFT_HALF_XY.x2 - 2 - textX;
+      label = ellipsizeToWidth(label, maxPx);
 
       g.drawString(label, textX, y, true);
     });
@@ -236,10 +313,13 @@ function CustomRadio() {
   }
 
   function drawWaveformBorder() {
+    // Clear the waveform area
+    // g.setColor(COLOR_BLACK).fillRect(WAVEFORM_XY);
+
     const ticks = 5;
     const ticksSpacing = 3;
 
-    const x1 = WAVEFORM_XY.x1;
+    const x1 = WAVEFORM_XY.x1 - LEFT_HALF_OFFSET;
     const y1 = WAVEFORM_XY.y1;
     const x2 = WAVEFORM_XY.x2;
     const y2 = WAVEFORM_XY.y2;
@@ -250,20 +330,28 @@ function CustomRadio() {
     for (let i = 0; i < 40; i++) {
       const color = i % ticks === 0 ? COLOR_THEME : COLOR_THEME_DARK;
       const height = i % ticks === 0 ? 2 : 1;
+
       const xpos = x1 + i * ticksSpacing;
       const ypos = bottom - height;
+
       g.setColor(color);
+      // Vertical ticks
       g.drawLine(xpos, ypos, xpos, bottom);
+      // Horizontal ticks
       g.drawLine(right - height, y1 + i * 3, right, y1 + i * 3);
     }
+
     g.setColor(COLOR_THEME);
+    // Bottom horizontal
     g.drawLine(x1, bottom, x2, bottom);
+    // Right vertical
     g.drawLine(x2, bottom, x2, y1);
   }
 
   function drawWaveform() {
     animationAngle = 0;
     waveformGfx = Graphics.createArrayBuffer(120, 120, 2, { msb: true });
+
     if (E.getAddressOf(waveformGfx, 0) === 0) {
       waveformGfx = undefined;
       E.defrag();
@@ -278,16 +366,14 @@ function CustomRadio() {
     }
 
     waveformInterval = setInterval(() => {
-      if (!waveformGfx) return;
+      if (!waveformGfx) {
+        return;
+      }
 
       waveformGfx.clearRect(0, 0, 119, 119);
 
       if (Pip.radioClipPlaying) {
         Pip.getAudioWaveform(waveformPoints, 20, 100);
-      } else if (Pip.radioOn && typeof RADIO_AUDIO !== 'undefined') {
-        const adc = analogRead(RADIO_AUDIO); // one sample
-        const v = E.clip(60 + (adc - 0.263) * 600, 0, 119) | 0;
-        for (let i = 1; i < 60; i += 2) waveformPoints[i] = v;
       } else {
         let a = animationAngle;
         for (let i = 1; i < 60; i += 2) {
@@ -302,9 +388,36 @@ function CustomRadio() {
     }, INTERVAL_WAVEFORM_MS);
   }
 
-  function formatEntryLabel(e) {
-    let label = e.displayName || e.fsName || e.name;
-    if (e.type !== 'folder') label = label.replace(/\.wav$/i, '');
+  function ellipsizeToWidth(text, maxPx) {
+    if (g.stringWidth(text) <= maxPx) {
+      return text;
+    }
+
+    const dots = '...';
+    const dotsW = g.stringWidth(dots);
+    let low = 0;
+    let high = text.length;
+    let best = 0;
+
+    while (low <= high) {
+      const mid = (low + high) >> 1;
+      const candidate = text.slice(0, mid);
+      if (g.stringWidth(candidate) + dotsW <= maxPx) {
+        best = mid;
+        low = mid + 1;
+      } else {
+        high = mid - 1;
+      }
+    }
+
+    return text.slice(0, best) + dots;
+  }
+
+  function formatEntryLabel(file) {
+    let label = file.name;
+    if (file.type !== 'folder') {
+      label = label.replace(/\.wav$/i, '');
+    }
     return label;
   }
 
@@ -316,16 +429,22 @@ function CustomRadio() {
 
   function handleLeftKnob(dir) {
     const now = Date.now();
-    if (now - lastLeftKnobTime < KNOB_DEBOUNCE) return;
+    if (now - lastLeftKnobTime < KNOB_DEBOUNCE) {
+      return;
+    }
     lastLeftKnobTime = now;
 
-    if (dir !== 0) return menuScroll(dir * -1);
+    if (dir !== 0) {
+      return menuScroll(dir * -1);
+    }
 
     const currentStart = page * PAGE_SIZE;
-    const e = entries[currentStart + selectedIndex];
-    if (!e) return;
+    const selectedFile = songFiles[currentStart + selectedIndex];
+    if (!selectedFile) {
+      return;
+    }
 
-    if (e.type === 'random') {
+    if (selectedFile.type === 'random') {
       if (playingRandom) {
         playingRandom = false;
         stopSong();
@@ -341,35 +460,44 @@ function CustomRadio() {
       return;
     }
 
-    if (e.type === 'ptl') {
-      // Path too long, disabled.
+    if (selectedFile.type === 'ptl') {
+      playingRandom = false;
+      nextSongToPlay = null;
+      currentAudio = null;
+      Pip.radioClipPlaying = false;
+
+      stopSong();
+      clearNowPlaying();
+      drawNowPlayingTitle();
+      drawNowPlaying(selectedFile);
+      drawAllBoundaries();
       return;
     }
 
-    if (e.type === 'up') {
+    if (selectedFile.type === 'up') {
       // Navigate up
       navigateTo(getParentPath(currentPath));
       return;
     }
 
-    if (e.type === 'folder') {
+    if (selectedFile.type === 'folder') {
       // Enter folder
-      navigateTo(pathJoin(currentPath, e.fsName));
+      navigateTo(pathJoin(currentPath, selectedFile.name));
       return;
     }
 
-    if (e.type === 'file') {
-      const fullPath = '/' + pathJoin(currentPath, e.fsName);
+    if (selectedFile.type === 'file') {
+      const fullPath = '/' + pathJoin(currentPath, selectedFile.name);
       if (currentAudio === fullPath) {
         nextSongToPlay = null;
         stopSong();
       } else {
         playingRandom = false;
         if (currentAudio !== null) {
-          nextSongToPlay = e;
+          nextSongToPlay = selectedFile;
           stopSong();
         } else {
-          playEntry(e);
+          play(selectedFile);
         }
       }
       return;
@@ -412,6 +540,10 @@ function CustomRadio() {
     }
   }
 
+  function isPathTooLong(base, name) {
+    return ('/' + pathJoin(base, name)).length > MAX_PATH;
+  }
+
   function menuLoad(path) {
     let dirPath = path || currentPath;
     unloadList();
@@ -442,49 +574,45 @@ function CustomRadio() {
     }
 
     // List
-    entries.push({ type: 'random', name: 'RANDOM' });
+    songFiles.push({ type: 'random', name: 'RANDOM' });
 
     // Up option if not at root
     if (dirPath !== MUSIC_DIR) {
-      entries.push({ type: 'up', name: '< BACK' });
+      songFiles.push({ type: 'up', name: 'BACK' });
     }
 
     // Folders
-    folders.forEach((n) => {
-      if (tooLongPath(dirPath, n)) {
-        entries.push({
+    folders.forEach((folder) => {
+      if (isPathTooLong(dirPath, folder)) {
+        songFiles.push({
+          name: folder,
           type: 'ptl',
-          fsName: n,
-          displayName: 'PTL: ' + sanitizeFilename(n),
         });
       } else {
-        entries.push({
+        songFiles.push({
+          name: folder,
           type: 'folder',
-          fsName: n,
-          displayName: sanitizeFilename(n),
         });
       }
     });
 
     // Files
-    wavs.forEach((n) => {
-      if (tooLongPath(dirPath, n)) {
-        entries.push({
+    wavs.forEach((file) => {
+      if (isPathTooLong(dirPath, file)) {
+        songFiles.push({
+          name: file,
           type: 'ptl',
-          fsName: n,
-          displayName: 'PTL: ' + sanitizeFilename(n),
         });
       } else {
-        entries.push({
+        songFiles.push({
           type: 'file',
-          fsName: n,
-          displayName: sanitizeFilename(n),
+          name: file,
         });
       }
     });
 
     // RANDOM list
-    currentFilesSongs = entries.filter((e) => e.type === 'file');
+    currentFilesSongs = songFiles.filter((file) => file.type === 'file');
 
     print(
       'Loaded folder ' +
@@ -504,8 +632,11 @@ function CustomRadio() {
 
   function menuScroll(dir) {
     const currentStart = page * PAGE_SIZE;
-    const visible = entries.slice(currentStart, currentStart + PAGE_SIZE);
-    const maxPage = Math.floor((entries.length - 1) / PAGE_SIZE);
+    const visibleFiles = songFiles.slice(
+      currentStart,
+      currentStart + PAGE_SIZE,
+    );
+    const maxPage = Math.floor((songFiles.length - 1) / PAGE_SIZE);
 
     selectedIndex += dir;
 
@@ -516,12 +647,12 @@ function CustomRadio() {
       } else {
         selectedIndex = 0;
       }
-    } else if (selectedIndex >= visible.length) {
+    } else if (selectedIndex >= visibleFiles.length) {
       if (page < maxPage) {
         page++;
         selectedIndex = 0;
       } else {
-        selectedIndex = visible.length - 1;
+        selectedIndex = visibleFiles.length - 1;
       }
     }
 
@@ -552,9 +683,9 @@ function CustomRadio() {
       return;
     }
     if (nextSongToPlay) {
-      const e = nextSongToPlay;
+      const file = nextSongToPlay;
       nextSongToPlay = null;
-      playEntry(e);
+      play(file);
       return;
     }
 
@@ -568,28 +699,76 @@ function CustomRadio() {
     return a + '/' + b;
   }
 
-  function playEntry(entry) {
-    const full = '/' + pathJoin(currentPath, entry.fsName);
-    currentAudio = full;
-    Pip.audioStart(full);
-    Pip.radioClipPlaying = true;
+  function play(file) {
+    try {
+      const full = '/' + pathJoin(currentPath, file.name);
+      currentAudio = full;
+      Pip.audioStart(full);
+      Pip.radioClipPlaying = true;
 
-    clearNowPlaying();
-    drawNowPlayingTitle();
-    drawNowPlaying(entry.displayName || entry.fsName);
+      lastPlayedName = file.name;
+
+      clearNowPlaying();
+      drawNowPlayingTitle();
+      drawNowPlaying(file);
+    } catch (error) {
+      log('Error playing audio:', error);
+      clearNowPlaying();
+      Pip.radioClipPlaying = false;
+    }
     drawAllBoundaries();
   }
 
   function playRandomSong() {
-    if (!currentFilesSongs.length) {
+    const pool = currentFilesSongs;
+    if (!pool.length) {
       playingRandom = false;
       return;
     }
+
+    // If theres is only one song, we have to replay it
+    if (pool.length === 1) {
+      play(pool[0]);
+      return;
+    }
+
     if (!randomQueue || randomIndex >= randomQueue.length) {
-      randomQueue = currentFilesSongs.slice().sort(() => Math.random() - 0.5);
+      randomQueue = pool.slice();
+      shuffle(randomQueue);
+
+      // Do not play the same song over again
+      if (
+        lastPlayedName &&
+        randomQueue.length > 1 &&
+        randomQueue[0].name === lastPlayedName
+      ) {
+        const t = randomQueue[0];
+        randomQueue[0] = randomQueue[1];
+        randomQueue[1] = t;
+      }
       randomIndex = 0;
     }
-    playEntry(randomQueue[randomIndex++]);
+
+    // If song is the same as last, try the next one or reshuffle
+    let next = randomQueue[randomIndex++];
+    if (lastPlayedName && next.name === lastPlayedName) {
+      if (randomIndex < randomQueue.length) {
+        next = randomQueue[randomIndex++];
+      } else {
+        // All we had left was the last played, reshuffle
+        randomQueue = pool.slice();
+        shuffle(randomQueue);
+        if (randomQueue.length > 1 && randomQueue[0].name === lastPlayedName) {
+          const t = randomQueue[0];
+          randomQueue[0] = randomQueue[1];
+          randomQueue[1] = t;
+        }
+        randomIndex = 1;
+        next = randomQueue[0];
+      }
+    }
+
+    play(next);
   }
 
   function removeListeners() {
@@ -597,10 +776,6 @@ function CustomRadio() {
     Pip.removeAllListeners(KNOB_RIGHT);
     Pip.removeAllListeners(BTN_TOP);
     Pip.removeAllListeners(MUSIC_STOPPED);
-  }
-
-  function sanitizeFilename(s) {
-    return s.replace(/[^0-9A-Za-z._-]/g, '_');
   }
 
   function setListeners() {
@@ -615,10 +790,33 @@ function CustomRadio() {
     });
   }
 
+  function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = (E.hwRand() >>> 0) % (i + 1);
+      const t = arr[i];
+      arr[i] = arr[j];
+      arr[j] = t;
+    }
+  }
+
   function startRandomForCurrentFolder() {
     playingRandom = true;
     // Only songs in the current folder
-    randomQueue = currentFilesSongs.slice().sort(() => Math.random() - 0.5);
+    randomQueue = currentFilesSongs.slice();
+    shuffle(randomQueue);
+
+    // Avoid placing the last played track at the front
+    if (
+      lastPlayedName &&
+      randomQueue.length > 1 &&
+      randomQueue[0].name === lastPlayedName
+    ) {
+      const swapIdx = 1;
+      const t = randomQueue[0];
+      randomQueue[0] = randomQueue[swapIdx];
+      randomQueue[swapIdx] = t;
+    }
+
     randomIndex = 0;
     playRandomSong();
   }
@@ -632,18 +830,11 @@ function CustomRadio() {
     drawAllBoundaries();
   }
 
-  function tooLongPath(base, name) {
-    return ('/' + pathJoin(base, name)).length > MAX_PATH;
-  }
-
   function unloadList() {
-    // Drop references to help GC
-    entries = null;
+    songFiles = null;
     currentFilesSongs = null;
     randomQueue = null;
-    // E.defrag();
-    // Recreate arrays fresh
-    entries = [];
+    songFiles = [];
     currentFilesSongs = [];
     randomQueue = [];
   }
@@ -659,7 +850,6 @@ function CustomRadio() {
     removeListeners();
     setListeners();
 
-    currentPath = MUSIC_DIR;
     menuLoad(currentPath);
 
     drawWaveform();
