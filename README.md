@@ -1,41 +1,75 @@
 <div align="center">
-  <img align="center" src=".github/images/logo.png" />
+  <img align="center" src=".github/images/logo.png" height="400" />
   <h1 align="center">Pip-Boy Apps</h1>
   <p align="center">
     A forked repository of the official <a href="https://github.com/thewandcompany/pip-boy" target="_blank">Mod Tool</a> from The Wand Company to house all the great apps and games made by fellow vault-dwellers for the Pip-Boy 3000 Mk V device. Apps are hosted on <a href="https://pip-boy.com/" target="_blank">pip-boy.com</a> and are open-source for all to enjoy.
   </p>
   <p align="center">
-    <a href="https://gear.bethesda.net/products/fallout-series-pip-boy-die-cast-replica" target="_blank">
-      Bethesda Store
-    </a>&nbsp;&#9679;&nbsp;
-    <a href="https://www.thewandcompany.com/pip-boy/upgrade/">
-      The Wand Company
-    </a>&nbsp;&#9679;&nbsp;
-    <a href="https://github.com/thewandcompany/pip-boy" target="_blank">
-      Official Mod Tool
-    </a>&nbsp;&#9679;&nbsp;
     <a href="https://pip-boy.com" target="_blank">
       Pip-Boy.com
+    </a>&nbsp;|&nbsp;
+    <a href="https://discord.com/invite/zQmAkEg8XG" target="_blank">
+      Discord Community
+    </a>
+  </p>
+  <p align="center">
+    <a href="https://gear.bethesda.net/products/fallout-series-pip-boy-die-cast-replica" target="_blank">
+      Bethesda Store
+    </a>&nbsp;|&nbsp;
+    <a href="https://www.thewandcompany.com/pip-boy/upgrade/">
+      The Wand Company
+    </a>&nbsp;|&nbsp;
+    <a href="https://github.com/thewandcompany/pip-boy" target="_blank">
+      Official Mod Tool
+    </a>
+  </p>
+  <p align="center">
+    <a href="https://www.espruino.com/Reference" target="_blank">
+      Espruino Reference
+    </a>&nbsp;|&nbsp;
+    <a href="https://github.com/espruino/BangleApps">
+      Bangle Apps
+    </a>&nbsp;|&nbsp;
+    <a href="https://www.espruino.com/Image%20Converter">
+      Bangle Images
     </a>
   </p>
 </div>
 
-## Quick Links
+<!---------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------->
 
-Official Software Reference: https://www.espruino.com/Reference
+## Index <a name="index"></a>
 
-Example apps: https://github.com/espruino/BangleApps
+- [Getting Started](#getting-started)
+- [Mod Tool](#mod-tool)
+- [App List](#app-list)
+- [Minification](#minification)
+- [Contributing](#contributing)
 
-Image converter: https://www.espruino.com/Image%20Converter
+<!---------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------->
 
-## Development
+## Getting Started <a name="getting-started"></a>
 
-### Writing Apps
+If you put a JS file in the `USER` folder, Pip-Boy will show it in a list of
+apps in the `INV` screen.
 
-Please see the development documentation at [DEVELOPMENT.md](DEVELOPMENT.md) for
-more information on writing apps for the Pip-Boy 3000 Mk V by The Wand Company.
+- `g` is a graphics instance that writes direct to the screen.
 
-### Running the application
+- `bC` is a graphics instance that writes to a 2 bit offscreen buffer, and
+  calling `bC.flip()` will flip that buffer to the screen with a scanline
+  effect.
+
+More details here: [API.md](API.md)
+
+<!---------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------->
+
+## Running the Pip-Boy Mod Tool <a name="mod-tool"></a>
 
 1.  Clone the repository and its submodules:
 
@@ -66,7 +100,7 @@ more information on writing apps for the Pip-Boy 3000 Mk V by The Wand Company.
     ```
 
     > ![info][img-info] Once you run the application, it will be available at
-    > `http://localhost:8080`.
+    > [http://localhost:8080](http://localhost:8080).
 
 5.  Stop the server any time with:
 
@@ -83,10 +117,14 @@ more information on writing apps for the Pip-Boy 3000 Mk V by The Wand Company.
     docker volume prune
     ```
 
-### App JSON Generation
+<!---------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------->
 
-1.  With [Node.js](https://nodejs.org/en) installed, open a new terminal at the
-    root of this repo. Install the required Node.js packages:
+## App JSON Generation <a name="app-list"></a>
+
+1.  With [Node.js][link-node-js] installed, open a new terminal at the root of
+    this repo. Install the required Node.js packages:
 
     ```sh
     npm install
@@ -107,14 +145,18 @@ more information on writing apps for the Pip-Boy 3000 Mk V by The Wand Company.
     > ![warn][img-warn] Do not commit this file to the repository, it is
     > generated automatically and should not be tracked by Git.
 
-### Manual Minification
+<!---------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------->
+
+## Manual Minification <a name="minification"></a>
 
 Sometimes the built in minification and tokenization doesn't work as expected,
 in this case you can run the Espruino minification manually using the following
 steps:
 
-1.  With [Node.js](https://nodejs.org/en) installed, open a new terminal at the
-    root of this repo. Install the required Node.js packages:
+1.  With [Node.js][link-node-js] installed, open a new terminal at the root of
+    this repo. Install the required Node.js packages:
 
     ```sh
     npm install
@@ -134,7 +176,11 @@ steps:
 
     > ![info][img-info] Press CTRL+C to stop the live update script.
 
-### Contributing
+<!---------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------->
+
+## Contributing <a name="contributing"></a>
 
 1.  Make sure to run the following commands before committing any changes:
 
@@ -157,7 +203,15 @@ steps:
 4.  Further details on contributing can be found in the
     [CONTRIBUTING.md](CONTRIBUTING.md) file.
 
+<!---------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------->
+
 <!-- IMAGE REFERENCES -->
 
 [img-info]: .github/images/ng-icons/info.svg
 [img-warn]: .github/images/ng-icons/warn.svg
+
+<!-- LINK REFERENCES -->
+
+[link-node-js]: https://nodejs.org/en
