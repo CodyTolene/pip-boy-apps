@@ -29,16 +29,6 @@ function PipUIPlus() {
   let page = 0;
   let selectedIndex = 0;
 
-  // Saved options
-  let options = {
-    enableSpecialTab: false,
-    enablePerksTab: false,
-    enableRamScan: false,
-    hideCogIcon: false,
-    hideHolotapeIcon: false,
-  };
-  let optionKeys = Object.keys(options);
-
   // Open App Icon (20x20)
   const ICON_OPEN_APP = Graphics.createImage(`
     XXXXXXXXX...XXXXXXXX
@@ -62,6 +52,60 @@ function PipUIPlus() {
     XXXXXXXXXXXXXXXXXXXX
     XXXXXXXXXXXXXXXXXXXX
   `);
+  const ICON_UNCHECKED = Graphics.createImage(`
+    XXXXXXXXXXXXXXXXXXXX
+    XXXXXXXXXXXXXXXXXXXX
+    XXXXXXXXXXXXXXXXXXXX
+    XXX..............XXX
+    XXX..............XXX
+    XXX..............XXX
+    XXX..............XXX
+    XXX..............XXX
+    XXX..............XXX
+    XXX..............XXX
+    XXX..............XXX
+    XXX..............XXX
+    XXX..............XXX
+    XXX..............XXX
+    XXX..............XXX
+    XXX..............XXX
+    XXX..............XXX
+    XXXXXXXXXXXXXXXXXXXX
+    XXXXXXXXXXXXXXXXXXXX
+    XXXXXXXXXXXXXXXXXXXX
+  `);
+  const ICON_CHECKED = Graphics.createImage(`
+    XXXXXXXXXXXXXXXXXXXX
+    XXXXXXXXXXXXXXXXXXXX
+    XXXXXXXXXXXXXXXXXXXX
+    XXX..............XXX
+    XXX..............XXX
+    XXX............XXXXX
+    XXX...........XXXXXX
+    XXX..........XXX.XXX
+    XXX.........XXX..XXX
+    XXX........XXX...XXX
+    XXX.......XXX....XXX
+    XXXXXX...XXX.....XXX
+    XXX.XXX.XXX......XXX
+    XXX..XXXXX.......XXX
+    XXX...XXX........XXX
+    XXX..............XXX
+    XXX..............XXX
+    XXXXXXXXXXXXXXXXXXXX
+    XXXXXXXXXXXXXXXXXXXX
+    XXXXXXXXXXXXXXXXXXXX
+  `);
+
+  // Options
+  let options = {
+    enableSpecialTab: false,
+    enablePerksTab: false,
+    enableRamScan: false,
+    hideCogIcon: false,
+    hideHolotapeIcon: false,
+  };
+  let optionKeys = Object.keys(options);
 
   // Options that are not directly tied to json
   const EXTRA_OPTIONS = [
@@ -137,48 +181,49 @@ function PipUIPlus() {
       return {
         key: key,
         render: function (x, y, selected) {
-          const checked = options[key] ? 'X' : ' ';
-          let label;
-          switch (key) {
-            case 'enableSpecialTab': {
-              label = '[ ' + checked + ' ] Enable STATS > SPECIAL tab';
-              break;
-            }
-            case 'enablePerksTab': {
-              label = '[ ' + checked + ' ] Enable STATS > PERKS tab';
-              break;
-            }
-            case 'enableRamScan': {
-              label =
-                '[ ' + checked + ' ] Enable RAM Scan (bottom right of OS)';
-              break;
-            }
-            case 'hideCogIcon': {
-              label = '[ ' + checked + ' ] Hide Cog Icon (top left of OS)';
-              break;
-            }
-            case 'hideHolotapeIcon': {
-              label =
-                '[ ' + checked + ' ] Hide Holotape Icon (top right of OS)';
-              break;
-            }
-            default: {
-              label =
-                '[ ' +
-                checked +
-                ' ] ' +
-                key.charAt(0).toUpperCase() +
-                key.slice(1).replace(/([A-Z])/g, ' $1');
-            }
-          }
-
           if (selected) {
             g.setColor(COLOR_THEME);
           } else {
             g.setColor(COLOR_THEME_DARK);
           }
 
-          g.drawString(label, x, y);
+          const checked = options[key];
+          if (checked) {
+            g.drawImage(ICON_CHECKED, x + 6, y);
+          } else {
+            g.drawImage(ICON_UNCHECKED, x + 6, y);
+          }
+
+          let label;
+          switch (key) {
+            case 'enableSpecialTab': {
+              label = 'Enable STATS > SPECIAL tab';
+              break;
+            }
+            case 'enablePerksTab': {
+              label = 'Enable STATS > PERKS tab';
+              break;
+            }
+            case 'enableRamScan': {
+              label = 'Enable RAM Scan (bottom right of OS)';
+              break;
+            }
+            case 'hideCogIcon': {
+              label = 'Hide Cog Icon (top left of OS)';
+              break;
+            }
+            case 'hideHolotapeIcon': {
+              label = 'Hide Holotape Icon (top right of OS)';
+              break;
+            }
+            default: {
+              label =
+                key.charAt(0).toUpperCase() +
+                key.slice(1).replace(/([A-Z])/g, ' $1');
+            }
+          }
+
+          g.drawString(label, x + ICON_OPEN_APP.width + 24, y);
         },
         onSelect: function () {
           options[key] = !options[key];
