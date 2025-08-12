@@ -1,8 +1,8 @@
 {
   "id": "pipuiplus",
   "name": "Pip UI+",
-  "version": "3.0.0",
-  "description": "Pip UI+ enhances the Pip‑Boy 3000 Mk V with classic tabs like SPECIAL and PERKS, a real‑time RAM monitor, and options to hide interface elements for a cleaner, less cluttered display.",
+  "version": "3.1.0",
+  "description": "Pip UI+ enhances the Pip-Boy 3000 Mk V with classic tabs like SPECIAL and PERKS, a real-time RAM monitor, options to hide interface elements, and a theme picker with more color options than the default interface.",
   "icon": "assets/pipuiplus.png",
   "tags": "bootloader,media,tool",
   "type": "bootloader",
@@ -27,12 +27,20 @@
       "url": "assets/RAMScanLoader.min.js"
     },
     {
+      "name": "USER_BOOT/ThemePickerLoader.min.js",
+      "url": "assets/ThemePickerLoader.min.js"
+    },
+    {
       "name": "USER_BOOT/PIP_UI_PLUS/Menu.min.js",
       "url": "assets/Menu.min.js"
     },
     {
       "name": "USER_BOOT/PIP_UI_PLUS/Perks.min.js",
       "url": "assets/Perks.min.js"
+    },
+    {
+      "name": "USER_BOOT/PIP_UI_PLUS/ThemePicker.min.js",
+      "url": "assets/ThemePicker.min.js"
     },
     {
       "name": "USER_BOOT/PIP_UI_PLUS/Special.min.js",
@@ -45,6 +53,10 @@
     {
       "name": "USER_BOOT/PIP_UI_PLUS/PERKS/_perks.dat",
       "url": "assets/PERKS/_perks.dat"
+    },
+    {
+      "name": "USER_BOOT/PIP_UI_PLUS/SPECIAL/_special.dat",
+      "url": "assets/SPECIAL/_special.dat"
     },
     {
       "name": "USER_BOOT/PIP_UI_PLUS/PERKS/action_boy.avi",
@@ -341,10 +353,6 @@
     {
       "name": "USER_BOOT/PIP_UI_PLUS/PERKS/wasteland_whisperer.avi",
       "url": "assets/PERKS/wasteland_whisperer.avi"
-    },
-    {
-      "name": "USER_BOOT/PIP_UI_PLUS/SPECIAL/_special.dat",
-      "url": "assets/SPECIAL/_special.dat"
     },
     {
       "name": "USER_BOOT/PIP_UI_PLUS/SPECIAL/agility.avi",

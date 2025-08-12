@@ -6,6 +6,7 @@
 
 - [Mercy](https://github.com/MercurialPony)
 - [Cody Tolene](https://github.com/CodyTolene)
+- [Athene Allen](https://github.com/gnargle)
 
 **Links(s):**
 
@@ -13,9 +14,9 @@
 
 ### Description
 
-Pip UI+ enhances the Pip‑Boy 3000 Mk V with classic tabs like SPECIAL and PERKS,
-a real‑time RAM monitor, and options to hide interface elements for a cleaner,
-less cluttered display.
+Pip UI+ enhances the Pip-Boy 3000 Mk V with classic tabs like SPECIAL and PERKS,
+a real-time RAM monitor, options to hide interface elements, and a theme picker
+with more color options than the default interface.
 
 ### Instructions
 
@@ -29,6 +30,7 @@ INV > APPS. Here, you can toggle various UI features on and off.
 - Enable RAM Scan (bottom right of OS)
 - Hide Cog Icon (top left of OS)
 - Hide Holotape Icon (top right of OS)
+- Open Theme Picker (change the color theme of your Pip‑Boy)
 
 ### Tips
 

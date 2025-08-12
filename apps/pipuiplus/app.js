@@ -1,8 +1,7 @@
 function PipUIPlus() {
   const self = {};
 
-  const APP_NAME = 'Pip UI+';
-  const APP_VERSION = '3.0.0';
+  const APP = JSON.parse(fs.readFileSync('APPINFO/pipuiplus.info'));
   const OPTIONS_PATH = 'USER/PIP_UI_PLUS/options.json';
 
   // Colors
@@ -26,7 +25,7 @@ function PipUIPlus() {
   let lastPlayButtonState = false;
 
   // Paging
-  const PAGE_SIZE = 5;
+  const PAGE_SIZE = 6;
   let page = 0;
   let selectedIndex = 0;
 
@@ -38,7 +37,68 @@ function PipUIPlus() {
     hideCogIcon: false,
     hideHolotapeIcon: false,
   };
-  const optionKeys = Object.keys(options);
+  let optionKeys = Object.keys(options);
+
+  // Open App Icon (20x20)
+  const ICON_OPEN_APP = Graphics.createImage(`
+    XXXXXXXXX...XXXXXXXX
+    XXXXXXXXX...XXXXXXXX
+    XXXXXXXXX...XXXXXXXX
+    XXX............XXXXX
+    XXX...........XXXXXX
+    XXX..........XXX.XXX
+    XXX.........XXX..XXX
+    XXX........XXX...XXX
+    XXX.......XXX.......
+    XXX......XXX........
+    XXX.....XXX.........
+    XXX....XXX.......XXX
+    XXX...XXX........XXX
+    XXX..............XXX
+    XXX..............XXX
+    XXX..............XXX
+    XXX..............XXX
+    XXXXXXXXXXXXXXXXXXXX
+    XXXXXXXXXXXXXXXXXXXX
+    XXXXXXXXXXXXXXXXXXXX
+  `);
+
+  // Options that are not directly tied to json
+  const EXTRA_OPTIONS = [
+    {
+      key: 'openThemePicker',
+      render: function (x, y, selected) {
+        if (selected) {
+          g.setColor(COLOR_THEME);
+        } else {
+          g.setColor(COLOR_THEME_DARK);
+        }
+        g.drawImage(ICON_OPEN_APP, x + 6, y);
+        g.drawString(
+          'Open Advanced Theme Picker',
+          x + ICON_OPEN_APP.width + 24,
+          y,
+        );
+      },
+      onSelect: function () {
+        removeListeners();
+
+        if (inputInterval) {
+          clearInterval(inputInterval);
+          inputInterval = null;
+        }
+
+        print('[PipUI+] Loading Theme Picker...');
+
+        try {
+          g.clear();
+          eval(fs.readFile('USER_BOOT/PIP_UI_PLUS/ThemePicker.min.js'));
+        } catch (e) {
+          print('[PipUI+] Error loading Theme Picker:', e);
+        }
+      },
+    },
+  ];
 
   function draw() {
     g.clear();
@@ -46,67 +106,100 @@ function PipUIPlus() {
     g.setFontMonofonto28();
     g.setColor(COLOR_THEME);
     g.setFontAlign(0, -1);
-    g.drawString(APP_NAME, CENTER, 20);
+    g.drawString(APP.name, CENTER, 20);
 
     g.setFontMonofonto18();
     g.setColor(COLOR_THEME_DARK);
-    g.drawString('Options Menu v' + APP_VERSION, CENTER, 55);
+    g.drawString('Options Menu v' + APP.version, CENTER, 55);
 
+    const items = getMenuItems();
     const start = page * PAGE_SIZE;
-    const visibleKeys = optionKeys.slice(start, start + PAGE_SIZE);
+    const visible = items.slice(start, start + PAGE_SIZE);
 
-    const rowHeight = 30;
-    g.setFontMonofonto18().setFontAlign(-1, -1);
+    const rowHeight = 26;
+    g.setFontMonofonto16().setFontAlign(-1, -1);
 
-    visibleKeys.forEach((key, i) => {
-      const y = 100 + i * rowHeight;
-      const x = 50;
-      const checked = options[key] ? 'X' : ' ';
-      let label = `[ ${checked} ] `;
-
-      switch (key) {
-        case 'enableSpecialTab': {
-          label += 'Enable STATS > SPECIAL tab';
-          break;
-        }
-        case 'enablePerksTab': {
-          label += 'Enable STATS > PERKS tab';
-          break;
-        }
-        case 'enableRamScan': {
-          label += 'Enable RAM Scan (bottom right of OS)';
-          break;
-        }
-        case 'hideCogIcon': {
-          label += 'Hide Cog Icon (top left of OS)';
-          break;
-        }
-        case 'hideHolotapeIcon': {
-          label += 'Hide Holotape Icon (top right of OS)';
-          break;
-        }
-        default: {
-          // Convert `camelCase` keys to human-readable labels
-          label +=
-            key.charAt(0).toUpperCase() +
-            key.slice(1).replace(/([A-Z])/g, ' $1');
-          break;
-        }
-      }
-
-      if (i === selectedIndex) {
-        g.setColor(COLOR_THEME);
-      } else {
-        g.setColor(COLOR_THEME_DARK);
-      }
-
-      g.drawString(label, x, y);
+    visible.forEach(function (item, i) {
+      const labelY = 100 + i * rowHeight;
+      const labelX = 50;
+      const isSelected = i === selectedIndex;
+      item.render(labelX, labelY, isSelected);
     });
 
     g.setFontMonofonto16();
     g.setColor(COLOR_THEME_DARK);
     g.setFontAlign(0, -1);
     g.drawString('Press power button to exit', CENTER, HEIGHT - 40);
+  }
+
+  function getMenuItems() {
+    const toggleItems = optionKeys.map(function (key) {
+      return {
+        key: key,
+        render: function (x, y, selected) {
+          const checked = options[key] ? 'X' : ' ';
+          let label;
+          switch (key) {
+            case 'enableSpecialTab': {
+              label = '[ ' + checked + ' ] Enable STATS > SPECIAL tab';
+              break;
+            }
+            case 'enablePerksTab': {
+              label = '[ ' + checked + ' ] Enable STATS > PERKS tab';
+              break;
+            }
+            case 'enableRamScan': {
+              label =
+                '[ ' + checked + ' ] Enable RAM Scan (bottom right of OS)';
+              break;
+            }
+            case 'hideCogIcon': {
+              label = '[ ' + checked + ' ] Hide Cog Icon (top left of OS)';
+              break;
+            }
+            case 'hideHolotapeIcon': {
+              label =
+                '[ ' + checked + ' ] Hide Holotape Icon (top right of OS)';
+              break;
+            }
+            default: {
+              label =
+                '[ ' +
+                checked +
+                ' ] ' +
+                key.charAt(0).toUpperCase() +
+                key.slice(1).replace(/([A-Z])/g, ' $1');
+            }
+          }
+
+          if (selected) {
+            g.setColor(COLOR_THEME);
+          } else {
+            g.setColor(COLOR_THEME_DARK);
+          }
+
+          g.drawString(label, x, y);
+        },
+        onSelect: function () {
+          options[key] = !options[key];
+
+          switch (key) {
+            case 'enableRamScan': {
+              if (!global.ui) {
+                global.ui = {};
+              }
+              global.ui.enableRamScan = options[key];
+              break;
+            }
+          }
+
+          saveOptions();
+          draw();
+        },
+      };
+    });
+
+    return toggleItems.concat(EXTRA_OPTIONS);
   }
 
   function handleLeftKnob(dir) {
@@ -117,7 +210,7 @@ function PipUIPlus() {
     lastLeftKnobTime = now;
 
     if (dir === 0) {
-      toggleSelectedOption();
+      selectCurrentItem();
     } else {
       scrollMenu(dir > 0 ? -1 : 1);
     }
@@ -130,8 +223,10 @@ function PipUIPlus() {
   function handlePowerButton() {
     removeListeners();
 
-    clearInterval(inputInterval);
-    inputInterval = null;
+    if (inputInterval) {
+      clearInterval(inputInterval);
+      inputInterval = null;
+    }
 
     bC.clear(1).flip();
     E.reboot();
@@ -140,9 +235,9 @@ function PipUIPlus() {
   function handleTopButton() {
     // Adjust brightness
     const brightnessLevels = [1, 5, 10, 15, 20];
-    const currentIndex = brightnessLevels.findIndex(
-      (level) => level === Pip.brightness,
-    );
+    const currentIndex = brightnessLevels.findIndex(function (level) {
+      return level === Pip.brightness;
+    });
     const nextIndex = (currentIndex + 1) % brightnessLevels.length;
     Pip.brightness = brightnessLevels[nextIndex];
     Pip.updateBrightness();
@@ -150,9 +245,23 @@ function PipUIPlus() {
 
   function readOptions() {
     try {
-      options = JSON.parse(require('fs').readFileSync(OPTIONS_PATH));
+      const loaded = JSON.parse(fs.readFileSync(OPTIONS_PATH));
+
+      if (loaded.enableThemePicker !== undefined) {
+        delete loaded.enableThemePicker;
+      }
+
+      Object.keys(options).forEach(function (k) {
+        if (loaded[k] !== undefined) {
+          options[k] = loaded[k];
+        }
+      });
+
+      optionKeys = Object.keys(options);
+
+      saveOptions();
     } catch (e) {
-      print('Error reading options:', e);
+      print('[PipUI+] Error reading options:', e);
       saveOptions();
     }
   }
@@ -170,29 +279,27 @@ function PipUIPlus() {
     Pip.on(BTN_TOP, handleTopButton);
   }
 
-  function toggleSelectedOption() {
-    const key = optionKeys[page * PAGE_SIZE + selectedIndex];
-    if (!key) {
+  function selectCurrentItem() {
+    const items = getMenuItems();
+    const index = page * PAGE_SIZE + selectedIndex;
+    const item = items[index];
+
+    if (!item) {
       return;
     }
-    options[key] = !options[key];
 
-    if (key === 'enableRamScan') {
-      global.ui.enableRamScan = options[key];
-    }
-
-    saveOptions();
-    draw();
+    item.onSelect();
   }
 
   function saveOptions() {
-    require('fs').writeFile(OPTIONS_PATH, JSON.stringify(options));
+    fs.writeFile(OPTIONS_PATH, JSON.stringify(options));
   }
 
   function scrollMenu(dir) {
+    const items = getMenuItems();
     const start = page * PAGE_SIZE;
-    const visibleCount = optionKeys.slice(start, start + PAGE_SIZE).length;
-    const maxPage = Math.floor((optionKeys.length - 1) / PAGE_SIZE);
+    const visibleCount = items.slice(start, start + PAGE_SIZE).length;
+    const maxPage = Math.floor((items.length - 1) / PAGE_SIZE);
 
     selectedIndex += dir;
 
@@ -227,19 +334,25 @@ function PipUIPlus() {
     readOptions();
     draw();
 
-    inputInterval = setInterval(() => {
+    inputInterval = setInterval(function () {
       const currentState = BTN_PLAY.read();
       if (currentState && !lastPlayButtonState) {
-        toggleSelectedOption();
+        selectCurrentItem();
       }
       lastPlayButtonState = currentState;
     }, 100);
 
-    setWatch(() => handlePowerButton(), BTN_POWER, {
-      debounce: 50,
-      edge: 'rising',
-      repeat: true,
-    });
+    setWatch(
+      function () {
+        handlePowerButton();
+      },
+      BTN_POWER,
+      {
+        debounce: 50,
+        edge: 'rising',
+        repeat: true,
+      },
+    );
   };
 
   return self;
