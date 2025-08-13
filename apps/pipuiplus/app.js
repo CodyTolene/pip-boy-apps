@@ -23,6 +23,7 @@ function PipUIPlus() {
   let lastLeftKnobTime = 0;
   let inputInterval = null;
   let lastPlayButtonState = false;
+  let powerButtonWatch = null;
 
   // Paging
   const PAGE_SIZE = 6;
@@ -30,7 +31,7 @@ function PipUIPlus() {
   let selectedIndex = 0;
 
   // Open App Icon (20x20)
-  const ICON_OPEN_APP = Graphics.createImage(`
+  let iconOpenApp = Graphics.createImage(`
     XXXXXXXXX...XXXXXXXX
     XXXXXXXXX...XXXXXXXX
     XXXXXXXXX...XXXXXXXX
@@ -52,7 +53,7 @@ function PipUIPlus() {
     XXXXXXXXXXXXXXXXXXXX
     XXXXXXXXXXXXXXXXXXXX
   `);
-  const ICON_UNCHECKED = Graphics.createImage(`
+  let iconUnhecked = Graphics.createImage(`
     XXXXXXXXXXXXXXXXXXXX
     XXXXXXXXXXXXXXXXXXXX
     XXXXXXXXXXXXXXXXXXXX
@@ -74,7 +75,7 @@ function PipUIPlus() {
     XXXXXXXXXXXXXXXXXXXX
     XXXXXXXXXXXXXXXXXXXX
   `);
-  const ICON_CHECKED = Graphics.createImage(`
+  let iconChecked = Graphics.createImage(`
     XXXXXXXXXXXXXXXXXXXX
     XXXXXXXXXXXXXXXXXXXX
     XXXXXXXXXXXXXXXXXXXX
@@ -117,15 +118,15 @@ function PipUIPlus() {
         } else {
           g.setColor(COLOR_THEME_DARK);
         }
-        g.drawImage(ICON_OPEN_APP, x + 6, y);
+        g.drawImage(iconOpenApp, x + 6, y);
         g.drawString(
           'Open Advanced Theme Picker',
-          x + ICON_OPEN_APP.width + 24,
+          x + iconOpenApp.width + 24,
           y,
         );
       },
       onSelect: function () {
-        removeListeners();
+        removeButtonListeners();
 
         if (inputInterval) {
           clearInterval(inputInterval);
@@ -135,14 +136,31 @@ function PipUIPlus() {
         print('[PipUI+] Loading Theme Picker...');
 
         try {
-          g.clear();
-          eval(fs.readFile('USER_BOOT/PIP_UI_PLUS/ThemePicker.min.js'));
+          cleanup();
+          eval(
+            fs.readFile('USER_BOOT/PIP_UI_PLUS/ThemePickerPreloader.min.js'),
+          );
         } catch (e) {
           print('[PipUI+] Error loading Theme Picker:', e);
         }
       },
     },
   ];
+
+  // Clean up EVERYTHING related to this file.
+  function cleanup() {
+    g.clear();
+    if (g.reset) g.reset();
+
+    removeButtonListeners();
+
+    iconChecked = null;
+    iconOpenApp = null;
+    iconUnhecked = null;
+    lastPlayButtonState = false;
+    optionKeys = null;
+    options = null;
+  }
 
   function draw() {
     g.clear();
@@ -189,9 +207,9 @@ function PipUIPlus() {
 
           const checked = options[key];
           if (checked) {
-            g.drawImage(ICON_CHECKED, x + 6, y);
+            g.drawImage(iconChecked, x + 6, y);
           } else {
-            g.drawImage(ICON_UNCHECKED, x + 6, y);
+            g.drawImage(iconUnhecked, x + 6, y);
           }
 
           let label;
@@ -223,7 +241,7 @@ function PipUIPlus() {
             }
           }
 
-          g.drawString(label, x + ICON_OPEN_APP.width + 24, y);
+          g.drawString(label, x + iconOpenApp.width + 24, y);
         },
         onSelect: function () {
           options[key] = !options[key];
@@ -266,13 +284,7 @@ function PipUIPlus() {
   }
 
   function handlePowerButton() {
-    removeListeners();
-
-    if (inputInterval) {
-      clearInterval(inputInterval);
-      inputInterval = null;
-    }
-
+    cleanup();
     bC.clear(1).flip();
     E.reboot();
   }
@@ -311,17 +323,44 @@ function PipUIPlus() {
     }
   }
 
-  function removeListeners() {
+  function removeButtonListeners() {
     Pip.removeAllListeners(KNOB_LEFT);
     Pip.removeAllListeners(KNOB_RIGHT);
     Pip.removeAllListeners(BTN_TOP);
     Pip.removeAllListeners(AUDIO_STOPPED);
+    if (inputInterval) {
+      clearInterval(inputInterval);
+      inputInterval = null;
+    }
+    if (powerButtonWatch) {
+      clearWatch(powerButtonWatch);
+      powerButtonWatch = null;
+    }
   }
 
-  function setListeners() {
+  function setButtonListeners() {
     Pip.on(KNOB_LEFT, handleLeftKnob);
     Pip.on(KNOB_RIGHT, handleRightKnob);
     Pip.on(BTN_TOP, handleTopButton);
+    inputInterval = setInterval(function () {
+      const currentState = BTN_PLAY.read();
+      if (currentState && !lastPlayButtonState) {
+        selectCurrentItem();
+      }
+      lastPlayButtonState = currentState;
+    }, 100);
+
+    powerButtonWatch = setWatch(
+      function () {
+        handlePowerButton();
+      },
+      BTN_POWER,
+      {
+        debounce: 50,
+        edge: 'rising',
+        repeat: true,
+      },
+    );
   }
 
   function selectCurrentItem() {
@@ -373,31 +412,11 @@ function PipUIPlus() {
       global.ui.enableRamScan = false;
     }
 
-    removeListeners();
-    setListeners();
+    removeButtonListeners();
+    setButtonListeners();
 
     readOptions();
     draw();
-
-    inputInterval = setInterval(function () {
-      const currentState = BTN_PLAY.read();
-      if (currentState && !lastPlayButtonState) {
-        selectCurrentItem();
-      }
-      lastPlayButtonState = currentState;
-    }, 100);
-
-    setWatch(
-      function () {
-        handlePowerButton();
-      },
-      BTN_POWER,
-      {
-        debounce: 50,
-        edge: 'rising',
-        repeat: true,
-      },
-    );
   };
 
   return self;
