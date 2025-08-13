@@ -8,6 +8,7 @@ function ThemePicker() {
 
   let gradient = false;
   let intervalId = null;
+  let powerButtonWatch = null;
   let selected = 0;
   let theme0 = [1, 1, 1];
   let theme1 = [1, 1, 1];
@@ -23,6 +24,7 @@ function ThemePicker() {
     g.clear();
     g.setFontMonofonto18();
     g.setColor(theme0[0], theme0[1], theme0[2]);
+    g.setFontAlign(0, 0, 0);
     g.drawString(
       'Select the primary color of the theme',
       SCREEN_WIDTH / 2,
@@ -300,9 +302,14 @@ function ThemePicker() {
     }
   }
 
-  function gracefulClose() {
+  function exit() {
     //shut down interval triggers first in case one fires while we're tearing down
     clearInterval(intervalId);
+    intervalId = null;
+    if (powerButtonWatch) {
+      clearWatch(powerButtonWatch);
+      powerButtonWatch = null;
+    }
     Pip.removeListener('knob1', handleKnob1);
     Pip.removeListener('knob2', handleKnob2);
     Pip.removeListener('torch', handleTorch);
@@ -316,7 +323,7 @@ function ThemePicker() {
     if (dir == 0) {
       gradient != gradient;
       writeThemeFile();
-      gracefulClose();
+      exit();
     } else {
       if (gradient && selected > 2) {
         theme1[selected % 3] += dir * 0.01;
@@ -361,7 +368,7 @@ function ThemePicker() {
 
   function handleTorch() {
     resetTheme();
-    gracefulClose();
+    exit();
   }
 
   function readThemeFile() {
@@ -414,15 +421,21 @@ function ThemePicker() {
     draw();
 
     intervalId = setInterval(() => {
-      checkMode();
-      if (Pip.mode != 2) {
-        gracefulClose();
-      } else {
-        //only load the blocks every yeigh-often to prevent slow draws.
-        drawBlocks();
-        checkTuner();
-      }
+      drawBlocks();
+      checkTuner();
     }, 250);
+
+    powerButtonWatch = setWatch(
+      function () {
+        exit();
+      },
+      BTN_POWER,
+      {
+        debounce: 50,
+        edge: 'rising',
+        repeat: true,
+      },
+    );
   };
 
   return self;
