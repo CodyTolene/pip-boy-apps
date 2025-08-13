@@ -1,3 +1,9 @@
+3.1.0
+https://github.com/CodyTolene/pip-boy-apps/pull/49
+- Add Theme Picker from @gnargle!
+- Add Theme Picker to the PipUI+ options app.
+- Add custom checkboxes to the PipUI+ options app.
+
 3.0.0
 https://github.com/CodyTolene/pip-boy-apps/pull/37
 - Add a Pip UI+ options app to toggle UI features on and off.

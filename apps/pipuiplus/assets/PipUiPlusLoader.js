@@ -1,8 +1,6 @@
 if (global.ui === undefined) {
   try {
-    global.ui = JSON.parse(
-      require('fs').readFileSync('USER/PIP_UI_PLUS/options.json'),
-    );
+    global.ui = JSON.parse(fs.readFileSync('USER/PIP_UI_PLUS/options.json'));
   } catch (e) {
     print('Error reading options:', e);
     global.ui = {};
