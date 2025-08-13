@@ -1,3 +1,9 @@
+3.1.1
+https://github.com/CodyTolene/pip-boy-apps/pull/50
+- Stability improvements.
+- Preload the Theme Picker apps with cleanup prior (reduce memory usage ~10%).
+- This fixes the issue of loading the Theme Picker when Ram Scan is enabled, as well as the misaligned text.
+
 3.1.0
 https://github.com/CodyTolene/pip-boy-apps/pull/49
 - Add Theme Picker from @gnargle!
