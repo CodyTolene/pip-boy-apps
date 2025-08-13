@@ -53,7 +53,7 @@ function PipUIPlus() {
     XXXXXXXXXXXXXXXXXXXX
     XXXXXXXXXXXXXXXXXXXX
   `);
-  let iconUnhecked = Graphics.createImage(`
+  let iconUnchecked = Graphics.createImage(`
     XXXXXXXXXXXXXXXXXXXX
     XXXXXXXXXXXXXXXXXXXX
     XXXXXXXXXXXXXXXXXXXX
@@ -156,7 +156,7 @@ function PipUIPlus() {
 
     iconChecked = null;
     iconOpenApp = null;
-    iconUnhecked = null;
+    iconUnchecked = null;
     lastPlayButtonState = false;
     optionKeys = null;
     options = null;
@@ -209,7 +209,7 @@ function PipUIPlus() {
           if (checked) {
             g.drawImage(iconChecked, x + 6, y);
           } else {
-            g.drawImage(iconUnhecked, x + 6, y);
+            g.drawImage(iconUnchecked, x + 6, y);
           }
 
           let label;
