@@ -189,7 +189,7 @@ function ThemePicker() {
     let offset = -120;
 
     if (gradient) {
-      for (i = 0; i < 16; i++) {
+      for (var i = 0; i < 16; i++) {
         let frac = 0;
         g.setColor(
           (((theme1[0] - theme0[0]) * frac + theme0[0]) * i) / 16,
@@ -250,7 +250,7 @@ function ThemePicker() {
         offset += 16;
       }
     } else {
-      for (i = 0; i < 16; i++) {
+      for (var i = 0; i < 16; i++) {
         g.setColor(
           (theme0[0] * i) / 16,
           (theme0[1] * i) / 16,

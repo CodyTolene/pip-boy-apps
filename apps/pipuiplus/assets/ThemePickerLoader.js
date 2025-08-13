@@ -1,25 +1,10 @@
 function ThemePickerLoader() {
   const self = {};
-  const fs = require('fs');
 
   const THEME_SETTINGS_FOLDER = 'USER/ThemePicker';
   const THEME_SETTINGS_FILE = 'USER/ThemePicker/theme.json';
 
-  const RETRY_MAX = 5;
-  let retry = 0;
-
-  let imv = false;
   let themeObj = null;
-
-  function nD(d) {
-    if (imv && d.endsWith('/')) {
-      return d.slice(0, -1);
-    }
-    if (!imv && !d.endsWith('/')) {
-      return d + '/';
-    }
-    return d;
-  }
 
   function readThemeFile() {
     // Confirm 'USER'
@@ -81,7 +66,7 @@ function ThemePickerLoader() {
           new Uint16Array(16),
           new Uint16Array(16),
         ];
-        for (i = 0; i < 16; i++) {
+        for (var i = 0; i < 16; i++) {
           let frac = 0;
           ((pal[0][i] = g.toColor(
             (((themeObj.theme1[0] - themeObj.theme0[0]) * frac +
@@ -154,37 +139,37 @@ function ThemePickerLoader() {
         }
         Pip.setPalette(pal);
       } else {
-        for (
-          var pal = [
-              new Uint16Array(16),
-              new Uint16Array(16),
-              new Uint16Array(16),
-              new Uint16Array(16),
-            ],
-            i = 0;
-          i < 16;
-          i++
-        )
-          ((pal[0][i] = g.toColor(
+        var pal = [
+          new Uint16Array(16),
+          new Uint16Array(16),
+          new Uint16Array(16),
+          new Uint16Array(16),
+        ];
+        for (var i = 0; i < 16; i++) {
+          pal[0][i] = g.toColor(
             (themeObj.theme0[0] * i) / 16,
             (themeObj.theme0[1] * i) / 16,
             (themeObj.theme0[2] * i) / 16,
-          )),
-            (pal[1][i] = g.toColor(
-              (themeObj.theme0[0] * i) / 16 - (i * 0.2) / 16,
-              (themeObj.theme0[1] * i) / 16 - (i * 0.2) / 16,
-              (themeObj.theme0[2] * i) / 16 - (i * 0.2) / 16,
-            )),
-            (pal[2][i] = g.toColor(
-              (themeObj.theme0[0] * i) / 16 + (i * 0.2) / 16,
-              (themeObj.theme0[1] * i) / 16 + (i * 0.2) / 16,
-              (themeObj.theme0[2] * i) / 16 + (i * 0.2) / 16,
-            )),
-            (pal[3][i] = g.toColor(
-              (themeObj.theme0[0] * i) / 16 - (i * 0.4) / 16,
-              (themeObj.theme0[1] * i) / 16 - (i * 0.4) / 16,
-              (themeObj.theme0[2] * i) / 16 - (i * 0.4) / 16,
-            )));
+          );
+
+          pal[1][i] = g.toColor(
+            (themeObj.theme0[0] * i) / 16 - (i * 0.2) / 16,
+            (themeObj.theme0[1] * i) / 16 - (i * 0.2) / 16,
+            (themeObj.theme0[2] * i) / 16 - (i * 0.2) / 16,
+          );
+
+          pal[2][i] = g.toColor(
+            (themeObj.theme0[0] * i) / 16 + (i * 0.2) / 16,
+            (themeObj.theme0[1] * i) / 16 + (i * 0.2) / 16,
+            (themeObj.theme0[2] * i) / 16 + (i * 0.2) / 16,
+          );
+
+          pal[3][i] = g.toColor(
+            (themeObj.theme0[0] * i) / 16 - (i * 0.4) / 16,
+            (themeObj.theme0[1] * i) / 16 - (i * 0.4) / 16,
+            (themeObj.theme0[2] * i) / 16 - (i * 0.4) / 16,
+          );
+        }
         Pip.setPalette(pal);
       }
     }
