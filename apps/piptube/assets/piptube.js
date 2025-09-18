@@ -14,7 +14,7 @@ function PipTube() {
   // Screen
   const SCREEN_WIDTH = g.getWidth(); // 480
   const SCREEN_HEIGHT = g.getHeight(); // 320
-  const SHOW_BOUNDARIES = false; // 4 Debugging
+  const DEBUG = false;
 
   // Video Player Default Size
   // const PLAYER_W = 340;
@@ -42,6 +42,7 @@ function PipTube() {
   let lastLeftKnobTime = 0;
 
   // Video
+  const VIDEO_FPS = 12;
   const MAX_PATH = 56;
   let currentPath = '';
   let currentVideoPath = null;
@@ -75,17 +76,17 @@ function PipTube() {
     ........X.....
   `);
   const ICON_VIDEO = Graphics.createImage(`
-    .............. 
-    .XXXXXXXXXXXX.
-    .X..........X.
-    .X..XXXXXX..X.
-    .X..X....X..X.
-    .X..X....X..X.
-    .X..X....X..X.
-    .X..XXXXXX..X.
-    .X..........X.
-    .XXXXXXXXXXXX.
-    ..............
+    ....XXXXX.....
+    ...X.....X....
+    ..X.......X...
+    .X...X.....X..
+    .X...XXX...X..
+    .X...XXXX..X..
+    .X...XXX...X..
+    .X...X.....X..
+    ..X.......X...
+    ...X.....X....
+    ....XXXXX.....
   `);
   const ICON_X = Graphics.createImage(`
     ..............
@@ -138,7 +139,7 @@ function PipTube() {
   }
 
   function drawAllBoundaries() {
-    if (!SHOW_BOUNDARIES) return;
+    if (!DEBUG) return;
     g.setColor(COLOR_THEME_DARKER);
     g.drawRect(SCREEN_XY);
     g.drawRect(PIPTUBE_XY);
@@ -246,7 +247,9 @@ function PipTube() {
       return;
     }
 
-    if (dir !== 0) return menuScroll(dir * -1);
+    if (dir !== 0) {
+      return menuScroll(dir * -1);
+    }
 
     // Select video
     const start = page * PAGE_SIZE;
@@ -256,21 +259,20 @@ function PipTube() {
     if (item.type === 'ptl') {
       stopVideo();
       drawAllBoundaries();
-      return;
-    }
-    if (item.type === 'up') {
+    } else if (item.type === 'up') {
       stopVideo();
-      return navigateTo(getParentPath(currentPath));
-    }
-    if (item.type === 'folder') {
+      navigateTo(getParentPath(currentPath));
+    } else if (item.type === 'folder') {
       stopVideo();
-      return navigateTo(pathJoin(currentPath, item.name));
-    }
-    if (item.type === 'file') {
+      navigateTo(pathJoin(currentPath, item.name));
+    } else if (item.type === 'file') {
       // Start
+      Pip.audioStartVar(Pip.audioBuiltin('CLICK'));
       play(item);
       return;
     }
+
+    Pip.audioStartVar(Pip.audioBuiltin('OK'));
   }
 
   function handlePowerButton() {
@@ -379,6 +381,12 @@ function PipTube() {
       } else selectedIndex = visible.length - 1;
     }
 
+    if (dir > 0) {
+      Pip.audioStartVar(Pip.audioBuiltin('PREV'));
+    } else {
+      Pip.audioStartVar(Pip.audioBuiltin('NEXT'));
+    }
+
     drawSongList();
   }
 
@@ -440,16 +448,28 @@ function PipTube() {
       Pip.audioStop && Pip.audioStop();
       Pip.videoStop && Pip.videoStop();
 
-      log('Playing video, path: "' + full + '"');
+      if (DEBUG) log('Playing video, path: "' + full + '"');
+
       const videoArgs = {
         x: PIPTUBE_XY.x1,
         y: PIPTUBE_XY.y1,
+        debug: DEBUG, // Logs video details
         repeat: true,
       };
 
       // Start video
+      // https://bit.ly/3I44ntb
       Pip.videoStart(full, videoArgs);
       // fs.open(full, 'r');
+
+      // Draw a border around the video area
+      g.setColor(COLOR_THEME_DARKER);
+      g.drawRect({
+        x: PIPTUBE_XY.x1 - 1,
+        y: PIPTUBE_XY.y1 - 1,
+        x2: PIPTUBE_XY.x2 + 1,
+        y2: PIPTUBE_XY.y2 + 1,
+      });
 
       currentVideoPath = full;
       isVideoPlaying = true;
@@ -471,6 +491,7 @@ function PipTube() {
     Pip.mode = MODE.DATA;
     drawHeader(MODE.DATA);
     drawSongList();
+    drawFooterBar();
     drawAllBoundaries();
   }
 
