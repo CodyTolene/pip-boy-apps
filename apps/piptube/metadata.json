@@ -1,0 +1,15 @@
+{
+  "id": "piptube",
+  "name": "PipTube",
+  "version": "1.0.0",
+  "description": "PipTube lets Vault residents browse holotapes and loop training films directly in the Pip-Boy's DATA interface, calibrated for the approved 340x210 viewport.",
+  "icon": "assets/piptube.png",
+  "tags": "media,video",
+  "type": "app",
+  "readme": "README.md",
+  "custom": "",
+  "storage": [
+    { "name": "USER/piptube.js", "url": "app.min.js" },
+    { "name": "USER/PIPTUBE/piptube.min.js", "url": "assets/piptube.min.js" }
+  ]
+}
