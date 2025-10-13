@@ -11,7 +11,7 @@ function MTGTracker() {
 
   // General
   const APP_NAME = 'MTG Life Counter';
-  const APP_VERSION = '1.0.0';
+  const APP_VERSION = '1.0.1';
 
   // Menu variables
   const MENU_MAIN_OPTIONS = ['New Game', 'Help', 'Exit']; //''New Game', 'Resume Game', 'Help', 'Exit'];'
@@ -49,6 +49,7 @@ function MTGTracker() {
   const SCREEN_WIDTH = g.getWidth(); // Width (480px)
   const SCREEN_HEIGHT = g.getHeight(); // Height (320px)
   const SHOW_MENU_BOUNDRIES = true;
+  let originalIdleTimeout = settings.idleTimeout;
 
   // UX Mapping
   const SCREEN_XY = {
@@ -125,10 +126,10 @@ function MTGTracker() {
   let footerInterval = null;
 
   // Colors
-  const BLACK = '#000000';
-  const GREEN = '#00ff00';
-  const GREEN_DARK = '#007f00';
-  const GREEN_DARKER = '#003300';
+  const COLOR_BLACK = '#000000';
+  const COLOR_THEME = g.theme.fg;
+  const COLOR_THEME_DARK = g.blendColor(COLOR_BLACK, COLOR_THEME, 0.5);
+  const COLOR_THEME_DARKER = g.blendColor(COLOR_BLACK, COLOR_THEME, 0.8);
 
   function Player(index, name, currentLife) {
     this.index = index;
@@ -164,7 +165,7 @@ function MTGTracker() {
   }
 
   function clearScreenArea(area) {
-    g.setColor(BLACK).fillRect(area);
+    g.setColor(COLOR_BLACK).fillRect(area);
   }
 
   function drawFooterBar() {
@@ -175,7 +176,7 @@ function MTGTracker() {
   }
 
   function drawBoundaries(area) {
-    g.setColor(GREEN_DARKER).drawRect(area.x1, area.y1, area.x2, area.y2);
+    g.setColor(COLOR_THEME_DARKER).drawRect(area.x1, area.y1, area.x2, area.y2);
   }
 
   function drawMenuBoundries() {
@@ -215,12 +216,12 @@ function MTGTracker() {
     const padding = 70;
     const titleWidth = g.stringWidth(appName);
 
-    g.setColor(GREEN)
+    g.setColor(COLOR_THEME)
       .setFontAlign(-1, -1, 0) // Align left-top
       .setFontMonofonto23() // 18, 16, 23, 28 36
       .drawString(appName, TITLE_XY.x1, TITLE_XY.y1);
 
-    g.setColor(GREEN_DARK)
+    g.setColor(COLOR_THEME_DARK)
       .setFontAlign(-1, -1, 0) // Align left-top
       .setFont('4x6', 2) // 4x6, 6x8
       .drawString(
@@ -236,7 +237,7 @@ function MTGTracker() {
 
     const padding = 5;
 
-    g.setColor(GREEN)
+    g.setColor(COLOR_THEME)
       .setFontAlign(-1, -1, 0) // Align left-top
       .setFontMonofonto16()
       .drawString(
@@ -276,12 +277,9 @@ function MTGTracker() {
       } else if (menuDisplayed === 'commanderDamage') {
         menuOption = ` ${option.fromSource}: ${option.amount}`;
       }
-      g.setColor(index === menuIndexSelected ? GREEN : GREEN_DARK).drawString(
-        menuOption,
-        MENU_XY.x1 + padding,
-        y,
-        true,
-      );
+      g.setColor(
+        index === menuIndexSelected ? COLOR_THEME : COLOR_THEME_DARK,
+      ).drawString(menuOption, MENU_XY.x1 + padding, y, true);
     });
 
     drawMenuBoundries();
@@ -304,12 +302,22 @@ function MTGTracker() {
     const helpTextLines = HELP_TEXT.split('\n');
     helpTextLines.forEach((line, index) => {
       const y = MENU_XY.y1 + index * rowHeight + padding;
-      g.setColor(GREEN_DARK).drawString(line, MENU_XY.x1 + padding, y, true);
+      g.setColor(COLOR_THEME_DARK).drawString(
+        line,
+        MENU_XY.x1 + padding,
+        y,
+        true,
+      );
     });
 
     // Draw the back option at the bottom
     const backY = MENU_XY.y2 - rowHeight - padding;
-    g.setColor(GREEN).drawString('Back', MENU_XY.x1 + padding, backY, true);
+    g.setColor(COLOR_THEME).drawString(
+      'Back',
+      MENU_XY.x1 + padding,
+      backY,
+      true,
+    );
 
     drawMenuBoundries();
   }
@@ -338,7 +346,7 @@ function MTGTracker() {
     const playerNameX = (area.x1 + area.x2) / 2; // ((area.x1 + area.x2) / 2) - g.stringWidth(player.name) + paddingX;
     const playerNameY = area.y1 + paddingY;
     g.setColor(
-      playerIndexSelected === player.index ? GREEN : GREEN_DARK,
+      playerIndexSelected === player.index ? COLOR_THEME : COLOR_THEME_DARK,
     ).drawString(player.name, playerNameX, playerNameY, true);
 
     // Draw the player's current life total
@@ -349,7 +357,7 @@ function MTGTracker() {
     const lifeTotalX = (area.x1 + area.x2) / 2; //((area.x1 + area.x2) / 2) - (g.stringWidth(strLifeTotal)) + paddingX - 20;
     const lifeTotalY = (area.y1 + area.y2) / 2 - rowHeight / 2 + paddingY;
     g.setColor(
-      playerIndexSelected === player.index ? GREEN : GREEN_DARK,
+      playerIndexSelected === player.index ? COLOR_THEME : COLOR_THEME_DARK,
     ).drawString(strLifeTotal, lifeTotalX, lifeTotalY, true);
 
     // draw the commander damage text prompt if needed
@@ -361,7 +369,9 @@ function MTGTracker() {
         commanderPromptY += -10; // battery bar covers this
       }
 
-      g.setColor(playerIndexSelected === player.index ? GREEN : GREEN_DARK)
+      g.setColor(
+        playerIndexSelected === player.index ? COLOR_THEME : COLOR_THEME_DARK,
+      )
         .setFontAlign(-1, -1, 0)
         .setFont('6x8', 2) // 4x6, 6x8
         .drawString(commanderPrompt, commanderPromptX, commanderPromptY, true);
@@ -709,6 +719,9 @@ function MTGTracker() {
     clearInterval(inputInterval);
     removeListeners();
 
+    // Restore original idle timeout to allow sleep again
+    settings.idleTimeout = originalIdleTimeout;
+
     bC.clear(1).flip();
     E.reboot();
   }
@@ -742,6 +755,10 @@ function MTGTracker() {
   }
 
   self.run = function () {
+    // Disable sleep by setting idle timeout to 0
+    originalIdleTimeout = settings.idleTimeout;
+    settings.idleTimeout = 0;
+
     bC.clear(1).flip();
 
     removeListeners();
