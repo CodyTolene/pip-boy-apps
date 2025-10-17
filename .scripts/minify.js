@@ -1,12 +1,28 @@
 import fs from 'fs';
 import path from 'path';
-import { execSync } from 'child_process';
+import { execFileSync } from 'child_process';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import { createRequire } from 'module';
 import readline from 'readline';
 
+const require = createRequire(import.meta.url);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+let espruinoCli;
+try {
+  espruinoCli = require.resolve('espruino/bin/espruino-cli.js');
+} catch {
+  espruinoCli = null;
+}
+
+function runEspruino(args) {
+  if (!espruinoCli) {
+    throw new Error('Espruino CLI not found. Run: npm i');
+  }
+  execFileSync(process.execPath, [espruinoCli, ...args], { stdio: 'inherit' });
+}
 
 const appsDir = path.resolve(__dirname, '../apps');
 const allFiles = [];
@@ -74,16 +90,11 @@ process.stdin.on('keypress', (str, key) => {
     fs.mkdirSync(path.dirname(output), { recursive: true });
     console.log(`\nMinifying ${inputPath}...`);
     try {
-      execSync(`espruino --minify "${inputPath}" -o "${output}"`, {
-        stdio: 'inherit',
-      });
+      runEspruino(['--minify', inputPath, '-o', output]);
       console.log('\nMinification complete.');
     } catch (e) {
       console.error(`Failed to minify: ${e.message}`);
     }
-    rl.close();
-    process.exit(0);
-  } else if (key.ctrl && key.name === 'c') {
     rl.close();
     process.exit(0);
   }
