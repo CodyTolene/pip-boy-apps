@@ -97,5 +97,8 @@ process.stdin.on('keypress', (str, key) => {
     }
     rl.close();
     process.exit(0);
+  } else if (key.ctrl && key.name === 'c') {
+    rl.close();
+    process.exit(0);
   }
 });
