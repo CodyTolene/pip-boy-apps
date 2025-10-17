@@ -1,12 +1,30 @@
 import fs from 'fs';
 import path from 'path';
-import { execSync } from 'child_process';
+import { execFileSync } from 'child_process';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import { createRequire } from 'module';
 import readline from 'readline';
 
+const require = createRequire(import.meta.url);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+// Resolve local Espruino CLI entry
+let espruinoCli;
+try {
+  espruinoCli = require.resolve('espruino/bin/espruino-cli.js');
+} catch {
+  espruinoCli = null;
+}
+
+function runEspruino(args) {
+  if (!espruinoCli) {
+    throw new Error('Espruino CLI not found. Run: npm i');
+  }
+  // Use the current Node binary to execute the CLI JS directly (no shell)
+  execFileSync(process.execPath, [espruinoCli, ...args], { stdio: 'inherit' });
+}
 
 const appsDir = path.resolve(__dirname, '../apps');
 const allFiles = [];
@@ -62,14 +80,13 @@ function render() {
 
 function minifyFile(inputPath, output) {
   fs.mkdirSync(path.dirname(output), { recursive: true });
-  console.log(`[${new Date().toLocaleTimeString()}] Minifying ${inputPath}...`);
+  const ts = new Date().toLocaleTimeString();
+  console.log(`[${ts}] Minifying ${inputPath}...`);
   try {
-    execSync(`espruino --minify "${inputPath}" -o "${output}"`, {
-      stdio: 'inherit',
-    });
-    console.log(`Minification complete: ${output}\n`);
+    runEspruino(['--minify', inputPath, '-o', output]);
+    console.log(`[${ts}] Minification complete: ${output}\n`);
   } catch (e) {
-    console.error(`Failed to minify: ${e.message}`);
+    console.error(`[${ts}] Failed to minify: ${e.message}`);
   }
 }
 
@@ -87,11 +104,18 @@ process.stdin.on('keypress', (str, key) => {
     console.log(`\nWatching ${inputPath} for changes... Press CTRL+C to stop.`);
     minifyFile(inputPath, output);
 
-    fs.watchFile(inputPath, { interval: 500 }, () => {
-      minifyFile(inputPath, output);
+    fs.watchFile(inputPath, { interval: 300 }, (curr, prev) => {
+      if (curr.mtimeMs !== prev.mtimeMs) {
+        minifyFile(inputPath, output);
+      }
     });
 
     rl.close();
+    process.on('SIGINT', () => {
+      console.log('\nStopping watcher.');
+      fs.unwatchFile(inputPath);
+      process.exit(0);
+    });
   } else if (key.ctrl && key.name === 'c') {
     console.log('\nStopping watcher.');
     rl.close();
