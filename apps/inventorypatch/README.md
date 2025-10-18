@@ -2,7 +2,7 @@
 
 ### Info
 
-**Author:** Aidan Lee-Calamera (@NightmareGoggles on the discord server)
+**Author:** Aidan Lee-Calamera (NightmareGoggles on the discord server)
 
 **Website(s):**
 
