@@ -1,0 +1,179 @@
+[
+  {
+    "name": "Stimpak",
+    "type": "consumable",
+    "quantity": 16,
+    "effect": "Restores 30% of your health.",
+    "sounds": ["Stimpak.wav"],
+    "image": "Stimpak_img.js",
+    "stats": {
+      "Health": "30%",
+      "Weight": "0.1",
+      "Value": "48"
+    }
+  },
+  {
+    "name": "RadAway",
+    "type": "consumable",
+    "quantity": 10,
+    "effect": "Removes 300 points of radiation over time.",
+    "sounds": ["Radaway.wav"],
+    "image": "Radaway_img.js",
+    "stats": {
+      "Rads": {
+        "value": "-300",
+        "isTimed": true
+      },
+      "Weight": "0.1",
+      "Value": "80"
+    }
+  },
+  {
+    "name": "Rad-X",
+    "type": "consumable",
+    "quantity": 4,
+    "effect": "Increases radiation resistance by 75 for 3 minutes.",
+    "sounds": ["RadX_01.wav", "RadX_02.wav"],
+    "image": "Rad-X_img.js",
+    "stats": {
+      "Rad Resist": {
+        "value": "75",
+        "isTimed": true
+      },
+      "Weight": "0.1",
+      "Value": "40"
+    }
+  },
+  {
+    "name": "Nuka-Cola",
+    "type": "consumable",
+    "quantity": 6,
+    "effect": "Refreshing! Restores 20 HP and provides a small AP boost.",
+    "sounds": ["NukaCola.wav"],
+    "image": "NukaCola_img.js",
+    "stats": {
+      "Health": "20",
+      "AP": "10",
+      "Rads": "5",
+      "Weight": "1.0",
+      "Value": "20"
+    }
+  },
+  {
+    "name": "Laser Musket",
+    "type": "weapon",
+    "quantity": 1,
+    "effect": "A powerful energy weapon. Crank to increase charge.",
+    "ammoType": "Fusion Cell",
+    "damages": [
+      {
+        "type": "energy",
+        "value": "35"
+      }
+    ],
+    "stats": {
+      "Fusion Cell": "1",
+      "Fire Rate": "1",
+      "Range": "150",
+      "Accuracy": "70",
+      "Weight": "12.0",
+      "Value": "500"
+    }
+  },
+  {
+    "name": "Shishkebab",
+    "type": "weapon",
+    "quantity": 1,
+    "effect": "A flaming sword forged from a motorcycle gas tank and lawnmower blade.",
+    "ammoType": null,
+    "image": "Shishkebab_img.js",
+    "damages": [
+      {
+        "type": "attack",
+        "value": "13"
+      },
+      {
+        "type": "fire",
+        "value": "13"
+      }
+    ],
+    "stats": {
+      "Speed": "Medium",
+      "Weight": "3.0",
+      "Value": "100"
+    }
+  },
+  {
+    "name": "Plasma Rifle",
+    "type": "weapon",
+    "quantity": 1,
+    "effect": "A multi-damage weapon firing bolts of superheated plasma.",
+    "ammoType": "Plasma Cartridge",
+    "damages": [
+      {
+        "type": "attack",
+        "value": "15"
+      },
+      {
+        "type": "energy",
+        "value": "15"
+      },
+      {
+        "type": "fire",
+        "value": "10"
+      }
+    ],
+    "stats": {
+      "Plasma Cartridge": "1",
+      "Fire Rate": "33",
+      "Range": "95",
+      "Accuracy": "71",
+      "Weight": "3.9",
+      "Value": "157"
+    }
+  },
+  {
+    "name": "Vault 111 Jumpsuit",
+    "type": "apparel",
+    "quantity": 1,
+    "effect": "",
+    "stats": {
+      "Weight": "1.0",
+      "Value": "10"
+    },
+    "defenses": [
+      {
+        "type": "energy",
+        "value": "+20"
+      },
+      {
+        "type": "rad",
+        "value": "+25"
+      }
+    ],
+    "equipSlots": ["clothing"],
+    "image": "VaultBoy_img.js"
+  },
+  {
+    "name": "Leather Chestplate",
+    "type": "apparel",
+    "quantity": 1,
+    "effect": "",
+    "stats": {
+      "Weight": "5.0",
+      "Value": "50"
+    },
+    "defenses": [
+      {
+        "type": "defense",
+        "value": "+14"
+      },
+      {
+        "type": "energy",
+        "value": "+23"
+      }
+    ],
+    "equipSlots": ["chest"],
+    "image": "LeatherChestPlate_img.js"
+  }
+]
