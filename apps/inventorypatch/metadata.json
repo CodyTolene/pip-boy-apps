@@ -3,7 +3,7 @@
   "name": "Inventory Patch",
   "version": "1.5",
   "description": "The inventory patch adds a customizable and interactable inventory.",
-  "icon": "invpatch.png",
+  "icon": "invPatch.png",
   "tags": "app,system",
   "type": "app",
   "readme": "README.md",
