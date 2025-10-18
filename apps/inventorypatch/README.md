@@ -20,5 +20,5 @@ Add an inventory with customizable and interactable items.
 
 ### Instructions
 
-For customizing the items list, or adding your own, see the
+For customizing the items list, or adding your own items, see the
 [JSON Generator.](https://github.com/AidansLab/Pip-Boy-Inventory-JSON-Generator)
