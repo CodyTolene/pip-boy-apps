@@ -2,7 +2,7 @@
   "id": "inventorypatch",
   "name": "Inventory Patch",
   "version": "1.5.1",
-  "description": "The inventory patch adds a customizable and interactable inventory.",
+  "description": "NOTE: If Pip UI+ doesn't work, or is finicky in any way, simply restart and go to Pip UI+. The inventory patch adds a customizable and interactable inventory.",
   "icon": "invPatch.png",
   "tags": "app,system",
   "type": "app",
