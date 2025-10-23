@@ -1,0 +1,17 @@
+{
+  "id": "pipBoyNotes",
+  "name": "PipBoy Notes",
+  "version": "1.0.0",
+  "description": "PipBoy Notes is a demo app intended to show off the new pipboy keyboard library, available for use for anyone in their apps.",
+  "icon": "app.png",
+  "tags": "notes,writing,tool",
+  "type": "app",
+  "readme": "README.md",
+  "storage": [
+    { "name": "USER/pipBoyNotes.js", "url": "pipBoyNotes.min.js" },
+    {
+      "name": "node_modules/pbkb.js",
+      "url": "assets/pbkb.js"
+    }
+  ]
+}
