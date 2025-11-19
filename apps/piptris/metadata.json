@@ -1,6 +1,7 @@
 {
   "id": "piptris",
   "name": "Piptris",
+  "author": "@CodyTolene",
   "version": "3.1.0",
   "description": "Stack, rotate, and clear falling blocks in this Tetris inspired mini-game. Simple, addictive, and perfect for idle moments between scavenging runs or stimpak breaks.",
   "icon": "assets/piptris.png",

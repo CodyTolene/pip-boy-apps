@@ -5,18 +5,22 @@
 /apps/customalarm/    @rblakesley
 /apps/customimg/      @rblakesley
 /apps/custommap/      @rblakesley
+/apps/customradio/    @CodyTolene
 /apps/customtext/     @rblakesley
 /apps/diceroller/     @CodyTolene
 /apps/fileexplorer/   @CodyTolene
 /apps/gameexample/    @CodyTolene
 /apps/idcard/         @rblakesley
+/apps/inventorypatch/ @AidansLab
 /apps/mtgtracker/     @tylerjbartlett
 /apps/pip2048/        @killes007
+/apps/pipboynotes/    @gnargle
 /apps/pipdoom/        @CodyTolene
 /apps/pippong/        @CodyTolene
 /apps/pipsnake/       @CodyTolene
 /apps/piptactoe/      @pip-4111
 /apps/piptris/        @CodyTolene
+/apps/piptube/        @CodyTolene
 /apps/pipuiplus/      @MercurialPony @CodyTolene @gnargle
 /apps/portahack/      @pip-4111 @CodyTolene
 /apps/settings        @rblakesley

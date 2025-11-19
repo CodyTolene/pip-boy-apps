@@ -12,7 +12,9 @@ if (window.location.host == 'thewandcompany.github.io') {
     'This is a fork of the main Mod Tool - you can try the <a href="https://thewandcompany.github.io/pip-boy/">Official Version</a> here.';
 }
 
-var RECOMMENDED_VERSION = '2v24.446';
+const RECOMMENDED_VERSION = '2v25.376'; // Keep this up to date!
+const APP_SOURCECODE_URL =
+  'https://github.com/CodyTolene/pip-boy-apps/tree/master/apps';
 
 // We're only interested in
 DEVICEINFO = [
@@ -36,10 +38,7 @@ Const.PACKET_UPLOAD_NOACK = true; // we're over USB and confident in flow contro
 
 // Set up source code URL
 (function () {
-  let username = 'thewandcompany';
-  let githubMatch = window.location.href.match(/\/([\w-]+)\.github\.io/);
-  if (githubMatch) username = githubMatch[1];
-  Const.APP_SOURCECODE_URL = `https://github.com/${username}/pip-boy/tree/master/apps`;
+  Const.APP_SOURCECODE_URL = APP_SOURCECODE_URL;
 })();
 
 // When a device is found, filter the apps accordingly

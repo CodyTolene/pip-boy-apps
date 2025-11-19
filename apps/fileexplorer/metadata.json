@@ -1,6 +1,7 @@
 {
   "id": "fileexplorer",
   "name": "File Explorer",
+  "author": "@CodyTolene",
   "version": "2.2.1",
   "description": "Seamlessly browse your system's directories and view pre-approved images, videos, and text files. Designed for clarity, built for the future, just the way Vault-Tec intended.",
   "icon": "fileexplorer.png",

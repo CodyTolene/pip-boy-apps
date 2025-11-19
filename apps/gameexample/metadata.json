@@ -1,6 +1,7 @@
 {
   "id": "gameexample",
   "name": "Game Example",
+  "author": "@CodyTolene",
   "version": "1.0.2",
   "description": "A game example that you can use as a template for your own game.",
   "icon": "gameexample.png",

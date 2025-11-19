@@ -1,6 +1,7 @@
 {
   "id": "portahack",
   "name": "Porta Hack",
+  "author": "@pip-4111 @CodyTolene",
   "version": "1.2.0",
   "description": "A recreation of the in-game hacking sequence, played right from your wrist!",
   "icon": "assets/portahack.png",

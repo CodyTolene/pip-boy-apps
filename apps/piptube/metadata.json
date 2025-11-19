@@ -1,6 +1,7 @@
 {
   "id": "piptube",
   "name": "PipTube",
+  "author": "@CodyTolene",
   "version": "1.0.0",
   "description": "PipTube lets Vault residents browse holotapes and loop training films directly in the Pip-Boy's DATA interface, calibrated for the approved 340x210 viewport.",
   "icon": "assets/piptube.png",

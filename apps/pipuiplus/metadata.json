@@ -1,6 +1,7 @@
 {
   "id": "pipuiplus",
   "name": "Pip UI+",
+  "author": "@MercurialPony @CodyTolene @gnargle",
   "version": "3.1.1",
   "description": "Pip UI+ enhances the Pip-Boy 3000 Mk V with classic tabs like SPECIAL and PERKS, a real-time RAM monitor, options to hide interface elements, and a theme picker with more color options than the default interface.",
   "icon": "assets/pipuiplus.png",

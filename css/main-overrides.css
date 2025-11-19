@@ -213,10 +213,14 @@ a.c-hand {
   z-index: 0;
 }
 
-.tile span {
-  color: #00ff00;
-  padding: 0.5rem 0;
-  z-index: 0;
+.tile span,
+.tile-author {
+  color: #027e02;
+  display: block;
+  font-size: 0.7rem;
+  font-weight: bolder;
+  margin: 0 0 0.25rem 0;
+  padding-top: 0;
 }
 
 .tile:hover {

@@ -1,6 +1,7 @@
 {
   "id": "idcard",
   "name": "ID Card",
+  "author": "@rblakesley",
   "version": "1.0.1",
   "description": "Create a customised ID card",
   "icon": "app.png",

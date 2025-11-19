@@ -1,6 +1,7 @@
 {
   "id": "pippong",
   "name": "Pip-Pong",
+  "author": "@CodyTolene",
   "version": "1.2.1",
   "description": "Pip-Pong is a simple game where you control a paddle that hits a ball back and forth.",
   "icon": "pippong.png",

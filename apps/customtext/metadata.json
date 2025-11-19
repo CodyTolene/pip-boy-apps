@@ -1,6 +1,7 @@
 {
   "id": "customtext",
   "name": "Custom Text",
+  "author": "@rblakesley",
   "version": "1.0.1",
   "description": "Upload some customised text to your Pip-boy",
   "icon": "app.png",
