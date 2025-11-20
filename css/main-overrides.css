@@ -150,7 +150,7 @@ a.c-hand {
   margin: 3px;
   padding: 10px;
   display: flex;
-  height: 200px;
+  min-height: 225px;
   flex-direction: row;
   position: relative;
   text-decoration: none;
