@@ -1,6 +1,7 @@
 {
   "id": "vaultbreaker",
   "name": "Vault Breaker",
+  "author": "@TetrisKid48",
   "version": "1.0.2",
   "description": "A classic brick-breaking game.",
   "icon": "vaultbreaker.png",

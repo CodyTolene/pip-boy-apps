@@ -1,6 +1,7 @@
 {
   "id": "settings",
   "name": "Settings",
+  "author": "@rblakesley",
   "version": "0.01",
   "description": "Allows you to tweak settings on your Pip-boy",
   "icon": "app.png",

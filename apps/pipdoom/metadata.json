@@ -1,6 +1,7 @@
 {
   "id": "pipdoom",
   "name": "Pip-DOOM",
+  "author": "@CodyTolene",
   "version": "1.3.0",
   "description": "A DOOM inspired RPG engine for the Pip-Boy 3000 Mk V.",
   "icon": "assets/pipdoom.png",

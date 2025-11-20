@@ -1,6 +1,7 @@
 {
   "id": "custommap",
   "name": "Custom Map",
+  "author": "@rblakesley",
   "version": "0.01",
   "description": "Upload a custom image to use as a map to your Pip-Boy",
   "icon": "app.png",

@@ -1,6 +1,7 @@
 {
   "id": "customalarm",
   "name": "Custom Alarm",
+  "author": "@rblakesley",
   "version": "0.01",
   "description": "Upload a custom audio file for the alarm",
   "icon": "app.png",

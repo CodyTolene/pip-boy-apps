@@ -1,6 +1,7 @@
 {
   "id": "customimg",
   "name": "Custom Image",
+  "author": "@rblakesley",
   "version": "1.0.1",
   "description": "Upload a custom image",
   "icon": "app.png",
