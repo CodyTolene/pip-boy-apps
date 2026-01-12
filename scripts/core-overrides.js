@@ -15,8 +15,10 @@
     const columns = document.querySelector('.columns');
     const appTiles = columns ? columns.querySelectorAll('.app-tile') : [];
 
+    
     if (appTiles.length > 0) {
       setTimeout(() => {
+        // If we found tiles, render authors
         appTiles.forEach(async (tile) => {
           const titleEl = tile.querySelector('.tile-title');
           if (!titleEl) return;
@@ -45,6 +47,13 @@
           } catch (err) {
             console.warn(`Could not load metadata for ${appName}`, err);
           }
+        });
+
+        // Remove the `span.fav-count` elements from the page
+        const favCountEls = document.querySelectorAll('span.fav-count');
+        favCountEls.forEach((el) => {
+          console.log('Removing fav-count style element', el);
+          el.remove();
         });
       }, 100);
     } else if (Date.now() - startTime < TIMEOUT_MS) {
