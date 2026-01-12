@@ -71,7 +71,7 @@ More details here: [API.md](API.md)
 
 ## Running the Pip-Boy Mod Tool <a name="mod-tool"></a>
 
-### Local server (no Docker)
+### Local server
 
 1.  Clone the repository and its submodules:
 
