@@ -1,18 +1,17 @@
 {
   "$schema": "http://json.schemastore.org/package",
   "name": "pip-boy-apps",
-  "homepage": "https://pip-boy.com/",
   "type": "module",
   "scripts": {
     "build": "node .scripts/generate-apps-local.js",
     "min": "node .scripts/minify.js",
     "min:watch": "node .scripts/minify-watch.js",
+    "start": "node .scripts/start.js",
     "prettier": "prettier --write .",
     "prettier:check": "prettier --check ."
   },
   "devDependencies": {
     "@types/node": "^24.1.0",
-    "espruino": "^0.1.61",
     "prettier": "^3.6.2"
   }
 }

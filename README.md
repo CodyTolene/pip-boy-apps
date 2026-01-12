@@ -71,6 +71,8 @@ More details here: [API.md](API.md)
 
 ## Running the Pip-Boy Mod Tool <a name="mod-tool"></a>
 
+### Local server (no Docker)
+
 1.  Clone the repository and its submodules:
 
     ```sh
@@ -78,48 +80,20 @@ More details here: [API.md](API.md)
     git submodule update --init --recursive
     ```
 
-2.  Install Docker:
-
-    https://www.docker.com/
-
-3.  Build the docker image:
+2.  Install dependencies:
 
     ```sh
-    docker build -t pip-boy-mod-tool .
+    npm install
     ```
 
-4.  Run the Docker container:
+3.  Start the local server:
 
     ```sh
-    # Unix/Linux/macOS
-    docker run -dit --name pip-boy-mod-tool -p 8080:80 -v "$PWD":/usr/local/apache2/htdocs/ httpd:2.4
-    # Windows Powershell
-    docker run -dit --name pip-boy-mod-tool -p 8080:80 -v ${PWD}:/usr/local/apache2/htdocs/ httpd:2.4
-    # Windows CMD
-    docker run -dit --name pip-boy-mod-tool -p 8080:80 -v %cd%:/usr/local/apache2/htdocs/ httpd:2.4
+    npm run serve
     ```
 
-    > ![info][img-info] Once you run the application, it will be available at
+    > ![info][img-info] The app will be available at
     > [http://localhost:8080](http://localhost:8080).
-
-5.  Stop the server any time with:
-
-    ```sh
-    docker stop pip-boy-mod-tool
-    ```
-
-6.  Clean up:
-
-    ```sh
-    docker rm pip-boy-mod-tool
-    docker rmi pip-boy-mod-tool
-    docker image prune -a
-    docker volume prune
-    ```
-
-<!---------------------------------------------------------------------------->
-<!---------------------------------------------------------------------------->
-<!---------------------------------------------------------------------------->
 
 ## App JSON Generation <a name="app-list"></a>
 
