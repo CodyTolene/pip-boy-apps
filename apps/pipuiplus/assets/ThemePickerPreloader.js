@@ -233,7 +233,7 @@ function clearMemory() {
     // 'radioPlayClip',
     'rd',
     'readRDSData',
-    'saveSettings',
+    // 'saveSettings',
     // 'settings',
     'showAlarm',
     'showMainMenu',
