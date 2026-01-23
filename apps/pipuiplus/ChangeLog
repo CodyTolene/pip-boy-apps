@@ -1,3 +1,7 @@
+3.1.2
+https://github.com/CodyTolene/pip-boy-apps/pull/62
+- Do not clear `saveSettings` on app load.
+
 3.1.1
 https://github.com/CodyTolene/pip-boy-apps/pull/50
 - Stability improvements.
