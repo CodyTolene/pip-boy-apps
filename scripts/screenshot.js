@@ -1,22 +1,28 @@
 (function () {
-  var btn = document.getElementById("pip-boy-screenshot");
+  var btn = document.getElementById('pip-boy-screenshot');
 
-  btn.addEventListener("click", event => {
+  btn.addEventListener('click', (event) => {
     if (!Comms.isConnected()) {
       startProgressiveScreenshot(true); // Demo mode
       return;
     }
 
-    getInstalledApps(false).then(() => {
-      if (device.id == "BANGLEJS") {
-        showPrompt("Screenshot", "Screenshots are not supported on Bangle.js 1", { ok: 1 });
-      } else {
-        startProgressiveScreenshot();
-      }
-    }).catch(() => {
-      // If device connection fails, show demo progressive screenshot
-      startProgressiveScreenshot(true); // true = demo mode
-    });
+    getInstalledApps(false)
+      .then(() => {
+        if (device.id == 'BANGLEJS') {
+          showPrompt(
+            'Screenshot',
+            'Screenshots are not supported on Bangle.js 1',
+            { ok: 1 },
+          );
+        } else {
+          startProgressiveScreenshot();
+        }
+      })
+      .catch(() => {
+        // If device connection fails, show demo progressive screenshot
+        startProgressiveScreenshot(true); // true = demo mode
+      });
   });
 })();
 
@@ -29,11 +35,11 @@ function startProgressiveScreenshot(demoMode = false) {
   let finalizeTimeoutId;
   let completed = false;
 
-  const commsLib = (typeof UART !== "undefined") ? UART : Puck;
+  const commsLib = typeof UART !== 'undefined' ? UART : Puck;
   const originalTimeouts = {
     timeoutNormal: commsLib.timeoutNormal,
     timeoutNewline: commsLib.timeoutNewline,
-    timeoutMax: commsLib.timeoutMax
+    timeoutMax: commsLib.timeoutMax,
   };
 
   // Function to restore timeouts
@@ -42,7 +48,7 @@ function startProgressiveScreenshot(demoMode = false) {
     commsLib.timeoutNewline = originalTimeouts.timeoutNewline;
     commsLib.timeoutMax = originalTimeouts.timeoutMax;
   };
-  
+
   // Create the progressive screenshot window immediately
   modal = htmlElement(`<div class="modal active">
     <div class="modal-overlay"></div>
@@ -67,119 +73,123 @@ function startProgressiveScreenshot(demoMode = false) {
       </div>
     </div>
   </div>`);
-  
+
   document.body.append(modal);
-  
+
   canvas = modal.querySelector('#progressive-canvas');
   ctx = canvas.getContext('2d');
-  
+
   // Set up canvas dimensions (default Bangle.js 2 screen size)
   canvas.width = 176;
   canvas.height = 176;
-  
+
   // Clear canvas to black
   ctx.fillStyle = '#000000';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-  
+
   const statusDiv = modal.querySelector('#screenshot-status');
   const progressBar = modal.querySelector('#screenshot-progress');
   const saveBtn = modal.querySelector('#save-screenshot');
   const cancelBtn = modal.querySelector('#cancel-screenshot');
-  
+
   // Set up event handlers
   const cleanup = () => {
     try {
       restoreTimeouts();
       if (originalDataHandler) {
-        Comms.on("data", originalDataHandler);
+        Comms.on('data', originalDataHandler);
       } else {
-        Comms.on("data"); // Remove our handler
+        Comms.on('data'); // Remove our handler
       }
     } catch (err) {
       // Ignore errors when no connection is active
-      console.log("Could not restore data handler:", err.message);
+      console.log('Could not restore data handler:', err.message);
     }
     if (timeoutId) clearTimeout(timeoutId);
     if (finalizeTimeoutId) clearTimeout(finalizeTimeoutId);
   };
-  
+
   const closeModal = () => {
     cleanup();
     modal.remove();
   };
-  
-  modal.querySelector("a[href='#close']").addEventListener("click", event => {
+
+  modal.querySelector("a[href='#close']").addEventListener('click', (event) => {
     event.preventDefault();
     closeModal();
   });
-  
-  cancelBtn.addEventListener("click", event => {
+
+  cancelBtn.addEventListener('click', (event) => {
     event.preventDefault();
     closeModal();
   });
-  
-  saveBtn.addEventListener("click", event => {
+
+  saveBtn.addEventListener('click', (event) => {
     event.preventDefault();
     const url = canvas.toDataURL();
-    let link = document.createElement("a");
-    link.download = "screenshot.png";
-    link.target = "_blank";
+    let link = document.createElement('a');
+    link.download = 'screenshot.png';
+    link.target = '_blank';
     link.href = url;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   });
-  
+
   // Set up timeout settings for screenshot
   // Set tripled timeouts for screenshot (3x default values)
   commsLib.timeoutNormal = 900; // 3 * 300ms
-  commsLib.timeoutNewline = 30000; // 3 * 10000ms  
+  commsLib.timeoutNewline = 30000; // 3 * 10000ms
   commsLib.timeoutMax = 90000; // 3 * 30000ms
-  
+
   // Save original data handler if one exists
   if (Comms.handlers && Comms.handlers.data) {
     originalDataHandler = Comms.handlers.data;
   }
-  
+
   // If in demo mode, prompt for device connection instead
   if (demoMode) {
     // Device not connected - prompt user to connect via webserial
-    statusDiv.textContent = "No device connected. Please connect your device via Web Serial.";
+    statusDiv.textContent =
+      'No device connected. Please connect your device via Web Serial.';
     progressBar.style.width = '0%';
-    
+
     // Create connect button
     const connectButtonDiv = document.createElement('div');
     connectButtonDiv.style.marginTop = '20px';
-    connectButtonDiv.innerHTML = '<button class="btn btn-primary" id="connect-device-btn">Connect Device</button>';
-    
+    connectButtonDiv.innerHTML =
+      '<button class="btn btn-primary" id="connect-device-btn">Connect Device</button>';
+
     // Insert the connect button after the status div
     statusDiv.parentNode.insertBefore(connectButtonDiv, statusDiv.nextSibling);
-    
+
     // Handle connect button click
-    connectButtonDiv.querySelector('#connect-device-btn').addEventListener('click', () => {
-      // Close this modal and trigger the main connect flow
-      closeModal();
-      
-      // Trigger the main device connection
-      const connectBtn = document.getElementById('connectmydevice');
-      if (connectBtn) {
-        connectBtn.click();
-      }
-    });
-    
+    connectButtonDiv
+      .querySelector('#connect-device-btn')
+      .addEventListener('click', () => {
+        // Close this modal and trigger the main connect flow
+        closeModal();
+
+        // Trigger the main device connection
+        const connectBtn = document.getElementById('connectmydevice');
+        if (connectBtn) {
+          connectBtn.click();
+        }
+      });
+
     return; // Exit - wait for user to connect device
   }
-  
+
   // Set up progressive data handler for real device communication
   let isReceivingData = false;
   let dataStarted = false;
-  let accumulatedData = "";
-  
+  let accumulatedData = '';
+
   const resetTimeout = () => {
     if (timeoutId) clearTimeout(timeoutId);
     timeoutId = setTimeout(() => {
       if (completed) return;
-      statusDiv.textContent = "Screenshot timed out";
+      statusDiv.textContent = 'Screenshot timed out';
       cleanup();
     }, 60000);
   };
@@ -187,7 +197,7 @@ function startProgressiveScreenshot(demoMode = false) {
   const markComplete = () => {
     if (completed) return;
     completed = true;
-    statusDiv.textContent = "Screenshot complete!";
+    statusDiv.textContent = 'Screenshot complete!';
     progressBar.style.width = '100%';
     saveBtn.disabled = false;
     cleanup();
@@ -220,36 +230,36 @@ function startProgressiveScreenshot(demoMode = false) {
 
     if (base64.length < 100) return null;
     const pad = base64.length % 4;
-    if (pad === 2) base64 += "==";
-    else if (pad === 3) base64 += "=";
+    if (pad === 2) base64 += '==';
+    else if (pad === 3) base64 += '=';
     else if (pad === 1) return null;
 
     return header + base64;
   };
 
-  Comms.on("data", (data) => {
+  Comms.on('data', (data) => {
     // Call original handler first if it exists
     if (originalDataHandler) {
       originalDataHandler(data);
     }
-    
+
     // Accumulate all data
     accumulatedData += data;
     resetTimeout();
-    
+
     // Look for the start of the data URL
     if (!dataStarted && accumulatedData.includes('data:image')) {
       dataStarted = true;
-      statusDiv.textContent = "Receiving screenshot data...";
+      statusDiv.textContent = 'Receiving screenshot data...';
       progressBar.style.width = '10%';
     }
-    
+
     // If we've started receiving data, try to render progressively
     if (dataStarted) {
       // Show simple progress without percentage (inaccurate progress bar removed)
-      statusDiv.textContent = "Receiving screenshot data...";
+      statusDiv.textContent = 'Receiving screenshot data...';
       progressBar.style.width = '50%'; // Simple visual indicator
-      
+
       const dataUrl = extractDataUrl(accumulatedData);
       if (dataUrl) {
         try {
@@ -262,7 +272,7 @@ function startProgressiveScreenshot(demoMode = false) {
               ctx.clearRect(0, 0, canvas.width, canvas.height);
               ctx.drawImage(tempImg, 0, 0);
               saveBtn.disabled = false;
-              statusDiv.textContent = "Screenshot received successfully!";
+              statusDiv.textContent = 'Screenshot received successfully!';
               progressBar.style.width = '100%';
               if (finalizeTimeoutId) clearTimeout(finalizeTimeoutId);
               finalizeTimeoutId = setTimeout(markComplete, 750);
@@ -277,18 +287,19 @@ function startProgressiveScreenshot(demoMode = false) {
         }
       }
     }
-    
+
     // Check if transmission is complete
-    if (dataStarted && (
-      accumulatedData.includes('\n>') || 
-      accumulatedData.includes('undefined\n') ||
-      data.trim().endsWith('>')
-    )) {
-      statusDiv.textContent = "Processing final image...";
+    if (
+      dataStarted &&
+      (accumulatedData.includes('\n>') ||
+        accumulatedData.includes('undefined\n') ||
+        data.trim().endsWith('>'))
+    ) {
+      statusDiv.textContent = 'Processing final image...';
       progressBar.style.width = '100%';
-      
+
       const finalDataUrl = extractDataUrl(accumulatedData);
-      
+
       if (finalDataUrl) {
         const finalImg = new Image();
         finalImg.onload = () => {
@@ -300,25 +311,25 @@ function startProgressiveScreenshot(demoMode = false) {
           markComplete();
         };
         finalImg.onerror = () => {
-          statusDiv.textContent = "Error processing image";
+          statusDiv.textContent = 'Error processing image';
         };
         finalImg.src = finalDataUrl;
       } else {
-        statusDiv.textContent = "No valid image data received";
+        statusDiv.textContent = 'No valid image data received';
       }
-      
+
       // Cleanup
       cleanup();
     }
   });
-  
+
   resetTimeout();
-  
+
   // Start the screenshot process
-  statusDiv.textContent = "Starting screenshot...";
-  
-  Comms.write("\x10g.dump();\n").catch((err) => {
-    statusDiv.textContent = "Error: " + err;
+  statusDiv.textContent = 'Starting screenshot...';
+
+  Comms.write('\x10g.dump();\n').catch((err) => {
+    statusDiv.textContent = 'Error: ' + err;
     restoreTimeouts();
     cleanup();
   });

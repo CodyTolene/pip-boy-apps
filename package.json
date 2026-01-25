@@ -6,12 +6,15 @@
     "build": "node .scripts/generate-apps-local.js",
     "min": "node .scripts/minify.js",
     "min:watch": "node .scripts/minify-watch.js",
-    "start": "node .scripts/start.js",
+    "start": "npm run build && node .scripts/start.js",
     "prettier": "prettier --write .",
     "prettier:check": "prettier --check ."
   },
   "devDependencies": {
     "@types/node": "^24.1.0",
     "prettier": "^3.6.2"
+  },
+  "dependencies": {
+    "espruino": "^0.1.67"
   }
 }

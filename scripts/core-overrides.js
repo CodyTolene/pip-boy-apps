@@ -15,7 +15,6 @@
     const columns = document.querySelector('.columns');
     const appTiles = columns ? columns.querySelectorAll('.app-tile') : [];
 
-    
     if (appTiles.length > 0) {
       setTimeout(() => {
         // If we found tiles, render authors
@@ -75,12 +74,12 @@
 })();
 
 (function disableButtonsUntilConnected() {
-  const BUTTON_IDS = ["settime", "pip-boy-screenshot"];
+  const BUTTON_IDS = ['settime', 'pip-boy-screenshot'];
   const RETRY_INTERVAL_MS = 200;
   const MAX_RETRIES = 50;
 
   function setDisabled(disabled) {
-    BUTTON_IDS.forEach(id => {
+    BUTTON_IDS.forEach((id) => {
       const btn = document.getElementById(id);
       if (btn) btn.disabled = disabled;
     });
@@ -94,11 +93,14 @@
   window.__pipboyUpdateDeviceButtons = updateDisabledFromConnection;
 
   function attachWatcher() {
-    if (typeof Comms === "undefined" || typeof Comms.watchConnectionChange !== "function") {
+    if (
+      typeof Comms === 'undefined' ||
+      typeof Comms.watchConnectionChange !== 'function'
+    ) {
       return false;
     }
     updateDisabledFromConnection();
-    Comms.watchConnectionChange(connected => {
+    Comms.watchConnectionChange((connected) => {
       setDisabled(!connected);
     });
     return true;
@@ -112,8 +114,8 @@
     }
   }
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", () => init());
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => init());
   } else {
     init();
   }
