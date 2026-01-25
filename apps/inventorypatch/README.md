@@ -11,7 +11,8 @@
 
 ### Description
 
-NOTE: If Pip UI+ doesn't work, or is finicky in any way, simply restart before going to Pip UI+.
+NOTE: If Pip UI+ doesn't work, or is finicky in any way, simply restart before
+going to Pip UI+.
 
 Add an inventory with customizable and interactable items.
 
