@@ -1,9 +1,9 @@
 {
-  "id": "inventorypatch",
-  "name": "Inventory Patch",
+  "id": "inventoryapp",
+  "name": "Inventory App",
   "author": "@AidansLab",
   "version": "1.5.1",
-  "description": "The inventory patch adds a customizable and interactable inventory.",
+  "description": "The inventory app adds a customizable and interactable inventory. (MAKE SURE TO CLICK READ MORE...)",
   "icon": "invPatch.png",
   "tags": "app,system",
   "type": "app",
