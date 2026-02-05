@@ -1,4 +1,6 @@
-# Inventory Patch
+# Inventory App
+
+## The inventory patch in the CFW Builder is recommended over this, as it is more performant and more compatible with high memory intensive apps (Pip UI+, etc.).
 
 ### Info
 
@@ -9,12 +11,13 @@
 - [Personal Site](http://aidan.calamera.com/)
 - [GitHub](https://github.com/AidansLab)
 
-### Description
+### Important
 
-NOTE: If Pip UI+ doesn't work, or is finicky in any way, simply restart before
-going to Pip UI+.
+If Pip UI+ doesn't work, or is finicky in any way, simply restart before going to Pip UI+.
 
-Add an inventory with customizable and interactable items.
+## Description
+
+Adds an inventory with customizable and interactable items.
 
 ### Controls
 
