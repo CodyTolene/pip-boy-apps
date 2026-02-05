@@ -2,7 +2,7 @@
   "id": "inventoryapp",
   "name": "Inventory App",
   "author": "@AidansLab",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "description": "The inventory app adds a customizable and interactable inventory. (MAKE SURE TO CLICK READ MORE...)",
   "icon": "invPatch.png",
   "tags": "app,system",
