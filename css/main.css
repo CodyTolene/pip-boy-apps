@@ -91,3 +91,10 @@ h2 {
 #connectmydevice {
   font-size: 0.9rem;
 }
+.pill-container > .btn-favourite,
+span.fav-count {
+  display: none;
+  visibility: hidden;
+  height: 0;
+  width: 0;
+}
