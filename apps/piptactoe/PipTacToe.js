@@ -15,8 +15,8 @@ let menuOptions = ['2 PLAYER', 'VS CPU'];
 let menuSelection = 0;
 let vsCPU = false;
 
-const screenWidth = bC.getWidth();
-const screenHeight = bC.getHeight();
+var screenWidth = bC.getWidth();
+var screenHeight = bC.getHeight();
 
 const spacing = 10,
   cellWidth = 50,
@@ -175,7 +175,10 @@ function getBestMove() {
   for (let y = 0; y < 3; y++) {
     for (let x = 0; x < 3; x++) {
       if (board[y][x] === '') {
-        availableMoves.push({ x, y });
+        availableMoves.push({
+          x,
+          y,
+        });
       }
     }
   }
@@ -235,7 +238,10 @@ function cpuMove() {
   let move;
 
   if (board[1][1] === '') {
-    move = { x: 1, y: 1 };
+    move = {
+      x: 1,
+      y: 1,
+    };
   } else {
     move = getBestMove();
   }
@@ -301,6 +307,7 @@ function exitGame() {
 
 function showMainMenu() {
   inMenu = true;
+
   function drawMenu() {
     bC.clear();
     bC.setFont('6x8', 2.5);
@@ -339,11 +346,9 @@ function showMainMenu() {
     E.reboot();
   });
 }
-
 setWatch(E.reboot, BTN_POWER, {
   debounce: 50,
   edge: 'rising',
-  repeat: true,
+  repeat: !0,
 });
-
 setTimeout(showMainMenu, 100);
