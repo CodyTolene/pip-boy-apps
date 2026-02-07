@@ -8,7 +8,7 @@
 
 **Contributors:** 
 
-- @LDenson (https://github.com/JLDenson)
+- @JLDenson (https://github.com/JLDenson)
 
 ### Description
 
