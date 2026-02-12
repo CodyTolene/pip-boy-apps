@@ -2,11 +2,11 @@
 
 ### Info
 
-**Author:** 
+**Author:**
 
 - @pip-4111 (https://github.com/pip-4111)
 
-**Contributors:** 
+**Contributors:**
 
 - @JLDenson (https://github.com/JLDenson)
 

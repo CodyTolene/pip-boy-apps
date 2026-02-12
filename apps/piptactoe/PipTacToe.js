@@ -26,10 +26,23 @@ const boardHeight = 3 * cellHeight + 2 * spacing;
 const offsetX = (screenWidth - boardWidth) / 2 + 10;
 const offsetY = (screenHeight - boardHeight) / 2 - 16;
 
+//  Adjust Pip-Boy Brightness
+function adjustBrightness() {
+  const brightnessLevels = [18, 19, 20];
+  const currentIndex = brightnessLevels.findIndex(
+    (level) => level === Pip.brightness,
+  );
+  const nextIndex = (currentIndex + 1) % brightnessLevels.length;
+  Pip.brightness = brightnessLevels[nextIndex];
+  Pip.updateBrightness();
+}
+
 function drawBoard() {
   bC.clear();
   bC.setFont('6x8', 2.5);
-  bC.setColor(10);
+  // Brighten things up a bit - JLDenson
+  bC.setColor(1, 1, 1);
+  bC.setBgColor(0, 0, 0);
 
   const thickness = 3;
   for (let i = 1; i < 3; i++) {
@@ -203,7 +216,8 @@ function showGameOverMessage(result) {
   let msg = result === 'Draw' ? "It's a draw!" : `Player ${result} wins!`;
   bC.clear();
   bC.setFont('6x8', 2.5);
-  bC.setColor(10);
+  bC.setColor(1, 1, 1);
+  bC.setBgColor(0, 0, 0);
   bC.drawString(msg, (screenWidth - bC.stringWidth(msg)) / 2, screenHeight / 2);
   bC.flip();
 
@@ -293,9 +307,6 @@ function bindGameControls() {
     cursorX = val > 0 ? (cursorX + 1) % 3 : (cursorX + 2) % 3;
     drawBoard();
   });
-
-  Pip.removeAllListeners('torch');
-  Pip.on('torch', exitGame);
 }
 
 function exitGame() {
@@ -311,7 +322,8 @@ function showMainMenu() {
   function drawMenu() {
     bC.clear();
     bC.setFont('6x8', 2.5);
-    bC.setColor(10);
+    bC.setColor(1, 1, 1);
+    bC.setBgColor(0, 0, 0);
     let title = 'PIP-TAC-TOE';
     bC.drawString(title, (screenWidth - bC.stringWidth(title)) / 2, 20);
     for (let i = 0; i < menuOptions.length; i++) {
@@ -341,11 +353,12 @@ function showMainMenu() {
     }
   });
 
-  Pip.on('torch', () => {
-    bC.clear();
-    E.reboot();
+  Pip.removeAllListeners('torch');
+  Pip.on('torch', function () {
+    adjustBrightness();
   });
 }
+
 setWatch(E.reboot, BTN_POWER, {
   debounce: 50,
   edge: 'rising',

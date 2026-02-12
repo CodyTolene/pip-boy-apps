@@ -1,3 +1,8 @@
+1.1.5
+https://github.com/CodyTolene/pip-boy-apps/pull/67
+- Allow screen brightness to be adjusted while the game is running using the top "torch" buttton.
+- Brighten the game UI overall for better visibility.
+
 1.1.4
 https://github.com/CodyTolene/pip-boy-apps/pull/65
 - Fix `ReferenceError: "x" is not defined`.
