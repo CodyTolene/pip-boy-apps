@@ -37,10 +37,10 @@ function adjustBrightness() {
   Pip.updateBrightness();
 }
 
-// Brighten things up overall
 function drawBoard() {
   bC.clear();
   bC.setFont('6x8', 2.5);
+  // Brighten things up a bit - JLDenson
   bC.setColor(1, 1, 1);
   bC.setBgColor(0, 0, 0);
 
@@ -307,9 +307,6 @@ function bindGameControls() {
     cursorX = val > 0 ? (cursorX + 1) % 3 : (cursorX + 2) % 3;
     drawBoard();
   });
-
-  //  Pip.removeAllListeners("torch");
-  //  Pip.on("torch", exitGame);
 }
 
 function exitGame() {
