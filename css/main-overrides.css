@@ -237,6 +237,10 @@ a.c-hand {
   color: black;
 }
 
+.modal-body .content {
+  background-color: white;
+}
+
 .hero {
   background-color: #00ff00;
   color: black;
