@@ -1,3 +1,7 @@
+1.1.5
+https://github.com/CodyTolene/pip-boy-apps/pull/67
+- todo
+
 1.1.4
 https://github.com/CodyTolene/pip-boy-apps/pull/65
 - Fix `ReferenceError: "x" is not defined`.
