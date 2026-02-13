@@ -1,6 +1,6 @@
 body {
   background-color: white!important;
-  color: black;
+  color: black!important;
 }
 
 #log {
@@ -18,7 +18,9 @@ body {
   padding: 2px 0;
 }
 
+button.btn, button.btn.btn-primary,
 button {
+  color: black!important;
   margin: 0;
 }
 
