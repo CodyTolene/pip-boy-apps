@@ -91,10 +91,7 @@ function hardExitAndReboot() {
   } catch (e) {}
   // Stop the game loop cleanly
   try {
-    if (loopId) {
-      clearInterval(loopId);
-      loopId = null;
-    }
+    stopGame();
   } catch (e) {}
 
   // Remove all input handlers
@@ -113,17 +110,20 @@ function hardExitAndReboot() {
   }, 100);
 }
 
-setWatch(hardExitAndReboot, BTN_POWER, {
-  repeat: true,
-  // If edge: "rising" still allows for screen ghosting, try edge: "falling" instead
-  edge: "rising",
-  debounce: 80
-});
-
 function playSound(name) {
   try {
-    Pip.audioStop();
-    Pip.audioStart(name);
+    let soundExists = false;
+
+    try {
+      if (Storage && typeof Storage.read === "function") {
+        soundExists = Storage.read(name) !== undefined;
+      }
+    } catch (e) {}
+
+    if (!soundExists) return;
+
+    try { Pip.audioStop(); } catch (e) {}
+    try { Pip.audioStart(name); } catch (e) {}
   } catch (e) {
     // Fail silently if audio is unavailable
   }
@@ -456,16 +456,6 @@ Pip.on("knob1", val => {
     return;
   }
 });
-Pip.on("knob1", val => {
-  if (paused && !gameOver) {
-    if (val > 0) {
-      menuIndex = (menuIndex + 1) % menuItems.length;
-    } else if (val < 0) {
-      menuIndex = (menuIndex + menuItems.length - 1) % menuItems.length;
-    }
-    return;
-  }
-});
 }
 
 function drawPauseMenu() {
@@ -538,6 +528,12 @@ function startGame() {
     draw();
    playSound(SND_START); // optional: start sound when restarting
   bindGameControls();
+  powerExitInProgress = false;
+  powerWatchId = setWatch(() => hardExitAndReboot(), BTN_POWER, {
+    debounce: 50,
+    edge: "rising",
+    repeat: true,
+  });
   draw();
   loopId = setInterval(() => {
     update();
