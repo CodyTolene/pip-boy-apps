@@ -1,4 +1,3 @@
-{
 // ====== Flappy-Roach (A Flappy-ish Wasteland Game) ======
 // ====== A JS learning experience for Jim D. ======
 // ====== Thanks to @Code, @Darrian, @Rikkuness for all the advice, suggestions, tips, and tricks! ======
@@ -26,7 +25,6 @@ let C = (typeof bC !== "undefined") ? bC : g,
  score = 0,
  gameOver = false,
  loopId = null,
- powerExitInProgress = false,
  powerWatchId = null,
  showingScoreScreen = false,
  playWasDown = false,
@@ -82,50 +80,13 @@ function startRun() {
   playSound(SND_START); // optional, if you want start sound here
 }
 
-function hardExitAndReboot() {
-  if (powerExitInProgress) return;
-  powerExitInProgress = true;
-  // Save score safely
-  try {
-    saveHighScoreIfNeeded(score);
-  } catch (e) {}
-  // Stop the game loop cleanly
-  try {
-    stopGame();
-  } catch (e) {}
-
-  // Remove all input handlers
-  try {
-    if (global.Pip) Pip.removeAllListeners();
-  } catch (e) {}
-  // Clear the display to avoid ghosting
-  try {
-    C.clear();
-    flushScreen();
-  } catch (e) {}
-
-  // Let the UI settle, then reboot
-  setTimeout(() => {
-    E.reboot();
-  }, 100);
-}
-
 function playSound(name) {
   try {
-    let soundExists = false;
-
-    try {
-      if (Storage && typeof Storage.read === "function") {
-        soundExists = Storage.read(name) !== undefined;
-      }
-    } catch (e) {}
-
-    if (!soundExists) return;
-
-    try { Pip.audioStop(); } catch (e) {}
-    try { Pip.audioStart(name); } catch (e) {}
+    Pip.audioStop();
+    Pip.audioStart(name);
   } catch (e) {
     // Fail silently if audio is unavailable
+    console.log("Audio error:", e);
   }
 }
 
@@ -524,16 +485,19 @@ function startGame() {
   exitingToApps = false;
   stopGame();
   resetGame();
-//  drawTitleScreen();
-    draw();
-   playSound(SND_START); // optional: start sound when restarting
+  // drawTitleScreen();
+  draw();
+  playSound(SND_START); // optional: start sound when restarting
   bindGameControls();
-  powerExitInProgress = false;
-  powerWatchId = setWatch(() => hardExitAndReboot(), BTN_POWER, {
-    debounce: 50,
-    edge: "rising",
-    repeat: true,
-  });
+  powerWatchId = setWatch(
+    () => { E.reboot(); }, 
+    BTN_POWER, 
+    {
+      debounce: 50,
+      edge: "rising",
+      repeat: true,
+    }
+  );
   draw();
   loopId = setInterval(() => {
     update();
@@ -543,4 +507,3 @@ function startGame() {
 }
 
 startGame();
-}
