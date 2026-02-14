@@ -1,3 +1,4 @@
+{
 // ====== Flappy-Roach (A Flappy-ish Wasteland Game) ======
 // ====== A JS learning experience for Jim D. ======
 // ====== Thanks to @Code, @Darrian, @Rikkuness for all the advice, suggestions, tips, and tricks! ======
@@ -19,14 +20,12 @@ let C = (typeof bC !== "undefined") ? bC : g,
  W = C.getWidth(),
  H = C.getHeight(),
  finalScore = 0,
- lastRunReason = "",
  bird,
  pipes = [],
  score = 0,
  gameOver = false,
  loopId = null,
  powerWatchId = null,
- showingScoreScreen = false,
  playWasDown = false,
  knob1WasDown = false,
  frameCount = 0,
@@ -37,7 +36,6 @@ let C = (typeof bC !== "undefined") ? bC : g,
  lastFlapSoundT = 0,
  impactFX = null,
  showGameOverUI = true,
- exitingToApps = false,
  inputLockedUntil = 0,
  GRAVITY = 0.4,
  FLAP = -5,
@@ -49,9 +47,7 @@ let C = (typeof bC !== "undefined") ? bC : g,
  SND_HIT  = "/USER/FLAPPYROACH/HitGround.wav",
  SND_OVER  = "/USER/FLAPPYROACH/GameOver.wav",
  SND_SPLAT   = "/USER/FLAPPYROACH/SplatOnPipe.wav",
- SND_START = "/USER/FLAPPYROACH/StartGame.wav",
- exitTO1 = null,
- exitTO2 = null;
+ SND_START = "/USER/FLAPPYROACH/StartGame.wav";
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
@@ -68,7 +64,6 @@ function drawTitleScreen() {
 }
 
 function startRun() {
-  exitingToApps = false;
   inTitle = false;
   gameOver = false;
   paused = false;
@@ -86,7 +81,6 @@ function playSound(name) {
     Pip.audioStart(name);
   } catch (e) {
     // Fail silently if audio is unavailable
-    console.log("Audio error:", e);
   }
 }
 
@@ -122,13 +116,7 @@ function drawSplat(x, y, s, t) {
 function flapAction() {
   // Ignore all input during lockout window
   if (getTime() < inputLockedUntil) return;
-  // 1) Score screen: press exits to apps
-  if (showingScoreScreen) {
-    showingScoreScreen = false;
-    exitToApps();
-    return;
-  }
-  // 2) Pause menu: press selects
+  // Pause menu: press selects
   if (paused && !gameOver) {
     pauseSelect();
     return;
@@ -179,41 +167,6 @@ function pauseSelect() {
   }
 }
 
-function exitToApps() {
-  if (exitingToApps) return;
-  exitingToApps = true;
-  // Cancel any previous exit timers (defensive)
-  if (exitTO1) { clearTimeout(exitTO1); exitTO1 = null; }
-  if (exitTO2) { clearTimeout(exitTO2); exitTO2 = null; }
-  // Stop everything first
-  stopGame();
-  try { if (global.Pip) Pip.removeAllListeners(); } catch (e) {}
-  // Clear/flush immediately
-  try { C.clear(); flushScreen(); } catch (e) {}
-  // Clear/flush again shortly after
-  exitTO1 = setTimeout(() => {
-    exitTO1 = null;
-    try { C.clear(); flushScreen(); } catch (e) {}
-    // Now hand off to UI
-    exitTO2 = setTimeout(() => {
-      exitTO2 = null;
-      try {
-        if (typeof submenuApps === "function") submenuApps();
-        else if (typeof showMainMenu === "function") showMainMenu();
-        else {
-          C.clear();
-          C.setFont("6x8", 2);
-          C.setFontAlign(-1, -1);
-          let msg = "Exited";
-          let x = Math.max(0, (W - C.stringWidth(msg)) >> 1);
-          C.drawString(msg, x, Math.floor(H * 0.45));
-          flushScreen();
-        }
-      } catch (e) {}
-    }, 120);
-  }, 40);
-}
-
 function flushScreen() {
   if (C && C.flip) return C.flip();
   if (C && C.flush) return C.flush();
@@ -234,7 +187,6 @@ function resetGame() {
   H = C.getHeight();
   paused = false;
   gameOver = false;
-  showingScoreScreen = false;
   bird = { x: Math.floor(W * 0.25), y: H / 2, vy: 0, size: 6 };
   pipes = [];
   score = 0;
@@ -242,7 +194,6 @@ function resetGame() {
 }
 
 function update() {
-  if (exitingToApps) return; // Prevents ghosting when entering Apps List
   if (!pipes) pipes = []; // safety
   // --- Always poll inputs FIRST (even on score/title/pause screens) ---
   // Radio PLAY
@@ -260,7 +211,6 @@ function update() {
   }
 
   // Now we can bail out of motion/physics while on other screens
-  if (showingScoreScreen) return;
   if (inTitle) return;
   if (gameOver || paused) return;
 
@@ -302,7 +252,6 @@ function update() {
 }
 
 function drawCentered(text, y) {
-  if (exitingToApps) return; // Prevents ghosting when entering Apps List
   C.setFontAlign(-1, -1); // left/top
   let tw = C.stringWidth(text);
   let x = Math.max(0, Math.floor((W - tw) / 2));
@@ -310,12 +259,10 @@ function drawCentered(text, y) {
 }
 
 function draw() {
-  if (exitingToApps) return;
   if (inTitle) {
     drawTitleScreen();
     return;
   }
-  if (showingScoreScreen) return;
   if (!pipes) pipes = [];
   C.clear();
   // Pipes
@@ -440,8 +387,6 @@ function drawPauseMenu() {
 function stopGame() {
   if (loopId) { clearInterval(loopId); loopId = null; }
   if (powerWatchId) { clearWatch(powerWatchId); powerWatchId = null; }
-  if (exitTO1) { clearTimeout(exitTO1); exitTO1 = null; }
-  if (exitTO2) { clearTimeout(exitTO2); exitTO2 = null; }
   if (tOverSound) { clearTimeout(tOverSound); tOverSound = null; }
   if (tImpactClear) { clearTimeout(tImpactClear); tImpactClear = null; }
   if (global.Pip) Pip.removeAllListeners();
@@ -455,7 +400,6 @@ function endRun(reason) {
   inputLockedUntil = getTime() + 0.75; // 600 ms lockout
   finalScore = score;
   saveHighScoreIfNeeded(finalScore);
-  lastRunReason = reason || "";
   // Start impact animation for 300ms
   showGameOverUI = false;
   impactFX = {
@@ -482,7 +426,6 @@ function endRun(reason) {
 }
 
 function startGame() {
-  exitingToApps = false;
   stopGame();
   resetGame();
   // drawTitleScreen();
@@ -507,3 +450,4 @@ function startGame() {
 }
 
 startGame();
+}
