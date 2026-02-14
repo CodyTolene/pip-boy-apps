@@ -1,3 +1,8 @@
+1.0.1
+https://github.com/CodyTolene/pip-boy-apps/pull/69
+- Fix bug where the game would periodically fail to exit/restart.
+- Remove duplicate `knob1` handler.
+
 1.0.0
 https://github.com/CodyTolene/pip-boy-apps/pull/68
 - Add new game.
