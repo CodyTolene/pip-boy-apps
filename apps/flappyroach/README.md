@@ -1,10 +1,14 @@
-# Flappy-Roach
+# Flappy Roach
 
 ### Info
 
 **Author:** 
 
 - @JLDenson (https://github.com/JLDenson)
+
+**Contributors:**
+
+- @CodyTolene (https://github.com/CodyTolene)
 
 ### Description
 

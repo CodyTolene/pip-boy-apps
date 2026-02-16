@@ -1,5 +1,5 @@
 {
-// ====== Flappy-Roach (A Flappy-ish Wasteland Game) ======
+// ====== Flappy Roach (A Flappy-ish Wasteland Game) ======
 // ====== A JS learning experience for Jim D. ======
 // ====== Thanks to @Code, @Darrian, @Rikkuness for all the advice, suggestions, tips, and tricks! ======
 // ====== Left Knob-press / Radio Knob-press flaps/restarts game, Torch pauses, Power exits ======
@@ -15,7 +15,7 @@ let C = (typeof bC !== "undefined") ? bC : g,
  inTitle = true,
  highScore = Storage.readJSON(HS_KEY, 1) || 0,
  paused = false,
- menuItems = ["RESUME", "RESTART", "QUIT (REBOOT)"],
+ menuItems = ["RESUME GAME", "RESTART GAME", "QUIT (REBOOT)"],
  menuIndex = 0,
  W = C.getWidth(),
  H = C.getHeight(),
@@ -47,7 +47,14 @@ let C = (typeof bC !== "undefined") ? bC : g,
  SND_HIT  = "/USER/FLAPPYROACH/HitGround.wav",
  SND_OVER  = "/USER/FLAPPYROACH/GameOver.wav",
  SND_SPLAT   = "/USER/FLAPPYROACH/SplatOnPipe.wav",
- SND_START = "/USER/FLAPPYROACH/StartGame.wav";
+ SND_START = "/USER/FLAPPYROACH/StartGame.wav",
+// New Floor and Ceiling lines
+ CEIL_H  = 8,  // pixels
+ FLOOR_H = 10,  // pixels
+// Play area bounds (Flappy Roach must stay inside these)
+ EDGE_PAD = 0, // Change this value to adjust boundary bezel gap
+ PLAY_TOP = CEIL_H,
+ PLAY_BOT = H - FLOOR_H;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
@@ -55,7 +62,7 @@ function drawTitleScreen() {
   C.clear();
   C.setFontAlign(-1, -1);
   C.setFont("6x8", 2);
-  drawCentered("FLAPPY-ROACH", Math.floor(H * 0.25));
+  drawCentered("FLAPPY ROACH", Math.floor(H * 0.25));
   C.setFont("6x8", 1);
   drawCentered("Knob1 or Radio PLAY", Math.floor(H * 0.52));
   drawCentered("to START", Math.floor(H * 0.60));
@@ -81,6 +88,7 @@ function playSound(name) {
     Pip.audioStart(name);
   } catch (e) {
     // Fail silently if audio is unavailable
+    // console.log("Audio error:", e);
   }
 }
 
@@ -152,9 +160,9 @@ function togglePause() {
 
 function pauseSelect() {
   let choice = menuItems[menuIndex];
-  if (choice === "RESUME") {
+  if (choice === "RESUME GAME") {
     paused = false;
-  } else if (choice === "RESTART") {
+  } else if (choice === "RESTART GAME") {
     paused = false;
     resetGame();
     startRun && startRun(); // if you have startRun
@@ -175,10 +183,16 @@ function flushScreen() {
 }
 
 function newPipe() {
-  let gap = Math.min(PIPE_GAP, H - 30);
-  let margin = 10;
-  let usable = H - gap - margin*2;
-  let gapY = margin + Math.random() * (usable > 0 ? usable : 1);
+  // Playable lane height (between ceiling and floor bars)
+  const laneTop = PLAY_TOP;
+  const laneBot = PLAY_BOT;
+  const laneH   = laneBot - laneTop;
+  // Logic is based on a lane now
+  let gap = Math.min(PIPE_GAP, laneH - 20);   // 20 is analogous to your old "H - 30" safety
+  if (gap < 10) gap = 10;                    // safety: don't allow absurdly tiny gaps
+  let margin = 10;                           // same feel as before
+  let usable = laneH - gap - margin * 2;
+  let gapY = laneTop + margin + Math.random() * (usable > 0 ? usable : 1);
   pipes.push({ x: W, gapY: gapY, scored: false, gap: gap });
 }
 
@@ -191,6 +205,19 @@ function resetGame() {
   pipes = [];
   score = 0;
   inTitle = true; // <--
+}
+
+// Floor & Ceiling
+function drawBounds() {
+  // Ceiling
+  C.setColor(0,0,0);
+  C.fillRect(0, 0, W-1, PLAY_TOP-1);
+  // Floor
+  C.fillRect(0, PLAY_BOT, W-1, H-1);
+  // Optional: thin bright edge line so it "reads" clearly
+  C.setColor(1,1,1);
+  C.drawLine(0, PLAY_TOP-1, W-1, PLAY_TOP-1);
+  C.drawLine(0, PLAY_BOT,   W-1, PLAY_BOT);
 }
 
 function update() {
@@ -228,18 +255,30 @@ function update() {
   if (!isFinite(bird.y)) { bird.y = H/2; bird.vy = 0; }
   if (bird.y < 0 || bird.y + bird.size > H) endRun("FELL");
 
+// ---- Ceiling / Floor Collision (CLAMP HERE) ----
+  if (bird.y <= PLAY_TOP) {
+    bird.y = PLAY_TOP;
+    endRun("HIT");
+  } else if (bird.y + bird.size >= PLAY_BOT) {
+    bird.y = PLAY_BOT - bird.size;
+    endRun("HIT");
+}
+
+  // New collision loop
   // Pipes move/collide/score
   for (let i = 0; i < pipes.length; i++) {
-    let p = pipes[i];
-    p.x -= PIPE_SPEED;
-    if (bird.x + bird.size > p.x && bird.x < p.x + PIPE_WIDTH) {
-      if (bird.y < p.gapY || bird.y + bird.size > p.gapY + p.gap) endRun("HIT");
-    }
-    if (!p.scored && p.x + PIPE_WIDTH < bird.x) {
-      p.scored = true;
-      score++;
-    }
+  let p = pipes[i];
+  p.x -= PIPE_SPEED;
+  if (bird.x + bird.size > p.x && bird.x < p.x + PIPE_WIDTH) {
+    let gapTop = Math.max(p.gapY, PLAY_TOP);
+    let gapBot = Math.min(p.gapY + p.gap, PLAY_BOT);
+    if (bird.y < gapTop || bird.y + bird.size > gapBot) endRun("HIT");
   }
+  if (!p.scored && p.x + PIPE_WIDTH < bird.x) {
+    p.scored = true;
+    score++;
+  }
+}
 
   // Spawn pipes
   let last = pipes[pipes.length - 1];
@@ -263,20 +302,26 @@ function draw() {
     drawTitleScreen();
     return;
   }
+  // Pipes
   if (!pipes) pipes = [];
   C.clear();
-  // Pipes
+  // (Optional but recommended) draw visible ceiling/floor first
+  drawBounds();
   for (let i = 0; i < pipes.length; i++) {
     let p = pipes[i];
-    C.fillRect(p.x, 0, p.x + PIPE_WIDTH, p.gapY);
-    C.fillRect(p.x, p.gapY + p.gap, p.x + PIPE_WIDTH, H);
+    let gapY = Math.max(p.gapY, PLAY_TOP);
+    // Top pipe: stop at the start of the gap (but never draw above the ceiling bar)
+    C.fillRect(p.x, PLAY_TOP, p.x + PIPE_WIDTH, gapY);
+    // Bottom pipe: start after the gap and stop at the floor bar
+    C.fillRect(p.x, gapY + p.gap, p.x + PIPE_WIDTH, PLAY_BOT);
   }
+
   // Rad-Roach
   drawRadroach(bird.x, bird.y, bird.size, frameCount, roachFlapT, roachTilt);
   // Score
   C.setFont("6x8", 2);
   C.setFontAlign(-1, -1);
-  C.drawString(" Score: " + score, 2, 2);
+  C.drawString("Score: " + score, 2, PLAY_TOP + 2);
   if (gameOver) {
   // If we’re in the impact phase, draw splat instead of text
   if (!showGameOverUI && impactFX) {
@@ -356,9 +401,9 @@ function bindGameControls() {
   });
 Pip.on("knob1", val => {
   if (paused && !gameOver) {
-    if (val > 0) {
+    if (val < 0) {
       menuIndex = (menuIndex + 1) % menuItems.length;
-    } else if (val < 0) {
+    } else if (val > 0) {
       menuIndex = (menuIndex + menuItems.length - 1) % menuItems.length;
     }
     return;
@@ -380,8 +425,8 @@ function drawPauseMenu() {
     drawCentered(t, y);
   }
   C.setFont("6x8", 1.5);
-  drawCentered("Torch: Pause/Resume", H - 40);
-  drawCentered("Knob1 Press: Select", H - 30);
+  drawCentered("Top Torch Press: Resume", H - 40);
+  drawCentered("Left Knob Press: Select", H - 30);
 }
 
 function stopGame() {

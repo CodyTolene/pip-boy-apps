@@ -1,3 +1,8 @@
+1.1.0
+https://github.com/CodyTolene/pip-boy-apps/pull/70
+- Added new ground and sky boundaries, and adjusted the play area bounds accordingly.
+- Added a new preloader for a smoother game launch and improved memory usage.
+
 1.0.1
 https://github.com/CodyTolene/pip-boy-apps/pull/69
 - Fix bug where the game would periodically fail to exit/restart.
