@@ -1,7 +1,7 @@
 {
 // ====== Flappy Roach (A Flappy-ish Wasteland Game) ======
 // ====== A JS learning experience for Jim D. ======
-// ====== Thanks to @Code, @Darrian, @Rikkuness for all the advice, suggestions, tips, and tricks! ======
+// ====== Thanks to @Code & @Darrian/@Rikkuness for all the advice, suggestions, tips, and tricks! ======
 // ====== Left Knob-press / Radio Knob-press flaps/restarts game, Torch pauses, Power exits ======
 //
 if (Pip.removeSubmenu) Pip.removeSubmenu();
@@ -10,17 +10,15 @@ if (Pip.remove) Pip.remove();
 delete Pip.remove;
 
 let C = (typeof bC !== "undefined") ? bC : g,
- Storage = require("Storage"),
- HS_KEY = "flappy_hs",
+ fs = require("fs"),
+ HS_PATH = "/USER/FLAPPYROACH/flappy_hs",
  inTitle = true,
- highScore = Storage.readJSON(HS_KEY, 1) || 0,
  paused = false,
  menuItems = ["RESUME GAME", "RESTART GAME", "QUIT (REBOOT)"],
  menuIndex = 0,
  W = C.getWidth(),
  H = C.getHeight(),
  finalScore = 0,
- bird,
  pipes = [],
  score = 0,
  gameOver = false,
@@ -137,12 +135,28 @@ function flapAction() {
   playFlapSound();
 }
 
+// * * * * * * * * * * * * * * * Save High Score * * * * * * * * * * * * * * * * * *
 function saveHighScoreIfNeeded(s) {
-  if (s > highScore) {
-    highScore = s;
-    Storage.writeJSON(HS_KEY, highScore);
+    if (s > highScore) {
+      highScore = s;
+	  fs.writeFileSync(HS_PATH, String(s));
+    }
+}
+
+// * * * * * * * * * * * * * * * Load High Score * * * * * * * * * * * * * * * * * *
+function loadHighScore() {
+  try {
+    return parseInt(fs.readFileSync(HS_PATH) || "0", 10);
+  } catch (e) {
+    if (e && e.toString().indexOf("NO_FILE") >= 0) {
+      fs.writeFileSync(HS_PATH, "0");
+      return 0;
+    }
+    throw e;
   }
 }
+
+let highScore = loadHighScore();
 
 function togglePause() {
   paused = !paused;
