@@ -1,3 +1,8 @@
+1.1.1
+https://github.com/CodyTolene/pip-boy-apps/pull/71
+- Made a minor change to move the Flappy Roach High Score file from the Mk V Internal Storage to the SD Card storage under /USER/FLAPPYROACH directory. This will allow users to delete (reset) the Flappy Roach High Score if/when desired. 
+- Also made some minor corrections to some remarks in the source.
+
 1.1.0
 https://github.com/CodyTolene/pip-boy-apps/pull/70
 - Added new ground and sky boundaries, and adjusted the play area bounds accordingly.
