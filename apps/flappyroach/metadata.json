@@ -2,7 +2,7 @@
   "id": "flappyroach",
   "name": "Flappy Roach",
   "author": "@JLDenson",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A Fallout inspired version of the popular Flappy Bird game.",
   "icon": "assets/flappyroach.png",
   "tags": "game",
@@ -10,7 +10,7 @@
   "readme": "README.md",
   "storage": [
     { "name": "USER/flappyroach.js", "url": "app.min.js" },
-    { "name": "USER/FLAPPYROACH/flappyroach.js", "url": "assets/flappyroach.min.js" },
+    { "name": "USER/FLAPPYROACH/flappyroach.js", "url": "assets/flappyroach.js" },
     { "name": "USER/FLAPPYROACH/BeetleFlying.wav", "url": "assets/BeetleFlying.wav" },
     { "name": "USER/FLAPPYROACH/GameOver.wav", "url": "assets/GameOver.wav" },
     { "name": "USER/FLAPPYROACH/HitGround.wav", "url": "assets/HitGround.wav" },
