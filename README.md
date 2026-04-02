@@ -1,185 +1,197 @@
-<div align="center">
-  <img align="center" src=".github/images/logo.png" height="400" />
-  <h1 align="center">Pip-Boy Apps</h1>
-  <p align="center">
-    A forked repository of the official <a href="https://github.com/thewandcompany/pip-boy" target="_blank">Mod Tool</a> from The Wand Company to house all the great apps and games made by fellow vault-dwellers for the Pip-Boy 3000 Mk V device. Apps are hosted on <a href="https://pip-boy.com/" target="_blank">pip-boy.com</a> and are open-source for all to enjoy.
-  </p>
-  <p align="center">
-    <a href="https://pip-boy.com" target="_blank">
-      Pip-Boy.com
-    </a>&nbsp;|&nbsp;
-    <a href="https://discord.com/invite/zQmAkEg8XG" target="_blank">
-      Discord Community
-    </a>
-  </p>
-  <p align="center">
-    <a href="https://gear.bethesda.net/products/fallout-series-pip-boy-die-cast-replica" target="_blank">
-      Bethesda Store
-    </a>&nbsp;|&nbsp;
-    <a href="https://www.thewandcompany.com/pip-boy/upgrade/">
-      The Wand Company
-    </a>&nbsp;|&nbsp;
-    <a href="https://github.com/thewandcompany/pip-boy" target="_blank">
-      Official Mod Tool
-    </a>
-  </p>
-  <p align="center">
-    <a href="https://www.espruino.com/Reference" target="_blank">
-      Espruino Reference
-    </a>&nbsp;|&nbsp;
-    <a href="https://github.com/espruino/BangleApps">
-      Bangle Apps
-    </a>&nbsp;|&nbsp;
-    <a href="https://www.espruino.com/Image%20Converter">
-      Bangle Images
-    </a>
-  </p>
-</div>
+## Notice
+
+![Warning][img-warn] This repository has been archived. Please use the new 
+repository below for all future contributions:
+
+https://github.com/CodyTolene/pip-boy-3000-mk-v-apps
 
 <!---------------------------------------------------------------------------->
 <!---------------------------------------------------------------------------->
 <!---------------------------------------------------------------------------->
 
-## Index <a name="index"></a>
+<details>
+  <summary>View Archived README</summary>
 
-- [Getting Started](#getting-started)
-- [Mod Tool](#mod-tool)
-- [App List](#app-list)
-- [Minification](#minification)
-- [Contributing](#contributing)
+  <div align="center">
+    <img align="center" src=".github/images/logo.png" height="400" />
+    <h1 align="center">Pip-Boy Apps</h1>
+    <p align="center">
+      A forked repository of the official <a href="https://github.com/thewandcompany/pip-boy" target="_blank">Mod Tool</a> from The Wand Company to house all the great apps and games made by fellow vault-dwellers for the Pip-Boy 3000 Mk V device. Apps are hosted on <a href="https://pip-boy.com/" target="_blank">pip-boy.com</a> and are open-source for all to enjoy.
+    </p>
+    <p align="center">
+      <a href="https://pip-boy.com" target="_blank">
+        Pip-Boy.com
+      </a>&nbsp;|&nbsp;
+      <a href="https://discord.com/invite/zQmAkEg8XG" target="_blank">
+        Discord Community
+      </a>
+    </p>
+    <p align="center">
+      <a href="https://gear.bethesda.net/products/fallout-series-pip-boy-die-cast-replica" target="_blank">
+        Bethesda Store
+      </a>&nbsp;|&nbsp;
+      <a href="https://www.thewandcompany.com/pip-boy/upgrade/">
+        The Wand Company
+      </a>&nbsp;|&nbsp;
+      <a href="https://github.com/thewandcompany/pip-boy" target="_blank">
+        Official Mod Tool
+      </a>
+    </p>
+    <p align="center">
+      <a href="https://www.espruino.com/Reference" target="_blank">
+        Espruino Reference
+      </a>&nbsp;|&nbsp;
+      <a href="https://github.com/espruino/BangleApps">
+        Bangle Apps
+      </a>&nbsp;|&nbsp;
+      <a href="https://www.espruino.com/Image%20Converter">
+        Bangle Images
+      </a>
+    </p>
+  </div>
 
-<!---------------------------------------------------------------------------->
-<!---------------------------------------------------------------------------->
-<!---------------------------------------------------------------------------->
+  ## Index <a name="index"></a>
 
-## Getting Started <a name="getting-started"></a>
+  - [Getting Started](#getting-started)
+  - [Mod Tool](#mod-tool)
+  - [App List](#app-list)
+  - [Minification](#minification)
+  - [Contributing](#contributing)
 
-If you put a JS file in the `USER` folder, Pip-Boy will show it in a list of
-apps in the `INV` screen.
+  <!---------------------------------------------------------------------------->
+  <!---------------------------------------------------------------------------->
+  <!---------------------------------------------------------------------------->
 
-- `g` is a graphics instance that writes direct to the screen.
+  ## Getting Started <a name="getting-started"></a>
 
-- `bC` is a graphics instance that writes to a 2 bit offscreen buffer, and
-  calling `bC.flip()` will flip that buffer to the screen with a scanline
-  effect.
+  If you put a JS file in the `USER` folder, Pip-Boy will show it in a list of
+  apps in the `INV` screen.
 
-More details here: [API.md](API.md)
+  - `g` is a graphics instance that writes direct to the screen.
 
-<!---------------------------------------------------------------------------->
-<!---------------------------------------------------------------------------->
-<!---------------------------------------------------------------------------->
+  - `bC` is a graphics instance that writes to a 2 bit offscreen buffer, and
+    calling `bC.flip()` will flip that buffer to the screen with a scanline
+    effect.
 
-## Running the Pip-Boy Mod Tool <a name="mod-tool"></a>
+  More details here: [API.md](API.md)
 
-### Local server
+  <!---------------------------------------------------------------------------->
+  <!---------------------------------------------------------------------------->
+  <!---------------------------------------------------------------------------->
 
-1.  Clone the repository and its submodules:
+  ## Running the Pip-Boy Mod Tool <a name="mod-tool"></a>
 
-    ```sh
-    git clone https://github.com/CodyTolene/pip-boy-apps.git
-    git submodule update --init --recursive
-    ```
+  ### Local server
 
-2.  Install dependencies:
+  1.  Clone the repository and its submodules:
 
-    ```sh
-    npm install
-    ```
+      ```sh
+      git clone https://github.com/CodyTolene/pip-boy-apps.git
+      git submodule update --init --recursive
+      ```
 
-3.  Start the local server:
+  2.  Install dependencies:
 
-    ```sh
-    npm run serve
-    ```
+      ```sh
+      npm install
+      ```
 
-    > ![info][img-info] The app will be available at
-    > [http://localhost:8080](http://localhost:8080).
+  3.  Start the local server:
 
-## App JSON Generation <a name="app-list"></a>
+      ```sh
+      npm run serve
+      ```
 
-1.  With [Node.js][link-node-js] installed, open a new terminal at the root of
-    this repo. Install the required Node.js packages:
+      > ![info][img-info] The app will be available at
+      > [http://localhost:8080](http://localhost:8080).
 
-    ```sh
-    npm install
-    ```
+  ## App JSON Generation <a name="app-list"></a>
 
-2.  Run the app generation script:
+  1.  With [Node.js][link-node-js] installed, open a new terminal at the root of
+      this repo. Install the required Node.js packages:
 
-    ```sh
-    npm run build
-    ```
+      ```sh
+      npm install
+      ```
 
-    > ![info][img-info] This will generate a file called `apps.local.json` in
-    > the root of the repository.
+  2.  Run the app generation script:
 
-    > ![info][img-info] You can also use jekyll to generate the
-    > `apps.local.json` file by running `jekyll build`.
+      ```sh
+      npm run build
+      ```
 
-    > ![warn][img-warn] Do not commit this file to the repository, it is
-    > generated automatically and should not be tracked by Git.
+      > ![info][img-info] This will generate a file called `apps.local.json` in
+      > the root of the repository.
 
-<!---------------------------------------------------------------------------->
-<!---------------------------------------------------------------------------->
-<!---------------------------------------------------------------------------->
+      > ![info][img-info] You can also use jekyll to generate the
+      > `apps.local.json` file by running `jekyll build`.
 
-## Manual Minification <a name="minification"></a>
+      > ![warn][img-warn] Do not commit this file to the repository, it is
+      > generated automatically and should not be tracked by Git.
 
-Sometimes the built in minification and tokenization doesn't work as expected,
-in this case you can run the Espruino minification manually using the following
-steps:
+  <!---------------------------------------------------------------------------->
+  <!---------------------------------------------------------------------------->
+  <!---------------------------------------------------------------------------->
 
-1.  With [Node.js][link-node-js] installed, open a new terminal at the root of
-    this repo. Install the required Node.js packages:
+  ## Manual Minification <a name="minification"></a>
 
-    ```sh
-    npm install
-    ```
+  Sometimes the built in minification and tokenization doesn't work as expected,
+  in this case you can run the Espruino minification manually using the following
+  steps:
 
-2.  Run the minification script:
+  1.  With [Node.js][link-node-js] installed, open a new terminal at the root of
+      this repo. Install the required Node.js packages:
 
-    ```sh
-    npm run min
-    ```
+      ```sh
+      npm install
+      ```
 
-    OR for live updates:
+  2.  Run the minification script:
 
-    ```sh
-    npm run min:watch
-    ```
+      ```sh
+      npm run min
+      ```
 
-    > ![info][img-info] Press CTRL+C to stop the live update script.
+      OR for live updates:
 
-<!---------------------------------------------------------------------------->
-<!---------------------------------------------------------------------------->
-<!---------------------------------------------------------------------------->
+      ```sh
+      npm run min:watch
+      ```
 
-## Contributing <a name="contributing"></a>
+      > ![info][img-info] Press CTRL+C to stop the live update script.
 
-1.  Make sure to run the following commands before committing any changes:
+  <!---------------------------------------------------------------------------->
+  <!---------------------------------------------------------------------------->
+  <!---------------------------------------------------------------------------->
 
-    ```sh
-    npm run prettier
-    ```
+  ## Contributing <a name="contributing"></a>
 
-    > ![info][img-info] This will format all files in the repository according
-    > to the Prettier configuration.
+  1.  Make sure to run the following commands before committing any changes:
 
-2.  Add and commit your changes:
+      ```sh
+      npm run prettier
+      ```
 
-    ```sh
-    git add .
-    git commit -m "Your commit message"
-    ```
+      > ![info][img-info] This will format all files in the repository according
+      > to the Prettier configuration.
 
-3.  Push your changes and create a pull request.
+  2.  Add and commit your changes:
 
-4.  Further details on contributing can be found in the
-    [CONTRIBUTING.md](CONTRIBUTING.md) file.
+      ```sh
+      git add .
+      git commit -m "Your commit message"
+      ```
 
-<!---------------------------------------------------------------------------->
-<!---------------------------------------------------------------------------->
-<!---------------------------------------------------------------------------->
+  3.  Push your changes and create a pull request.
+
+  4.  Further details on contributing can be found in the
+      [CONTRIBUTING.md](CONTRIBUTING.md) file.
+
+  <!---------------------------------------------------------------------------->
+  <!---------------------------------------------------------------------------->
+  <!---------------------------------------------------------------------------->
+
+</details>
 
 <!-- IMAGE REFERENCES -->
 
